@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 User=www-data
-WorkingDirectory=/opt/aasec
+WorkingDirectory=/www
 ExecStart=/usr/bin/node server.js
 Restart=on-failure
 RestartSec=5
