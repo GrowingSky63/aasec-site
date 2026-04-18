@@ -1,0 +1,234 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Responsáveis — Área Docente Betel</title>
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+<button class="mobile-toggle" id="mobileToggle">☰</button>
+<div class="sidebar">
+  <div class="sidebar-logo"><img src="../assets/logo_aasec.png" alt="Betel"><strong>Área Docente Betel</strong><span>CEI Betel · AASEC</span></div>
+  <div class="sidebar-perfil"><div class="sp-nome"></div><div class="sp-cargo"></div><span class="sp-badge"></span></div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Principal</div>
+    <a class="nav-item" href="dashboard.html" data-page="dashboard"><span class="nav-icon">🏠</span> Painel</a>
+    <a class="nav-item" href="avaliacao.html" data-page="avaliacao"><span class="nav-icon">📝</span> Avaliação Mensal</a>
+    <div class="nav-label">Cadastros</div>
+    <a class="nav-item nav-admin" href="usuarios.html" data-page="usuarios"><span class="nav-icon">👥</span> Usuários</a>
+    <a class="nav-item nav-admin" href="turmas.html" data-page="turmas"><span class="nav-icon">👩‍👧‍👦</span> Turmas</a>
+    <a class="nav-item" href="criancas.html" data-page="criancas"><span class="nav-icon">🌻</span> Crianças</a>
+    <a class="nav-item" href="responsaveis.html" data-page="responsaveis"><span class="nav-icon">👨‍👩‍👧</span> Responsáveis</a>
+  </nav>
+  <div class="sidebar-bottom"><a href="login.html">← Sair</a></div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-esq"><h2 id="paginaTitulo">👨‍👩‍👧 Responsáveis</h2><p id="paginaSub">Responsáveis e famílias cadastradas</p></div>
+    <button class="btn btn-primary btn-sm" onclick="abrirModal()">+ Adicionar responsável</button>
+  </div>
+  <div class="content">
+
+    <!-- FILTRO POR CRIANÇA (quando vem de criancas.html) -->
+    <div id="filtroContexto" style="display:none;margin-bottom:16px">
+      <div style="background:var(--verde-claro);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:12px;border-left:4px solid var(--verde)">
+        <span style="font-size:20px">🌻</span>
+        <div><strong id="criancaContextoNome" style="color:var(--preto)"></strong><div style="font-size:12px;color:var(--cinza)">Exibindo responsáveis desta criança</div></div>
+        <a href="responsaveis.html" style="margin-left:auto;font-size:12px;color:var(--verde);font-weight:600;text-decoration:none">Ver todos →</a>
+      </div>
+    </div>
+
+    <div class="bloco">
+      <div class="list-toolbar">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="busca" placeholder="Buscar por nome..." oninput="renderLista()">
+        </div>
+        <select class="filter-select" id="filtroCrianca" onchange="renderLista()">
+          <option value="">Todas as crianças</option>
+        </select>
+      </div>
+      <div class="contador" id="contador"></div>
+      <div class="tabela-wrap">
+        <table>
+          <thead><tr><th>Responsável</th><th>Parentesco</th><th>Criança vinculada</th><th>Telefone</th><th>WhatsApp</th><th>E-mail</th><th style="text-align:right">Ações</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="vazio" id="vazio" style="display:none"><div class="vi">👨‍👩‍👧</div><h4>Nenhum responsável encontrado</h4><p>Cadastre responsáveis vinculados às crianças.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-header"><h3 id="modalTitulo">Adicionar Responsável</h3><button class="modal-close" onclick="fecharModal()">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="editId">
+      <div class="form-bloco">
+        <div class="form-bloco-titulo">Vínculo</div>
+        <div class="form-row cols-2">
+          <div class="fg"><label>Criança vinculada <span class="req">*</span></label>
+            <select id="fCrianca"><option value="">Selecione a criança</option></select>
+          </div>
+          <div class="fg"><label>Parentesco <span class="req">*</span></label>
+            <select id="fParentesco">
+              <option value="Mãe">Mãe</option><option value="Pai">Pai</option>
+              <option value="Avó">Avó</option><option value="Avô">Avô</option>
+              <option value="Tia">Tia</option><option value="Tio">Tio</option>
+              <option value="Responsável legal">Responsável legal</option><option value="Outro">Outro</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-bloco">
+        <div class="form-bloco-titulo">Dados pessoais</div>
+        <div class="fg" style="margin-bottom:12px"><label>Nome completo <span class="req">*</span></label><input type="text" id="fNome" placeholder="Nome completo do responsável"></div>
+        <div class="form-row cols-2">
+          <div class="fg"><label>Telefone <span class="req">*</span></label><input type="tel" id="fTel" placeholder="(42) 9 9999-9999"></div>
+          <div class="fg"><label>WhatsApp</label><input type="tel" id="fWpp" placeholder="(42) 9 9999-9999"></div>
+        </div>
+        <div class="fg" style="margin-bottom:12px"><label>E-mail</label><input type="email" id="fEmail" placeholder="email@exemplo.com (opcional)"></div>
+        <div class="fg" style="margin-bottom:12px"><label>Endereço</label><input type="text" id="fEndereco" placeholder="Rua, número, bairro"></div>
+        <div class="fg"><label>Observações</label><textarea id="fObs" placeholder="Informações relevantes sobre este responsável..."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvar()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script src="dados.js"></script>
+<script src="sidebar.js"></script>
+<script>
+let criancaFiltroId = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderSidebar('responsaveis');
+  carregarCriancas();
+
+  // Verificar se veio de criancas.html com ?crianca=id
+  const params = new URLSearchParams(window.location.search);
+  criancaFiltroId = params.get('crianca');
+  if(criancaFiltroId) {
+    const c = DB.getCrianca(criancaFiltroId);
+    if(c) {
+      document.getElementById('filtroContexto').style.display='block';
+      document.getElementById('criancaContextoNome').textContent=c.nome;
+      document.getElementById('filtroCrianca').value=criancaFiltroId;
+      document.getElementById('paginaTitulo').textContent=`👨‍👩‍👧 Responsáveis — ${c.nome}`;
+      document.getElementById('paginaSub').textContent='Clique em "Ver todos" para ver todos os responsáveis';
+    }
+  }
+  renderLista();
+});
+
+function carregarCriancas() {
+  const sels = [document.getElementById('filtroCrianca'), document.getElementById('fCrianca')];
+  DB.getCriancas().filter(c=>c.ativo!==false).sort((a,b)=>a.nome.localeCompare(b.nome)).forEach(c => {
+    sels.forEach(sel => {
+      const opt = document.createElement('option');
+      opt.value=c.id; opt.textContent=`${c.nome} (${DB.getTurma(c.turma_id)?.nome||'—'})`; sel.appendChild(opt);
+    });
+  });
+}
+
+function renderLista() {
+  const busca=document.getElementById('busca').value.toLowerCase();
+  const filtroCrianca=document.getElementById('filtroCrianca').value || criancaFiltroId;
+
+  let lista = DB.getResponsaveis().filter(r => {
+    const ok_b=!busca || r.nome.toLowerCase().includes(busca);
+    const ok_c=!filtroCrianca || r.crianca_id===filtroCrianca;
+    return ok_b && ok_c;
+  });
+
+  document.getElementById('contador').innerHTML=`Exibindo <span>${lista.length}</span> responsável(is)`;
+  const tbody=document.getElementById('tbody');
+  const vazio=document.getElementById('vazio');
+  if(!lista.length){tbody.innerHTML='';vazio.style.display='block';return;}
+  vazio.style.display='none';
+
+  tbody.innerHTML=lista.map(r=>{
+    const crianca=r.crianca_id?DB.getCrianca(r.crianca_id):null;
+    return `<tr>
+      <td><strong>${r.nome}</strong></td>
+      <td><span class="badge badge-amarelo">${r.parentesco||'—'}</span></td>
+      <td>${crianca?`<a href="criancas.html" style="color:var(--verde);text-decoration:none;font-weight:600">🌻 ${crianca.nome}</a>`:'<span style="color:var(--cinza)">—</span>'}</td>
+      <td><a href="tel:${r.telefone}" style="color:var(--verde);text-decoration:none;font-size:12px">${r.telefone||'—'}</a></td>
+      <td>${r.whatsapp?`<a href="https://wa.me/${r.whatsapp.replace(/\D/g,'')}" style="color:var(--verde);text-decoration:none;font-size:12px">${r.whatsapp}</a>`:'—'}</td>
+      <td style="font-size:12px;color:var(--cinza)">${r.email||'—'}</td>
+      <td><div class="td-acoes">
+        <button class="btn btn-secondary btn-sm btn-icon" onclick="editar('${r.id}')">✏️</button>
+        <button class="btn btn-danger btn-sm btn-icon" onclick="excluir('${r.id}')">🗑️</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function abrirModal() {
+  document.getElementById('editId').value='';
+  document.getElementById('fCrianca').value=criancaFiltroId||'';
+  document.getElementById('fParentesco').value='Mãe';
+  document.getElementById('fNome').value='';
+  document.getElementById('fTel').value='';
+  document.getElementById('fWpp').value='';
+  document.getElementById('fEmail').value='';
+  document.getElementById('fEndereco').value='';
+  document.getElementById('fObs').value='';
+  document.getElementById('modalTitulo').textContent='Adicionar Responsável';
+  document.getElementById('modal').classList.add('visivel');
+}
+
+function editar(id) {
+  const r=DB.getResponsavel(id);
+  if(!r) return;
+  document.getElementById('editId').value=r.id;
+  document.getElementById('fCrianca').value=r.crianca_id||'';
+  document.getElementById('fParentesco').value=r.parentesco||'Mãe';
+  document.getElementById('fNome').value=r.nome;
+  document.getElementById('fTel').value=r.telefone||'';
+  document.getElementById('fWpp').value=r.whatsapp||'';
+  document.getElementById('fEmail').value=r.email||'';
+  document.getElementById('fEndereco').value=r.endereco||'';
+  document.getElementById('fObs').value=r.obs||'';
+  document.getElementById('modalTitulo').textContent='Editar Responsável';
+  document.getElementById('modal').classList.add('visivel');
+}
+
+function fecharModal(){document.getElementById('modal').classList.remove('visivel');}
+
+function salvar(){
+  const id=document.getElementById('editId').value;
+  const crianca_id=document.getElementById('fCrianca').value;
+  const nome=document.getElementById('fNome').value.trim();
+  const telefone=document.getElementById('fTel').value.trim();
+  if(!crianca_id||!nome||!telefone){toast('Preencha os campos obrigatórios.','erro');return;}
+
+  const dados={
+    crianca_id, nome, parentesco:document.getElementById('fParentesco').value,
+    telefone, whatsapp:document.getElementById('fWpp').value.trim(),
+    email:document.getElementById('fEmail').value.trim(),
+    endereco:document.getElementById('fEndereco').value.trim(),
+    obs:document.getElementById('fObs').value.trim()
+  };
+
+  if(id){DB.updateResponsavel(id,dados);toast('Responsável atualizado!');}
+  else{DB.addResponsavel(dados);toast('Responsável cadastrado!');}
+  fecharModal();renderLista();
+}
+
+function excluir(id){
+  if(!confirmar('Excluir este responsável?'))return;
+  DB.deleteResponsavel(id);toast('Responsável excluído.');renderLista();
+}
+
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))fecharModal();});
+</script>
+</body>
+</html>

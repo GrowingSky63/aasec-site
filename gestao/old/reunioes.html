@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reuniões de Família — AASEC</title>
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+<button class="mobile-toggle" id="mobileToggle">☰</button>
+<div class="sidebar">
+  <div class="sidebar-logo"><img src="../assets/logo_aasec.png" alt="Betel"><strong>Área Docente Betel</strong><span>CEI Betel · AASEC</span></div>
+  <div class="sidebar-perfil"><div class="sp-nome"></div><div class="sp-cargo"></div><span class="sp-badge"></span></div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Principal</div>
+    <a class="nav-item" href="dashboard.html" data-page="dashboard"><span class="nav-icon">🏠</span> Painel</a>
+    <a class="nav-item" href="indicadores.html" data-page="indicadores"><span class="nav-icon">📊</span> Indicadores</a>
+    <div class="nav-label">Acompanhamento</div>
+    <a class="nav-item" href="lrco.html" data-page="lrco"><span class="nav-icon">📋</span> Dados LRCO</a>
+    <a class="nav-item" href="reunioes.html" data-page="reunioes"><span class="nav-icon">👨‍👩‍👧</span> Reuniões de Família</a>
+    <div class="nav-label">Cadastros</div>
+    <a class="nav-item nav-admin" href="usuarios.html" data-page="usuarios"><span class="nav-icon">👥</span> Equipe & Acessos</a>
+    <a class="nav-item nav-admin" href="turmas.html" data-page="turmas"><span class="nav-icon">👩‍👧‍👦</span> Turmas</a>
+    <a class="nav-item" href="criancas.html" data-page="criancas"><span class="nav-icon">🌻</span> Crianças</a>
+  </nav>
+  <div class="sidebar-bottom"><a href="login.html">← Sair</a></div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-esq">
+      <h2>👨‍👩‍👧 Reuniões de Família</h2>
+      <p>Percepção das famílias — coleta trimestral · Dados consolidados</p>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="abrirModal()">+ Nova reunião</button>
+  </div>
+
+  <div class="content">
+
+    <!-- AVISO -->
+    <div style="background:#eef5e6;border-left:4px solid var(--verde);border-radius:0 10px 10px 0;padding:14px 18px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px">
+      <span style="font-size:20px">🌱</span>
+      <div>
+        <strong style="font-size:13px;color:var(--verde)">Dados de percepção — sem identificação</strong>
+        <p style="font-size:12px;color:#666;margin-top:3px">Registre apenas dados consolidados após as reuniões trimestrais com famílias. Nenhuma família é identificada individualmente.</p>
+      </div>
+    </div>
+
+    <!-- CARDS RESUMO -->
+    <div id="cardsResumo" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px"></div>
+
+    <div class="bloco">
+      <div class="list-toolbar">
+        <select class="filter-select" id="filtroUnidade" onchange="renderLista()">
+          <option value="">Todas as unidades</option>
+          <option value="CEI Betel">CEI Betel</option>
+          <option value="Esco-Lar">Esco-Lar</option>
+        </select>
+        <select class="filter-select" id="filtroPeriodo" onchange="renderLista()">
+          <option value="">Todos os períodos</option>
+        </select>
+      </div>
+
+      <div class="tabela-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Trimestre</th>
+              <th>Unidade</th>
+              <th>Famílias presentes</th>
+              <th>% Evolução percebida</th>
+              <th>% Bom/Excelente</th>
+              <th>% Participação</th>
+              <th style="text-align:right">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="vazio" id="vazio" style="display:none">
+        <div class="vi">👨‍👩‍👧</div>
+        <h4>Nenhuma reunião registrada</h4>
+        <p>Registre a percepção das famílias após cada reunião trimestral.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-header"><h3 id="modalTitulo">Nova Reunião de Família</h3><button class="modal-close" onclick="fecharModal()">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="editId">
+
+      <div class="form-bloco">
+        <div class="form-bloco-titulo">Identificação</div>
+        <div class="form-row cols-2">
+          <div class="fg">
+            <label>Trimestre <span class="req">*</span></label>
+            <select id="fPeriodo">
+              <option value="">Selecione</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>Unidade <span class="req">*</span></label>
+            <select id="fUnidade">
+              <option value="">Selecione</option>
+              <option value="CEI Betel">CEI Betel</option>
+              <option value="Esco-Lar">Esco-Lar</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg">
+          <label>Número de famílias presentes <span class="req">*</span></label>
+          <input type="number" id="fFamilias" min="0" placeholder="Ex: 28">
+        </div>
+      </div>
+
+      <div class="form-bloco">
+        <div class="form-bloco-titulo">🌻 Eixo Social — Percepção das famílias</div>
+        <div class="form-row cols-2">
+          <div class="fg">
+            <label>% que percebem evolução positiva na criança</label>
+            <input type="number" id="fEvolucao" min="0" max="100" placeholder="Ex: 78">
+            <div class="hint">Percentual de famílias com percepção positiva de desenvolvimento</div>
+          </div>
+          <div class="fg">
+            <label>% que avaliam o atendimento como bom/excelente</label>
+            <input type="number" id="fAvaliacao" min="0" max="100" placeholder="Ex: 92">
+            <div class="hint">Percentual de avaliação positiva do serviço prestado</div>
+          </div>
+        </div>
+        <div class="fg">
+          <label>% de participação nas reuniões</label>
+          <input type="number" id="fParticipacao" min="0" max="100" placeholder="Ex: 65">
+          <div class="hint">Famílias presentes / total de famílias matriculadas</div>
+        </div>
+      </div>
+
+      <div class="form-bloco">
+        <div class="form-bloco-titulo">🤝 Eixo Comunidade — Percepções qualitativas</div>
+        <div class="fg">
+          <label>Principais percepções das famílias</label>
+          <textarea id="fPercepções" placeholder="Resumo das percepções coletadas na reunião — sem identificar famílias...&#10;&#10;Ex: As famílias destacaram a melhoria na comunicação da unidade. Houve demanda por mais atividades ao ar livre..."></textarea>
+          <div class="hint">Texto resumido e institucional. Sem identificar famílias ou crianças.</div>
+        </div>
+        <div class="fg" style="margin-top:12px">
+          <label>Pontos de atenção levantados</label>
+          <textarea id="fAtencao" placeholder="Aspectos que precisam de melhoria segundo as famílias..."></textarea>
+          <div class="hint">Opcional. Sem identificação individual.</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvar()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script src="dados.js"></script>
+<script src="sidebar.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  renderSidebar('reunioes');
+  gerarTrimestres();
+  carregarFiltroPeriodos();
+  renderCards();
+  renderLista();
+});
+
+function gerarTrimestres() {
+  const sel = document.getElementById('fPeriodo');
+  const anos = [2025, 2026, 2027];
+  const trimestres = ['T1','T2','T3','T4'];
+  anos.forEach(a => trimestres.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = `${a}-${t}`;
+    opt.textContent = `${t} ${a}`;
+    sel.appendChild(opt);
+  }));
+  // Selecionar trimestre atual
+  const mes = new Date().getMonth();
+  const t = mes < 3 ? 'T1' : mes < 6 ? 'T2' : mes < 9 ? 'T3' : 'T4';
+  sel.value = `${new Date().getFullYear()}-${t}`;
+}
+
+function carregarFiltroPeriodos() {
+  const sel = document.getElementById('filtroPeriodo');
+  const periodos = [...new Set(DB.getReunioes().map(x=>x.periodo))].sort().reverse();
+  periodos.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p;
+    const [a,t] = p.split('-');
+    opt.textContent = `${t} ${a}`;
+    sel.appendChild(opt);
+  });
+}
+
+function renderCards() {
+  const reunioes = DB.getReunioes();
+  if(!reunioes.length) { document.getElementById('cardsResumo').style.display='none'; return; }
+
+  const ultimas = reunioes.slice(-6);
+  const mediaEvolucao = Math.round(ultimas.filter(r=>r.pct_evolucao).reduce((s,r)=>s+r.pct_evolucao,0)/ultimas.filter(r=>r.pct_evolucao).length)||0;
+  const mediaAvaliacao = Math.round(ultimas.filter(r=>r.pct_avaliacao).reduce((s,r)=>s+r.pct_avaliacao,0)/ultimas.filter(r=>r.pct_avaliacao).length)||0;
+  const mediaParticipacao = Math.round(ultimas.filter(r=>r.pct_participacao).reduce((s,r)=>s+r.pct_participacao,0)/ultimas.filter(r=>r.pct_participacao).length)||0;
+
+  document.getElementById('cardsResumo').innerHTML = `
+    <div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.06);border-top:4px solid var(--verde);text-align:center">
+      <div style="font-size:32px;font-weight:800;color:var(--verde)">${mediaEvolucao}%</div>
+      <div style="font-size:12px;font-weight:600;color:var(--cinza);margin-top:4px">Percebem evolução positiva</div>
+      <div style="font-size:11px;color:var(--cinza);margin-top:2px">Média dos últimos registros</div>
+    </div>
+    <div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.06);border-top:4px solid var(--amarelo);text-align:center">
+      <div style="font-size:32px;font-weight:800;color:var(--marrom)">${mediaAvaliacao}%</div>
+      <div style="font-size:12px;font-weight:600;color:var(--cinza);margin-top:4px">Avaliação bom/excelente</div>
+      <div style="font-size:11px;color:var(--cinza);margin-top:2px">Percepção de qualidade</div>
+    </div>
+    <div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.06);border-top:4px solid #10b981;text-align:center">
+      <div style="font-size:32px;font-weight:800;color:#065f46">${mediaParticipacao}%</div>
+      <div style="font-size:12px;font-weight:600;color:var(--cinza);margin-top:4px">Participação nas reuniões</div>
+      <div style="font-size:11px;color:var(--cinza);margin-top:2px">Envolvimento das famílias</div>
+    </div>`;
+}
+
+function renderLista() {
+  const filtroUnidade = document.getElementById('filtroUnidade').value;
+  const filtroPeriodo = document.getElementById('filtroPeriodo').value;
+
+  let lista = DB.getReunioes().filter(x => {
+    const ok_u = !filtroUnidade || x.unidade === filtroUnidade;
+    const ok_p = !filtroPeriodo || x.periodo === filtroPeriodo;
+    return ok_u && ok_p;
+  }).sort((a,b) => b.periodo.localeCompare(a.periodo));
+
+  const tbody = document.getElementById('tbody');
+  const vazio = document.getElementById('vazio');
+  if(!lista.length) { tbody.innerHTML=''; vazio.style.display='block'; return; }
+  vazio.style.display='none';
+
+  const cor = v => v >= 80 ? 'color:var(--verde);font-weight:700' : v >= 60 ? 'color:var(--atencao);font-weight:700' : 'color:var(--alerta);font-weight:700';
+
+  tbody.innerHTML = lista.map(x => {
+    const [a,t] = x.periodo.split('-');
+    return `<tr>
+      <td><strong>${t} ${a}</strong></td>
+      <td><span class="badge badge-verde">${x.unidade}</span></td>
+      <td><strong>${x.num_familias||'—'}</strong> famílias</td>
+      <td>${x.pct_evolucao!=null?`<span style="${cor(x.pct_evolucao)}">${x.pct_evolucao}%</span>`:'—'}</td>
+      <td>${x.pct_avaliacao!=null?`<span style="${cor(x.pct_avaliacao)}">${x.pct_avaliacao}%</span>`:'—'}</td>
+      <td>${x.pct_participacao!=null?`<span style="${cor(x.pct_participacao)}">${x.pct_participacao}%</span>`:'—'}</td>
+      <td><div class="td-acoes">
+        <button class="btn btn-secondary btn-sm btn-icon" onclick="editar('${x.id}')" title="Editar">✏️</button>
+        <button class="btn btn-secondary btn-sm btn-icon" onclick="verDetalhes('${x.id}')" title="Ver percepções">💬</button>
+        <button class="btn btn-danger btn-sm btn-icon" onclick="excluir('${x.id}')" title="Excluir">🗑️</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function abrirModal() {
+  document.getElementById('editId').value='';
+  document.getElementById('fUnidade').value='';
+  document.getElementById('fFamilias').value='';
+  document.getElementById('fEvolucao').value='';
+  document.getElementById('fAvaliacao').value='';
+  document.getElementById('fParticipacao').value='';
+  document.getElementById('fPercepções').value='';
+  document.getElementById('fAtencao').value='';
+  gerarTrimestres();
+  document.getElementById('modalTitulo').textContent='Nova Reunião de Família';
+  document.getElementById('modal').classList.add('visivel');
+}
+
+function editar(id) {
+  const x=DB.getReuniaoItem(id);
+  if(!x) return;
+  document.getElementById('editId').value=x.id;
+  document.getElementById('fPeriodo').value=x.periodo;
+  document.getElementById('fUnidade').value=x.unidade;
+  document.getElementById('fFamilias').value=x.num_familias||'';
+  document.getElementById('fEvolucao').value=x.pct_evolucao??'';
+  document.getElementById('fAvaliacao').value=x.pct_avaliacao??'';
+  document.getElementById('fParticipacao').value=x.pct_participacao??'';
+  document.getElementById('fPercepções').value=x.percepcoes||'';
+  document.getElementById('fAtencao').value=x.atencao||'';
+  document.getElementById('modalTitulo').textContent='Editar Reunião';
+  document.getElementById('modal').classList.add('visivel');
+}
+
+function fecharModal() { document.getElementById('modal').classList.remove('visivel'); }
+
+function salvar() {
+  const id=document.getElementById('editId').value;
+  const periodo=document.getElementById('fPeriodo').value;
+  const unidade=document.getElementById('fUnidade').value;
+  const num_familias=document.getElementById('fFamilias').value;
+  if(!periodo||!unidade||!num_familias) { toast('Informe período, unidade e número de famílias.','erro'); return; }
+
+  const pct = v => v!=='' ? parseFloat(v) : null;
+  const dados = {
+    periodo, unidade,
+    num_familias: parseInt(num_familias),
+    pct_evolucao: pct(document.getElementById('fEvolucao').value),
+    pct_avaliacao: pct(document.getElementById('fAvaliacao').value),
+    pct_participacao: pct(document.getElementById('fParticipacao').value),
+    percepcoes: document.getElementById('fPercepções').value.trim()||null,
+    atencao: document.getElementById('fAtencao').value.trim()||null
+  };
+
+  if(id) { DB.updateReuniao(id,dados); toast('Reunião atualizada!'); }
+  else { DB.addReuniao(dados); toast('Reunião registrada!'); }
+  fecharModal(); renderCards(); renderLista();
+}
+
+function verDetalhes(id) {
+  const x=DB.getReuniaoItem(id);
+  if(!x) return;
+  const [a,t]=x.periodo.split('-');
+  const msg = `${t} ${a} — ${x.unidade}\n\nPercepções:\n${x.percepcoes||'Não registrado'}\n\nPontos de atenção:\n${x.atencao||'Nenhum registrado'}`;
+  alert(msg);
+}
+
+function excluir(id) {
+  if(!confirmar('Excluir este registro?')) return;
+  DB.deleteReuniao(id); toast('Registro excluído.'); renderCards(); renderLista();
+}
+
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))fecharModal();});
+</script>
+</body>
+</html>

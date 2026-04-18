@@ -1,0 +1,1328 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CEI Betel — Unidade da AASEC</title>
+  <meta name="description"
+    content="Centro de Educação Infantil Betel — Educação Infantil 0 a 5 anos em Carambeí-PR. Unidade da AASEC.">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    :root {
+      /* Azul institucional — base da identidade */
+      --azul: #1A56A0;
+      --azul-escuro: #0F3D7A;
+      --azul-profundo: #092B5A;
+      --azul-claro: #EBF2FB;
+      --azul-medio: #C8DEFA;
+
+      /* Acento — âmbar quente, discreto */
+      --ambar: #D97706;
+      --ambar-claro: #FEF3C7;
+
+      /* Neutros — clean e profissional */
+      --branco: #FFFFFF;
+      --fundo: #F7F9FC;
+      --cinza-borda: #E2E8F0;
+      --cinza-claro: #F1F5F9;
+      --cinza: #64748B;
+      --grafite: #334155;
+      --preto: #0F172A;
+
+      /* Feedback */
+      --ok: #0F3D7A;
+      --ok-claro: #D1FAE5;
+      --alerta: #DC2626;
+
+      /* Legados (compatibilidade) */
+      --verde: #1A56A0;
+      --verde-claro: #EBF2FB;
+      --amarelo: #D97706;
+      --amarelo-claro: #FEF3C7;
+      --marrom: #0F3D7A;
+      --creme: #F7F9FC;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--grafite);
+      background: var(--fundo);
+      font-size: 15px;
+      line-height: 1.6
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: var(--branco);
+      border-bottom: 3px solid var(--cor);
+      z-index: 1000;
+      padding: 0 4%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, .07)
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none
+    }
+
+    .nav-logo img {
+      height: 64px;
+      width: auto;
+      mix-blend-mode: multiply
+    }
+
+    .nav-logo-txt strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--preto)
+    }
+
+    .nav-logo-txt span {
+      font-size: 10px;
+      color: var(--cinza)
+    }
+
+    .nav-back {
+      text-decoration: none;
+      background: var(--azul);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: all .2s
+    }
+
+    .nav-back:hover {
+      background: var(--azul-escuro)
+    }
+
+    /* HERO */
+    #hero {
+      min-height: 90vh;
+      background: linear-gradient(150deg, var(--azul) 0%, var(--azul-escuro) 55%, var(--azul-profundo) 100%);
+      display: flex;
+      align-items: center;
+      padding: 80px 4% 40px;
+      position: relative;
+      overflow: hidden
+    }
+
+    #hero::before {
+      content: '';
+      position: absolute;
+      top: -80px;
+      right: -80px;
+      width: 400px;
+      height: 400px;
+      background: var(--cor);
+      border-radius: 50%;
+      opacity: .08
+    }
+
+    #hero::after {
+      content: '';
+      position: absolute;
+      bottom: -60px;
+      left: 10%;
+      width: 250px;
+      height: 250px;
+      background: var(--cor);
+      border-radius: 50%;
+      opacity: .05
+    }
+
+    .hero-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+      width: 100%;
+      position: relative;
+      z-index: 1
+    }
+
+    .hero-logo-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center
+    }
+
+    .hero-logo-wrap img {
+      width: 340px;
+      height: 340px;
+      object-fit: contain;
+      mix-blend-mode: screen;
+      filter: drop-shadow(0 0 40px rgba(255, 208, 0, .4))
+    }
+
+    .hero-tag-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px
+    }
+
+    .htag {
+      display: inline-block;
+      background: rgba(255, 255, 255, .12);
+      color: rgba(255, 255, 255, .7);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 20px
+    }
+
+    .htag-cor {
+      background: var(--cor);
+      color: var(--preto)
+    }
+
+    h1 {
+      font-size: clamp(30px, 4vw, 50px);
+      font-weight: 800;
+      color: var(--branco);
+      line-height: 1.15;
+      margin-bottom: 14px
+    }
+
+    h1 span {
+      color: var(--cor)
+    }
+
+    .hero-desc {
+      font-size: 16px;
+      color: rgba(255, 255, 255, .7);
+      margin-bottom: 28px;
+      line-height: 1.7;
+      font-weight: 300
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 12px 22px;
+      border-radius: 9px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all .25s;
+      border: none;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer
+    }
+
+    .btn-cor {
+      background: var(--cor);
+      color: var(--preto)
+    }
+
+    .btn-cor:hover {
+      background: var(--cor-escura);
+      transform: translateY(-2px)
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, .1);
+      color: var(--branco);
+      border: 1.5px solid rgba(255, 255, 255, .2)
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--cor);
+      color: var(--cor)
+    }
+
+    /* FAIXA */
+    .faixa {
+      background: var(--cor);
+      padding: 18px 4%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 50px;
+      flex-wrap: wrap
+    }
+
+    .faixa-item {
+      text-align: center
+    }
+
+    .faixa-item strong {
+      display: block;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--preto)
+    }
+
+    .faixa-item span {
+      font-size: 10px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, .65);
+      text-transform: uppercase;
+      letter-spacing: 1px
+    }
+
+    /* SEÇÕES */
+    section {
+      padding: 56px 4%
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto
+    }
+
+    .stag {
+      display: inline-block;
+      background: #EBF2FB;
+      color: var(--marrom);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      border-left: 3px solid var(--cor)
+    }
+
+    .stitu {
+      font-size: clamp(22px, 3vw, 30px);
+      font-weight: 800;
+      color: var(--preto);
+      margin-bottom: 8px
+    }
+
+    .ssub {
+      font-size: 15px;
+      color: var(--cinza);
+      line-height: 1.7;
+      max-width: 600px
+    }
+
+    .div {
+      width: 44px;
+      height: 4px;
+      background: var(--cor);
+      border-radius: 2px;
+      margin: 10px 0 24px
+    }
+
+    /* APRESENTAÇÃO */
+    #apresentacao {
+      background: var(--branco)
+    }
+
+    .apres-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: start;
+      margin-top: 32px
+    }
+
+    .apres-card {
+      background: var(--cinza-claro);
+      border-radius: 10px;
+      padding: 20px 24px
+    }
+
+    .apres-card h3 {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--cinza);
+      margin-bottom: 6px
+    }
+
+    .apres-card p {
+      font-size: 14px;
+      color: var(--grafite);
+      line-height: 1.6
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px
+    }
+
+    .tag {
+      background: var(--cor);
+      color: var(--marrom);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px
+    }
+
+    /* ATIVIDADES */
+    #atividades {
+      background: var(--cinza-claro)
+    }
+
+    .ativ-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 28px
+    }
+
+    .ativ-card {
+      background: var(--branco);
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, .05);
+      border-top: 3px solid var(--cor);
+      transition: all .25s
+    }
+
+    .ativ-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .1)
+    }
+
+    .ativ-icon {
+      font-size: 28px;
+      margin-bottom: 10px
+    }
+
+    .ativ-card h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--preto);
+      margin-bottom: 6px
+    }
+
+    .ativ-card p {
+      font-size: 12px;
+      color: var(--cinza);
+      line-height: 1.5
+    }
+
+    /* FUNCIONAMENTO */
+    #funcionamento {
+      background: var(--branco)
+    }
+
+    .func-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-top: 28px
+    }
+
+    .func-bloco {
+      background: var(--cor-claro);
+      border-radius: 14px;
+      padding: 28px
+    }
+
+    .func-bloco h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--preto);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .func-bloco ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    .func-bloco ul li {
+      font-size: 13px;
+      color: var(--grafite);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      line-height: 1.5
+    }
+
+    .func-bloco ul li::before {
+      content: '→';
+      color: var(--cor-escura);
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px
+    }
+
+    /* LIMITES */
+    #limites {
+      background: var(--cinza-claro)
+    }
+
+    .limite-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 28px
+    }
+
+    .limite-card {
+      border-radius: 12px;
+      padding: 24px
+    }
+
+    .limite-card.faz {
+      background: #EBF2FB;
+      border-left: 4px solid #1A56A0
+    }
+
+    .limite-card.nfaz {
+      background: #fee2e2;
+      border-left: 4px solid #ef4444
+    }
+
+    .limite-card h3 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 12px
+    }
+
+    .limite-card.faz h3 {
+      color: #092B5A
+    }
+
+    .limite-card.nfaz h3 {
+      color: #991b1b
+    }
+
+    .limite-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px
+    }
+
+    .limite-card ul li {
+      font-size: 13px;
+      display: flex;
+      align-items: flex-start;
+      gap: 7px
+    }
+
+    .limite-card.faz ul li {
+      color: #064e3b
+    }
+
+    .limite-card.nfaz ul li {
+      color: #7f1d1d
+    }
+
+    .limite-card.faz ul li::before {
+      content: '✓';
+      font-weight: 700;
+      color: #1A56A0;
+      flex-shrink: 0
+    }
+
+    .limite-card.nfaz ul li::before {
+      content: '✗';
+      font-weight: 700;
+      color: #ef4444;
+      flex-shrink: 0
+    }
+
+    /* VINCULO AASEC */
+    #vinculo {
+      background: var(--preto);
+      padding: 48px 4%
+    }
+
+    .vinculo-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center
+    }
+
+    .vinculo-texto h2 {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--branco);
+      margin-bottom: 12px
+    }
+
+    .vinculo-texto h2 span {
+      color: var(--cor)
+    }
+
+    .vinculo-texto p {
+      font-size: 14px;
+      color: rgba(255, 255, 255, .65);
+      line-height: 1.7
+    }
+
+    .vinculo-estrutura {
+      background: rgba(255, 255, 255, .05);
+      border-radius: 14px;
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, .08)
+    }
+
+    .ve-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 8px
+    }
+
+    .ve-item.principal {
+      background: rgba(255, 208, 0, .12);
+      border-left: 3px solid var(--cor)
+    }
+
+    .ve-item.atual {
+      background: rgba(255, 255, 255, .07);
+      border-left: 3px solid #1A56A0
+    }
+
+    .ve-item.outro {
+      background: rgba(255, 255, 255, .04);
+      border-left: 3px solid rgba(255, 255, 255, .15)
+    }
+
+    .ve-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0
+    }
+
+    .ve-item.principal .ve-icon {
+      background: var(--cor)
+    }
+
+    .ve-item.atual .ve-icon {
+      background: #1A56A0
+    }
+
+    .ve-item.outro .ve-icon {
+      background: rgba(255, 255, 255, .1)
+    }
+
+    .ve-info strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 700
+    }
+
+    .ve-item.principal .ve-info strong {
+      color: var(--cor)
+    }
+
+    .ve-item.atual .ve-info strong {
+      color: #93C5FD
+    }
+
+    .ve-item.outro .ve-info strong {
+      color: rgba(255, 255, 255, .5)
+    }
+
+    .ve-info span {
+      font-size: 11px;
+      color: rgba(255, 255, 255, .35)
+    }
+
+    /* DOCUMENTOS */
+    #documentos {
+      background: var(--branco)
+    }
+
+    .docs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 28px
+    }
+
+    .doc-card {
+      background: var(--cor-claro);
+      border-radius: 10px;
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all .2s;
+      border: 1px solid #f0e8c8
+    }
+
+    .doc-card:hover {
+      background: #EBF2FB;
+      transform: translateX(3px)
+    }
+
+    .doc-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--cor);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0
+    }
+
+    .doc-info strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--preto)
+    }
+
+    .doc-info span {
+      font-size: 11px;
+      color: var(--cinza)
+    }
+
+    .status {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 8px;
+      margin-left: auto;
+      white-space: nowrap
+    }
+
+    .status.breve {
+      background: #fff3cd;
+      color: #856404
+    }
+
+    .status.ok {
+      background: #EBF2FB;
+      color: #092B5A
+    }
+
+    /* CONTATO */
+    #contato {
+      background: var(--cinza-claro)
+    }
+
+    .contato-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-top: 28px
+    }
+
+    .citem {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--branco);
+      border-radius: 10px;
+      text-decoration: none;
+      border-left: 3px solid var(--cor);
+      transition: all .2s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .04)
+    }
+
+    .citem:hover {
+      transform: translateX(3px)
+    }
+
+    .cicone {
+      width: 38px;
+      height: 38px;
+      background: var(--cor);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0
+    }
+
+    .ctexto label {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--cinza);
+      margin-bottom: 2px
+    }
+
+    .ctexto span {
+      color: var(--preto);
+      font-size: 13px;
+      font-weight: 500
+    }
+
+    form {
+      background: var(--branco);
+      border-radius: 14px;
+      padding: 28px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, .05)
+    }
+
+    form h3 {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--preto);
+      margin-bottom: 18px
+    }
+
+    .fg {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 12px
+    }
+
+    .fg label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--grafite)
+    }
+
+    .fg input,
+    .fg textarea,
+    .fg select {
+      padding: 10px 14px;
+      border: 1.5px solid #e0d8c8;
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      color: var(--grafite);
+      background: var(--fundo);
+      outline: none;
+      transition: border-color .2s
+    }
+
+    .fg input:focus,
+    .fg textarea:focus,
+    .fg select:focus {
+      border-color: var(--cor)
+    }
+
+    .fg textarea {
+      height: 80px;
+      resize: vertical
+    }
+
+    /* RODAPÉ */
+    footer {
+      background: #0C1A2E;
+      padding: 36px 4% 20px;
+      border-top: 3px solid var(--cor)
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, .07);
+      margin-bottom: 16px
+    }
+
+    .fmarca {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .fmarca img {
+      height: 64px;
+      mix-blend-mode: screen
+    }
+
+    .fmarca-txt strong {
+      display: block;
+      color: var(--branco);
+      font-size: 13px;
+      font-weight: 800
+    }
+
+    .fmarca-txt span {
+      color: rgba(255, 255, 255, .35);
+      font-size: 10px
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap
+    }
+
+    .footer-links a {
+      color: rgba(255, 255, 255, .45);
+      text-decoration: none;
+      font-size: 12px;
+      transition: color .2s
+    }
+
+    .footer-links a:hover {
+      color: var(--cor)
+    }
+
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px
+    }
+
+    .footer-bottom p {
+      color: rgba(255, 255, 255, .25);
+      font-size: 11px
+    }
+
+    .footer-bottom span {
+      color: var(--cor)
+    }
+
+    @media(max-width:900px) {
+
+      .hero-inner,
+      .apres-grid,
+      .func-grid,
+      .limite-grid,
+      .vinculo-inner,
+      .contato-grid {
+        grid-template-columns: 1fr
+      }
+
+      .hero-logo-wrap img {
+        width: 220px;
+        height: 220px
+      }
+
+      .ativ-grid,
+      .docs-grid {
+        grid-template-columns: 1fr 1fr
+      }
+    }
+
+    @media(max-width:600px) {
+
+      .ativ-grid,
+      .docs-grid,
+      .faixa {
+        grid-template-columns: 1fr;
+        gap: 12px
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <img src="assets/logo_betel.png" alt="AASEC">
+      <div class="nav-logo-txt">
+        <strong>AASEC · CEI Betel</strong>
+        <span>Unidade Educacional</span>
+      </div>
+    </a>
+    <a href="index.html" class="nav-back">← Voltar à AASEC</a>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-inner">
+      <div class="hero-logo-wrap"><a href="index.html"><img src="assets/logo_betel.png" alt="CEI Betel"></a></div>
+      <div>
+        <div class="hero-tag-wrap">
+          <span class="htag">Unidade da AASEC</span>
+          <span class="htag htag-cor">Educação Infantil · 0 a 5 anos</span>
+        </div>
+        <h1>CEI Betel<br><span>Cuidado e aprendizagem</span><br>na primeira infância.</h1>
+        <p class="hero-desc">Centro de Educação Infantil mantido pela AASEC, voltado ao desenvolvimento integral de
+          crianças de 0 a 5 anos em Carambeí-PR, em parceria com as famílias.</p>
+        <div class="hero-btns">
+          <a href="#apresentacao" class="btn btn-cor">Conheça o CEI Betel</a>
+          <a href="#contato" class="btn btn-ghost">Entre em contato</a>
+          <div
+            style="margin-top:20px;padding:14px 18px;background:rgba(255,255,255,.08);border-left:3px solid rgba(255,255,255,.3);border-radius:0 8px 8px 0">
+            <p style="font-size:13px;color:rgba(255,255,255,.8);font-style:italic;line-height:1.6">"Ensina a criança no
+              caminho em que deve andar, e, ainda quando for velho, não se desviará dele."</p>
+            <p style="font-size:11px;color:rgba(255,255,255,.45);margin-top:5px;font-weight:600;letter-spacing:.5px">
+              Provérbios 22.6</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAIXA -->
+  <div class="faixa">
+    <div class="faixa-item"><strong>0–5</strong><span>Anos atendidos</span></div>
+    <div class="faixa-item"><strong>Integral</strong><span>Desenvolvimento</span></div>
+    <div class="faixa-item"><strong>Família</strong><span>Parceria ativa</span></div>
+    <div class="faixa-item"><strong>AASEC</strong><span>Mantenedora</span></div>
+  </div>
+
+  <!-- APRESENTAÇÃO -->
+  <section id="apresentacao">
+    <div class="container">
+      <div class="stag">Sobre a unidade</div>
+      <h2 class="stitu">O que é o CEI Betel</h2>
+      <div class="div"></div>
+      <div class="apres-grid">
+        <div>
+          <p style="font-size:15px;color:var(--grafite);line-height:1.8;margin-bottom:20px">O CEI Betel é uma unidade
+            educacional mantida pela AASEC, voltada à Educação Infantil. Atende crianças de 0 a 5 anos em Carambeí-PR,
+            promovendo cuidado, aprendizagem e desenvolvimento integral na primeira infância, em parceria com as
+            famílias e com organização pedagógica própria.</p>
+          <div class="tags">
+            <span class="tag">Educação Infantil</span>
+            <span class="tag">0 a 5 anos</span>
+            <span class="tag">Carambeí/PR</span>
+            <span class="tag">Organização pedagógica</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="apres-card">
+            <h3>Natureza</h3>
+            <p>Unidade educacional — foco em educação infantil e desenvolvimento integral na primeira infância.</p>
+          </div>
+          <div class="apres-card">
+            <h3>Público</h3>
+            <p>Crianças de 0 a 5 anos e suas famílias, no município de Carambeí-PR.</p>
+          </div>
+          <div class="apres-card">
+            <h3>Vínculo institucional</h3>
+            <p>Unidade mantida pela AASEC — Associação de Assistência Social Evangélica de Carambeí.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ATIVIDADES -->
+  <section id="atividades">
+    <div class="container">
+      <div class="stag">O que fazemos</div>
+      <h2 class="stitu">Atividades e Serviços</h2>
+      <div class="div"></div>
+      <div class="ativ-grid">
+        <div class="ativ-card">
+          <div class="ativ-icon">📚</div>
+          <h4>Educação Infantil</h4>
+          <p>Organização pedagógica própria voltada ao desenvolvimento cognitivo e da linguagem.</p>
+        </div>
+        <div class="ativ-card">
+          <div class="ativ-icon">🌱</div>
+          <h4>Desenvolvimento Integral</h4>
+          <p>Atenção aos aspectos físicos, emocionais, afetivos, cognitivos e sociais da criança.</p>
+        </div>
+        <div class="ativ-card">
+          <div class="ativ-icon">🍽️</div>
+          <h4>Cuidado Diário</h4>
+          <p>Rotina de cuidado, alimentação, higiene e bem-estar no ambiente escolar.</p>
+        </div>
+        <div class="ativ-card">
+          <div class="ativ-icon">👨‍👩‍👧</div>
+          <h4>Parceria com Famílias</h4>
+          <p>Comunicação ativa e participação das famílias no processo de desenvolvimento da criança.</p>
+        </div>
+        <div class="ativ-card">
+          <div class="ativ-icon">🎨</div>
+          <h4>Atividades Pedagógicas</h4>
+          <p>Rotina escolar estruturada com atividades de estímulo, criatividade e socialização.</p>
+        </div>
+        <div class="ativ-card">
+          <div class="ativ-icon">🤝</div>
+          <h4>Articulação com Poder Público</h4>
+          <p>Atuação em parceria com a rede municipal de educação e serviços públicos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FUNCIONAMENTO -->
+  <section id="funcionamento">
+    <div class="container">
+      <div class="stag">Como funciona</div>
+      <h2 class="stitu">Funcionamento e Rotina</h2>
+      <div class="div"></div>
+      <div class="func-grid">
+        <div class="func-bloco">
+          <h3>🏫 Modelo de atendimento</h3>
+          <ul>
+            <li>Atendimento presencial em período regular</li>
+            <li>Organização em turmas por faixa etária</li>
+            <li>Rotina pedagógica estruturada</li>
+            <li>Profissionais habilitados para educação infantil</li>
+            <li>Registro e acompanhamento do desenvolvimento</li>
+          </ul>
+        </div>
+        <div class="func-bloco">
+          <h3>👨‍👩‍👧 Relação com as famílias</h3>
+          <ul>
+            <li>Comunicação regular com responsáveis</li>
+            <li>Reuniões e encontros periódicos</li>
+            <li>Participação da família na vida escolar</li>
+            <li>Abertura para diálogo e escuta</li>
+            <li>Parceria no desenvolvimento da criança</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIMITES -->
+  <section id="limites">
+    <div class="container">
+      <div class="stag">Atuação clara</div>
+      <h2 class="stitu">O que o CEI Betel faz e não faz</h2>
+      <div class="div"></div>
+      <p class="ssub" style="margin-bottom:24px">A clareza sobre os limites de atuação protege a instituição e garante
+        que cada caso receba o atendimento adequado.</p>
+      <div class="limite-grid">
+        <div class="limite-card faz">
+          <h3>✅ O CEI Betel faz</h3>
+          <ul>
+            <li>Oferece educação infantil</li>
+            <li>Promove desenvolvimento integral</li>
+            <li>Realiza cuidado diário e rotina escolar</li>
+            <li>Atua em parceria com as famílias</li>
+            <li>Mantém organização pedagógica própria</li>
+            <li>Articula com o poder público municipal</li>
+          </ul>
+        </div>
+        <div class="limite-card nfaz">
+          <h3>✗ O CEI Betel não é</h3>
+          <ul>
+            <li>Unidade principal de assistência social</li>
+            <li>Serviço clínico ou terapêutico</li>
+            <li>Serviço de média ou alta complexidade</li>
+            <li>Substituto para atendimento especializado</li>
+            <li>Serviço de acolhimento institucional</li>
+            <li>CRAS, CAPS ou serviço equivalente</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VÍNCULO AASEC -->
+  <section id="vinculo" style="padding:0">
+    <div id="vinculo">
+      <div class="vinculo-inner">
+        <div class="vinculo-texto">
+          <h2>Parte de algo <span>maior</span></h2>
+          <p style="margin-bottom:14px">O CEI Betel é uma unidade mantida pela AASEC — Associação de Assistência Social
+            Evangélica de Carambeí. A AASEC é a entidade responsável pela governança, sustentação institucional e
+            coordenação de suas unidades.</p>
+          <p>Ao fazer parte da AASEC, o CEI Betel integra uma estrutura organizada, com documentação própria, gestão
+            responsável e compromisso com a comunidade de Carambeí.</p>
+          <a href="index.html" class="btn btn-cor" style="margin-top:20px">Conheça a AASEC</a>
+        </div>
+        <div class="vinculo-estrutura">
+          <div class="ve-item principal">
+            <div class="ve-icon">🏛️</div>
+            <div class="ve-info"><strong>AASEC</strong><span>Entidade mantenedora · Governança</span></div>
+          </div>
+          <div style="padding-left:16px;border-left:2px solid rgba(255,255,255,.1);margin-left:18px">
+            <div class="ve-item atual" style="margin-left:0">
+              <div class="ve-icon">🌻</div>
+              <div class="ve-info"><strong>CEI Betel</strong><span>Educação Infantil · 0–5 anos</span></div>
+            </div>
+            <div class="ve-item outro" style="margin-left:0">
+              <div class="ve-icon">🤲</div>
+              <div class="ve-info"><strong>Esco-Lar</strong><span>Proteção Social Básica</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOCUMENTOS -->
+  <section id="documentos">
+    <div class="container">
+      <div class="stag">Transparência</div>
+      <h2 class="stitu">Documentação do CEI Betel</h2>
+      <div class="div"></div>
+      <p class="ssub" style="margin-bottom:24px">Documentos próprios da unidade — distintos da documentação
+        institucional da AASEC.</p>
+      <div class="docs-grid" id="docsInstGrid">
+        <div class="doc-card">
+          <div class="doc-icon">📘</div>
+          <div class="doc-info"><strong>Regimento Escolar</strong><span>Normas da unidade educacional</span></div><span
+            class="status breve">Em breve</span>
+        </div>
+        <div class="doc-card">
+          <div class="doc-icon">⚖️</div>
+          <div class="doc-info"><strong>Código de Ética</strong><span>Conduta e princípios</span></div><span
+            class="status breve">Em breve</span>
+        </div>
+        <div class="doc-card">
+          <div class="doc-icon">📋</div>
+          <div class="doc-info"><strong>Plano de Trabalho</strong><span>Planejamento pedagógico</span></div><span
+            class="status breve">Em breve</span>
+        </div>
+        <div class="doc-card">
+          <div class="doc-icon">🤝</div>
+          <div class="doc-info"><strong>Termo de Colaboração</strong><span>Convênio com poder público</span></div><span
+            class="status breve">Em breve</span>
+        </div>
+        <div class="doc-card">
+          <div class="doc-icon">📄</div>
+          <div class="doc-info"><strong>Aditivos</strong><span>Aditamentos ao convênio</span></div><span
+            class="status breve">Em breve</span>
+        </div>
+        <div class="doc-card">
+          <div class="doc-icon">📊</div>
+          <div class="doc-info"><strong>Relatórios</strong><span>Relatórios pedagógicos e administrativos</span></div>
+          <span class="status breve">Em breve</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTATO -->
+  <section id="contato">
+    <div class="container">
+      <div class="stag">Fale conosco</div>
+      <h2 class="stitu">Contato</h2>
+      <div class="div"></div>
+      <div class="contato-grid">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <p style="font-size:14px;color:var(--cinza);margin-bottom:8px">Para informações sobre o CEI Betel, entre em
+            contato diretamente ou pelo canal da AASEC.</p>
+          <a href="tel:+554232315326" class="citem">
+            <div class="cicone">📞</div>
+            <div class="ctexto"><label>Telefone</label><span>(42) 3231-5326</span></div>
+          </a>
+          <a href="https://wa.me/554232315326" class="citem" target="_blank">
+            <div class="cicone">💬</div>
+            <div class="ctexto"><label>WhatsApp</label><span>(42) 3231-5326</span></div>
+          </a>
+          <a href="mailto:aasec.betel@gmail.com" class="citem">
+            <div class="cicone">✉️</div>
+            <div class="ctexto"><label>E-mail</label><span>aasec.betel@gmail.com</span></div>
+          </a>
+          <div class="citem">
+            <div class="cicone">📍</div>
+            <div class="ctexto"><label>Endereço</label><span>Rua das Safiras, 120 — Centro — Carambeí/PR</span></div>
+          </div>
+        </div>
+        <form>
+          <h3>Envie uma mensagem</h3>
+          <div class="fg"><label>Nome</label><input type="text" placeholder="Seu nome"></div>
+          <div class="fg"><label>Contato</label><input type="text" placeholder="E-mail ou WhatsApp"></div>
+          <div class="fg"><label>Mensagem</label><textarea placeholder="Como podemos ajudar?"></textarea></div>
+          <button type="submit" class="btn btn-cor" style="width:100%;justify-content:center">Enviar</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- RODAPÉ -->
+  <footer>
+    <div class="footer-inner">
+      <div class="fmarca"><a href="index.html"><img src="assets/logo_betel.png" alt="AASEC">
+          <div class="fmarca-txt"><strong>CEI Betel · AASEC</strong><span>Educação Infantil — Carambeí/PR</span></div>
+      </div>
+      <div class="footer-links">
+        <a href="index.html">← AASEC</a>
+        <a href="#apresentacao">Apresentação</a>
+        <a href="#atividades">Atividades</a>
+        <a href="#documentos">Documentos</a>
+        <a href="#contato">Contato</a>
+        <a href="esco-lar.html">Esco-Lar →</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 <span>CEI Betel · AASEC</span> — Todos os direitos reservados.</p>
+      <p>Carambeí — Paraná — Brasil</p>
+    </div>
+  </footer>
+
+  <script>
+    window.addEventListener('scroll', () => {
+      document.querySelector('nav').style.boxShadow = window.scrollY > 10 ? '0 4px 20px rgba(0,0,0,.12)' : '';
+    });
+  </script>
+
+  <script>
+    (function () {
+      const meses = ['', 'Janeiro', 'Fevereiro', 'Marco', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+      const docs = JSON.parse(localStorage.getItem('aasec_docs') || '[]')
+        .filter(d => d.unidade === 'CEI Betel' && d.tipo !== 'prestacao');
+      const grid = document.getElementById('docsInstGrid');
+      if (!grid || !docs.length) return;
+      grid.innerHTML = docs.map(d => {
+        const tem = !!d.link;
+        return <div class="doc-card" style="">
+          <div class="doc-icon"></div>
+          <div class="doc-info"><strong>+d.nome+</strong><span>+(d.ano||'')+</span></div>
+          <span class="status" style=""></span>
+        </div>;
+      }).join('');
+    })();
+  </script>
+  <script src="dados_docs.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      renderDocsPublico('docsInstGrid', { unidade: 'CEI Betel' });
+    });
+  </script>
+</body>
+
+</html>

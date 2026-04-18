@@ -1,0 +1,261 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dados Operacionais — AASEC</title>
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+<div class="layout">
+  <div id="nav-placeholder"></div>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h2>📋 Dados Operacionais</h2>
+        <p>Dados do LRCO inseridos pela coordenação · por período e unidade</p>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="abrirModal('modal')">+ Novo registro</button>
+    </div>
+
+    <div class="content">
+
+      <div class="aviso info">
+        <div class="aviso-ico">ℹ️</div>
+        <div>
+          <strong>Dados agregados — sem identificação individual</strong>
+          <p>Insira sempre dados consolidados por turma ou unidade. Não registre nomes de crianças ou professoras. Fonte: LRCO.</p>
+        </div>
+      </div>
+
+      <div class="bloco">
+        <div class="toolbar">
+          <select class="fselect" id="filtroUnidade" onchange="renderLista()">
+            <option value="">Todas as unidades</option>
+          </select>
+          <select class="fselect" id="filtroPeriodo" onchange="renderLista()">
+            <option value="">Todos os períodos</option>
+          </select>
+        </div>
+
+        <div class="tabela-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Período</th>
+                <th>Unidade</th>
+                <th>Turma</th>
+                <th>Frequência</th>
+                <th>Atividades</th>
+                <th>Regularidade</th>
+                <th style="text-align:right">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <div class="vazio" id="vazio" style="display:none">
+          <div class="vi">📋</div>
+          <h4>Nenhum registro ainda</h4>
+          <p>Clique em "+ Novo registro" para inserir os dados do mês.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-h">
+      <h3 id="modalTitulo">Novo Registro</h3>
+      <button class="modal-close" onclick="fecharModal('modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editId">
+
+      <div class="bloco-form">
+        <div class="bloco-form-titulo">Identificação</div>
+        <div class="row2">
+          <div class="fg">
+            <label>Período <span class="req">*</span></label>
+            <input type="month" id="fPeriodo">
+          </div>
+          <div class="fg">
+            <label>Unidade <span class="req">*</span></label>
+            <select id="fUnidade" class="select-unidade"><option value="">Selecione</option></select>
+          </div>
+        </div>
+        <div class="fg">
+          <label>Turma</label>
+          <input type="text" id="fTurma" placeholder="Ex: Berçário, Maternal I... (opcional)">
+          <div class="hint">Deixe em branco para dados gerais da unidade</div>
+        </div>
+      </div>
+
+      <div class="bloco-form">
+        <div class="bloco-form-titulo">Indicadores operacionais</div>
+        <div class="row2">
+          <div class="fg">
+            <label>Frequência média (%)</label>
+            <input type="number" id="fFreq" min="0" max="100" placeholder="Ex: 85">
+          </div>
+          <div class="fg">
+            <label>Atividades realizadas</label>
+            <input type="number" id="fAtiv" min="0" placeholder="Ex: 22">
+          </div>
+        </div>
+        <div class="fg">
+          <label>Regularidade dos registros</label>
+          <select id="fReg">
+            <option value="">Selecione</option>
+            <option value="alta">Alta — registros consistentes</option>
+            <option value="media">Média — alguns registros faltantes</option>
+            <option value="baixa">Baixa — registros irregulares</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="bloco-form">
+        <div class="bloco-form-titulo">Contexto do período</div>
+        <div class="fg">
+          <label>Observações gerais</label>
+          <textarea id="fObs" placeholder="Contexto relevante do período — sem identificar pessoas..."></textarea>
+          <div class="hint">Opcional. Texto curto e institucional.</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="fecharModal('modal')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvar()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script src="dados.js"></script>
+<script src="cadastros.js"></script>
+<script src="_nav.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  carregarSelectsUnidade();
+  document.getElementById('nav-placeholder').innerHTML = renderSidebar();
+  initNav('lrco');
+  initModal('modal');
+  document.getElementById('fPeriodo').value = mesAtual();
+  carregarFiltroPeriodos();
+  renderLista();
+});
+
+function carregarFiltroPeriodos() {
+  const sel = document.getElementById('filtroPeriodo');
+  DB.periodosMes().forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p; opt.textContent = fmtMes(p); sel.appendChild(opt);
+  });
+}
+
+const regLabel = { alta: '🟢 Alta', media: '🟡 Média', baixa: '🔴 Baixa' };
+
+function renderLista() {
+  const u = document.getElementById('filtroUnidade').value;
+  const p = document.getElementById('filtroPeriodo').value;
+
+  let lista = DB.getLrco()
+    .filter(x => (!u || x.unidade === u) && (!p || x.periodo === p))
+    .sort((a, b) => b.periodo.localeCompare(a.periodo));
+
+  const tbody = document.getElementById('tbody');
+  const vazio = document.getElementById('vazio');
+
+  if (!lista.length) { tbody.innerHTML = ''; vazio.style.display = 'block'; return; }
+  vazio.style.display = 'none';
+
+  tbody.innerHTML = lista.map(x => `<tr>
+    <td><strong>${fmtMes(x.periodo)}</strong></td>
+    <td><span class="badge b-verde">${x.unidade}</span></td>
+    <td>${x.turma || '<span style="color:var(--cinza)">Geral</span>'}</td>
+    <td>${x.frequencia != null ? `<strong style="color:var(--verde)">${x.frequencia}%</strong>` : '—'}</td>
+    <td>${x.atividades || '—'}</td>
+    <td>${regLabel[x.regularidade] || '—'}</td>
+    <td><div class="td-acoes">
+      <button class="btn btn-secondary btn-sm btn-icon" onclick="editar('${x.id}')">✏️</button>
+      <button class="btn btn-danger btn-sm btn-icon" onclick="excluir('${x.id}')">🗑️</button>
+    </div></td>
+  </tr>`).join('');
+}
+
+function limparForm() {
+  ['editId','fTurma','fObs'].forEach(id => document.getElementById(id).value = '');
+  ['fFreq','fAtiv'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fUnidade').value = '';
+  document.getElementById('fReg').value = '';
+  document.getElementById('fPeriodo').value = mesAtual();
+}
+
+function abrirNovoModal() {
+  limparForm();
+  document.getElementById('modalTitulo').textContent = 'Novo Registro';
+  abrirModal('modal');
+}
+
+// Botão do topbar chama esta função
+document.querySelector('.btn-primary')?.addEventListener('click', () => {
+  limparForm();
+  document.getElementById('modalTitulo').textContent = 'Novo Registro';
+});
+
+function editar(id) {
+  const x = DB.getLrcoItem(id);
+  if (!x) return;
+  document.getElementById('editId').value = x.id;
+  document.getElementById('fPeriodo').value = x.periodo;
+  document.getElementById('fUnidade').value = x.unidade;
+  document.getElementById('fTurma').value = x.turma || '';
+  document.getElementById('fFreq').value = x.frequencia ?? '';
+  document.getElementById('fAtiv').value = x.atividades ?? '';
+  document.getElementById('fReg').value = x.regularidade || '';
+  document.getElementById('fObs').value = x.obs || '';
+  document.getElementById('modalTitulo').textContent = 'Editar Registro';
+  abrirModal('modal');
+}
+
+function salvar() {
+  const periodo = document.getElementById('fPeriodo').value;
+  const unidade = document.getElementById('fUnidade').value;
+  if (!periodo || !unidade) { toast('Informe o período e a unidade.', 'erro'); return; }
+
+  const id = document.getElementById('editId').value;
+  const dados = {
+    periodo, unidade,
+    turma: document.getElementById('fTurma').value.trim() || null,
+    frequencia: document.getElementById('fFreq').value !== '' ? parseFloat(document.getElementById('fFreq').value) : null,
+    atividades: document.getElementById('fAtiv').value !== '' ? parseInt(document.getElementById('fAtiv').value) : null,
+    regularidade: document.getElementById('fReg').value || null,
+    obs: document.getElementById('fObs').value.trim() || null
+  };
+
+  if (id) { DB.updateLrco(id, dados); toast('Registro atualizado!'); }
+  else { DB.addLrco(dados); toast('Registro salvo!'); }
+
+  fecharModal('modal');
+  renderLista();
+
+  // Atualizar filtro de períodos
+  document.getElementById('filtroPeriodo').innerHTML = '<option value="">Todos os períodos</option>';
+  DB.periodosMes().forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p; opt.textContent = fmtMes(p);
+    document.getElementById('filtroPeriodo').appendChild(opt);
+  });
+}
+
+function excluir(id) {
+  if (!confirmar('Excluir este registro?')) return;
+  DB.deleteLrco(id);
+  toast('Registro excluído.');
+  renderLista();
+}
+</script>
+</body>
+</html>

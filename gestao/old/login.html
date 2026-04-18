@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Área Docente Betel — Entrar</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:linear-gradient(135deg,#2d5010 0%,#1e3a08 50%,#5a3210 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{background:#fff;border-radius:20px;padding:48px 40px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.logo-wrap{text-align:center;margin-bottom:28px}
+.logo-wrap img{height:80px;mix-blend-mode:multiply;margin-bottom:12px}
+.logo-wrap h1{font-size:20px;font-weight:800;color:#1a1a1a;margin-bottom:4px}
+.logo-wrap p{font-size:12px;color:#888;letter-spacing:.5px}
+.divider{width:40px;height:3px;background:#FFD000;border-radius:2px;margin:20px auto}
+.badge{display:inline-block;background:#eef5e6;color:#4a7c1f;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:24px;border-left:3px solid #4a7c1f}
+h2{font-size:22px;font-weight:800;color:#1a1a1a;margin-bottom:6px}
+.sub{font-size:13px;color:#666;margin-bottom:28px;line-height:1.5}
+.fg{margin-bottom:16px}
+.fg label{display:block;font-size:12px;font-weight:600;color:#444;margin-bottom:5px}
+.fg input{width:100%;padding:13px 16px;border:1.5px solid #e0e0e0;border-radius:10px;font-size:14px;font-family:'Inter',sans-serif;color:#222;background:#fafafa;outline:none;transition:all .2s}
+.fg input:focus{border-color:#4a7c1f;background:#fff;box-shadow:0 0 0 3px rgba(74,124,31,.1)}
+.btn-login{width:100%;padding:14px;background:linear-gradient(135deg,#4a7c1f,#3d6615);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:all .25s;margin-top:8px;margin-bottom:16px}
+.btn-login:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(74,124,31,.35)}
+.link{text-align:center;font-size:13px;color:#888}
+.link a{color:#4a7c1f;text-decoration:none;font-weight:600}
+.frase{background:linear-gradient(135deg,#fffdf0,#fff8dc);border-radius:10px;padding:14px 16px;margin-top:24px;border-left:3px solid #FFD000;text-align:center}
+.frase p{font-size:12px;color:#5a3210;line-height:1.6;font-style:italic}
+.perfis{display:flex;flex-direction:column;gap:6px;margin-top:16px}
+.perfil-demo{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#f5f5f5;border-radius:8px;font-size:12px;color:#555;cursor:pointer;transition:all .15s;border:1px solid #eee}
+.perfil-demo:hover{background:#eef5e6;border-color:#4a7c1f;color:#4a7c1f}
+.perfil-demo .pi{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.perfil-demo .pt{font-weight:600;font-size:11px}
+.perfil-demo .pe{font-size:10px;color:#999;margin-left:auto}
+.demo-titulo{font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin:16px 0 8px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo-wrap">
+    <img src="../assets/logo_aasec.png" alt="CEI Betel">
+    <h1>Área Docente Betel</h1>
+    <p>CEI Betel · AASEC · Carambeí/PR</p>
+  </div>
+  <div class="divider"></div>
+  <div style="text-align:center">
+    <span class="badge">Acesso restrito</span>
+  </div>
+  <h2>Bem-vinda de volta 🌻</h2>
+  <p class="sub">Entre com seus dados para acessar o painel da sua turma.</p>
+  <form onsubmit="entrar_real(event)">
+    <div class="fg">
+      <label>E-mail</label>
+      <input type="email" id="email" placeholder="seu@email.com.br" value="diretora@betel.org.br">
+    </div>
+    <div class="fg">
+      <label>Senha</label>
+      <input type="password" id="senha" placeholder="••••••••" value="123456">
+    </div>
+    <button type="submit" class="btn-login">Entrar no sistema</button>
+    <div class="link"><a href="#">Esqueci minha senha</a></div>
+  </form>
+
+  <div class="demo-titulo">Demonstração — clique para entrar como:</div>
+  <div class="perfis">
+    <div class="perfil-demo" onclick="loginDemo('diretora')">
+      <div class="pi" style="background:#fff3cd">👩‍💼</div>
+      <div><div class="pt">Diretora</div></div>
+      <span class="pe">Acesso total</span>
+    </div>
+    <div class="perfil-demo" onclick="loginDemo('coordenacao')">
+      <div class="pi" style="background:#dbeafe">👩‍🏫</div>
+      <div><div class="pt">Coordenação Pedagógica</div></div>
+      <span class="pe">Todas turmas</span>
+    </div>
+    <div class="perfil-demo" onclick="loginDemo('professora')">
+      <div class="pi" style="background:#d1fae5">🌸</div>
+      <div><div class="pt">Professora</div></div>
+      <span class="pe">Minha turma</span>
+    </div>
+    <div class="perfil-demo" onclick="loginDemo('admin')">
+      <div class="pi" style="background:#e0e7ff">📋</div>
+      <div><div class="pt">Administrativo</div></div>
+      <span class="pe">Cadastros</span>
+    </div>
+  </div>
+
+  <div class="frase">
+    <p>"Acompanhar com sensibilidade, registrar com responsabilidade e cuidar com propósito."</p>
+  </div>
+</div>
+
+<script src="dados.js"></script>
+<script>
+
+function loginDemo(perfil) {
+  const usuario = DB.getUsuarios().find(u => u.perfil === perfil && u.ativo !== false);
+  if(usuario) {
+    DB.setSessao(usuario);
+    window.location.href = 'dashboard.html';
+  }
+}
+
+function entrar_real(e) {
+  e.preventDefault();
+  const email = document.getElementById('email').value.trim();
+  const senha = document.getElementById('senha').value;
+  const u = DB.getUsuarios().find(u => u.email === email && u.senha === senha && u.ativo !== false);
+  if(!u) { alert('E-mail ou senha incorretos.'); return; }
+  DB.setSessao(u);
+  window.location.href = 'dashboard.html';
+}
+</script>
+</body>
+</html>

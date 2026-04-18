@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indicadores Institucionais — AASEC</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="estilos.css">
+<style>
+.eixo-card{background:#fff;border-radius:16px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.06);border-top:5px solid}
+.eixo-card.social{border-top-color:#FFD000}
+.eixo-card.educacao{border-top-color:var(--verde)}
+.eixo-card.comunidade{border-top-color:#10b981}
+.eixo-titulo{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
+.eixo-card.social .eixo-titulo{color:#856404}
+.eixo-card.educacao .eixo-titulo{color:var(--verde)}
+.eixo-card.comunidade .eixo-titulo{color:#065f46}
+.eixo-nome{font-size:20px;font-weight:800;color:var(--preto);margin-bottom:16px}
+.ind-item{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ind-label{font-size:12px;color:var(--grafite);flex:1}
+.ind-bar-wrap{width:120px;background:#f0f0f0;border-radius:20px;height:8px;flex-shrink:0}
+.ind-bar{height:8px;border-radius:20px;transition:width .6s}
+.eixo-card.social .ind-bar{background:linear-gradient(90deg,#FFD000,#f0c000)}
+.eixo-card.educacao .ind-bar{background:linear-gradient(90deg,var(--verde),#7bc142)}
+.eixo-card.comunidade .ind-bar{background:linear-gradient(90deg,#10b981,#059669)}
+.ind-val{font-size:12px;font-weight:700;width:36px;text-align:right;flex-shrink:0}
+.eixo-card.social .ind-val{color:#856404}
+.eixo-card.educacao .ind-val{color:var(--verde)}
+.eixo-card.comunidade .ind-val{color:#065f46}
+.sem-dados{text-align:center;padding:20px;color:var(--cinza);font-size:13px;font-style:italic}
+.periodo-selector{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.ps-btn{padding:6px 16px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;color:var(--grafite)}
+.ps-btn.ativo{background:var(--verde);color:#fff;border-color:var(--verde)}
+.frase-missao{background:linear-gradient(135deg,#2d5010,#5a3210);border-radius:14px;padding:24px 28px;color:#fff;margin-bottom:20px;text-align:center}
+.frase-missao p{font-size:16px;font-style:italic;opacity:.9;line-height:1.6}
+.frase-missao strong{color:var(--amarelo);font-style:normal}
+</style>
+</head>
+<body>
+<button class="mobile-toggle" id="mobileToggle">☰</button>
+<div class="sidebar">
+  <div class="sidebar-logo"><img src="../assets/logo_aasec.png" alt="Betel"><strong>Área Docente Betel</strong><span>CEI Betel · AASEC</span></div>
+  <div class="sidebar-perfil"><div class="sp-nome"></div><div class="sp-cargo"></div><span class="sp-badge"></span></div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Principal</div>
+    <a class="nav-item" href="dashboard.html" data-page="dashboard"><span class="nav-icon">🏠</span> Painel</a>
+    <a class="nav-item" href="indicadores.html" data-page="indicadores"><span class="nav-icon">📊</span> Indicadores</a>
+    <div class="nav-label">Acompanhamento</div>
+    <a class="nav-item" href="lrco.html" data-page="lrco"><span class="nav-icon">📋</span> Dados LRCO</a>
+    <a class="nav-item" href="reunioes.html" data-page="reunioes"><span class="nav-icon">👨‍👩‍👧</span> Reuniões de Família</a>
+    <div class="nav-label">Cadastros</div>
+    <a class="nav-item nav-admin" href="usuarios.html" data-page="usuarios"><span class="nav-icon">👥</span> Equipe & Acessos</a>
+    <a class="nav-item nav-admin" href="turmas.html" data-page="turmas"><span class="nav-icon">👩‍👧‍👦</span> Turmas</a>
+    <a class="nav-item" href="criancas.html" data-page="criancas"><span class="nav-icon">🌻</span> Crianças</a>
+  </nav>
+  <div class="sidebar-bottom"><a href="login.html">← Sair</a></div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-esq">
+      <h2>📊 Indicadores Institucionais</h2>
+      <p>Valor entregue pela AASEC — dados agregados por unidade e período</p>
+    </div>
+    <div style="display:flex;gap:8px">
+      <select class="filter-select" id="filtroUnidade" onchange="renderTudo()" style="font-size:12px">
+        <option value="">Todas as unidades</option>
+        <option value="CEI Betel">CEI Betel</option>
+        <option value="Esco-Lar">Esco-Lar</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- MISSÃO -->
+    <div class="frase-missao">
+      <p>"A missão da AASEC é <strong>transformar vidas para Cristo</strong> — através do cuidado, da educação e do fortalecimento das famílias."</p>
+    </div>
+
+    <!-- SELETOR DE PERÍODO -->
+    <div class="periodo-selector" id="periodoSelector"></div>
+
+    <!-- 3 EIXOS -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:24px">
+
+      <!-- SOCIAL — AMOR -->
+      <div class="eixo-card social">
+        <div class="eixo-titulo">🌻 Social</div>
+        <div class="eixo-nome">Amor</div>
+        <div id="social-conteudo">
+          <div class="sem-dados">Sem dados de reuniões registrados</div>
+        </div>
+      </div>
+
+      <!-- EDUCAÇÃO — DESENVOLVIMENTO -->
+      <div class="eixo-card educacao">
+        <div class="eixo-titulo">📚 Educação</div>
+        <div class="eixo-nome">Desenvolvimento</div>
+        <div id="educacao-conteudo">
+          <div class="sem-dados">Sem dados do LRCO registrados</div>
+        </div>
+      </div>
+
+      <!-- COMUNIDADE — TRANSFORMAÇÃO -->
+      <div class="eixo-card comunidade">
+        <div class="eixo-titulo">🤝 Comunidade</div>
+        <div class="eixo-nome">Transformação</div>
+        <div id="comunidade-conteudo">
+          <div class="sem-dados">Sem dados de reuniões registrados</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- GRÁFICO EVOLUÇÃO -->
+    <div class="bloco" style="margin-bottom:20px">
+      <div class="bloco-titulo">📈 Evolução dos Indicadores</div>
+      <div style="font-size:11px;color:var(--cinza);margin-bottom:16px">Percepção das famílias ao longo do tempo — dados das reuniões trimestrais</div>
+      <div id="graficoWrap" style="position:relative;height:220px">
+        <div class="sem-dados" id="graficoVazio">Registre dados de reuniões para visualizar a evolução.</div>
+        <canvas id="graficoEvolucao" style="display:none"></canvas>
+      </div>
+    </div>
+
+    <!-- QUALITATIVO -->
+    <div class="bloco">
+      <div class="bloco-titulo">💬 Percepções das Famílias</div>
+      <div style="font-size:11px;color:var(--cinza);margin-bottom:16px">Síntese qualitativa dos registros mais recentes</div>
+      <div id="qualitativoLista">
+        <div class="sem-dados">Nenhuma percepção qualitativa registrada ainda.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="dados.js"></script>
+<script src="sidebar.js"></script>
+<script>
+let grafico = null;
+let periodoSelecionado = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderSidebar('indicadores');
+  renderPeriodos();
+  renderTudo();
+});
+
+function renderPeriodos() {
+  const reunioes = DB.getReunioes();
+  const lrco = DB.getLrco();
+  const periodos = [...new Set([
+    ...reunioes.map(r=>r.periodo),
+    ...lrco.map(l=>l.periodo.substring(0,7))
+  ])].sort().reverse();
+
+  const wrap = document.getElementById('periodoSelector');
+  if(!periodos.length) { wrap.innerHTML='<span style="font-size:12px;color:var(--cinza)">Sem dados registrados</span>'; return; }
+
+  wrap.innerHTML = `<button class="ps-btn ativo" onclick="selecionarPeriodo(null,this)">Todos</button>` +
+    periodos.slice(0,8).map(p => {
+      const label = p.includes('-T') ? p.replace('-','&nbsp;') : fmtMes(p);
+      return `<button class="ps-btn" onclick="selecionarPeriodo('${p}',this)">${label}</button>`;
+    }).join('');
+}
+
+function selecionarPeriodo(p, btn) {
+  document.querySelectorAll('.ps-btn').forEach(b=>b.classList.remove('ativo'));
+  btn.classList.add('ativo');
+  periodoSelecionado = p;
+  renderTudo();
+}
+
+function renderTudo() {
+  const unidade = document.getElementById('filtroUnidade').value;
+
+  // Filtrar dados
+  let reunioes = DB.getReunioes().filter(r => !unidade || r.unidade===unidade);
+  let lrco = DB.getLrco().filter(l => !unidade || l.unidade===unidade);
+
+  if(periodoSelecionado) {
+    reunioes = reunioes.filter(r => r.periodo === periodoSelecionado);
+    lrco = lrco.filter(l => l.periodo.startsWith(periodoSelecionado));
+  }
+
+  renderSocial(reunioes);
+  renderEducacao(lrco);
+  renderComunidade(reunioes);
+  renderGrafico(reunioes);
+  renderQualitativo(reunioes);
+}
+
+function media(arr, campo) {
+  const validos = arr.filter(x=>x[campo]!=null);
+  if(!validos.length) return null;
+  return Math.round(validos.reduce((s,x)=>s+x[campo],0)/validos.length);
+}
+
+function barHTML(pct, label, val) {
+  if(val==null) return '';
+  return `<div class="ind-item">
+    <div class="ind-label">${label}</div>
+    <div class="ind-bar-wrap"><div class="ind-bar" style="width:${Math.min(val,100)}%"></div></div>
+    <div class="ind-val">${val}%</div>
+  </div>`;
+}
+
+function renderSocial(reunioes) {
+  const el = document.getElementById('social-conteudo');
+  if(!reunioes.length) { el.innerHTML='<div class="sem-dados">Sem dados de reuniões</div>'; return; }
+  const v = media(reunioes,'pct_avaliacao');
+  const e = media(reunioes,'pct_evolucao');
+  el.innerHTML = [
+    barHTML(v,'Avaliação do atendimento',v),
+    barHTML(e,'Percepção de evolução',e),
+    reunioes.length ? `<div style="font-size:11px;color:var(--cinza);margin-top:12px">Baseado em ${reunioes.length} reunião(ões) registrada(s)</div>` : ''
+  ].join('');
+}
+
+function renderEducacao(lrco) {
+  const el = document.getElementById('educacao-conteudo');
+  if(!lrco.length) { el.innerHTML='<div class="sem-dados">Sem dados do LRCO</div>'; return; }
+  const freq = media(lrco,'frequencia_media');
+  const atv = lrco.reduce((s,l)=>s+(l.num_atividades||0),0);
+  const regCounts = {alta:0,media:0,baixa:0};
+  lrco.forEach(l=>{ if(l.regularidade) regCounts[l.regularidade]++; });
+  const regTotal = Object.values(regCounts).reduce((a,b)=>a+b,0);
+  const regAlta = regTotal ? Math.round(regCounts.alta/regTotal*100) : null;
+
+  el.innerHTML = [
+    barHTML(freq,'Frequência média',freq),
+    regAlta!=null ? barHTML(regAlta,'Regularidade alta nos registros',regAlta) : '',
+    `<div class="ind-item"><div class="ind-label">Total de atividades</div><div class="ind-val" style="width:auto;font-size:14px;font-weight:800;color:var(--verde)">${atv}</div></div>`,
+    `<div style="font-size:11px;color:var(--cinza);margin-top:8px">${lrco.length} período(s) registrado(s)</div>`
+  ].join('');
+}
+
+function renderComunidade(reunioes) {
+  const el = document.getElementById('comunidade-conteudo');
+  if(!reunioes.length) { el.innerHTML='<div class="sem-dados">Sem dados de reuniões</div>'; return; }
+  const part = media(reunioes,'pct_participacao');
+  const totalFamilias = reunioes.reduce((s,r)=>s+(r.num_familias||0),0);
+  el.innerHTML = [
+    barHTML(part,'Participação nas reuniões',part),
+    `<div class="ind-item"><div class="ind-label">Famílias alcançadas (total)</div><div class="ind-val" style="width:auto;font-size:14px;font-weight:800;color:#065f46">${totalFamilias}</div></div>`,
+    `<div style="font-size:11px;color:var(--cinza);margin-top:8px">${reunioes.length} reunião(ões) registrada(s)</div>`
+  ].join('');
+}
+
+function renderGrafico(reunioes) {
+  const sorted = [...reunioes].sort((a,b)=>a.periodo.localeCompare(b.periodo));
+  const vazio = document.getElementById('graficoVazio');
+  const canvas = document.getElementById('graficoEvolucao');
+
+  if(sorted.length < 2) { vazio.style.display='block'; canvas.style.display='none'; return; }
+  vazio.style.display='none'; canvas.style.display='block';
+
+  const labels = sorted.map(r => { const [a,t]=r.periodo.split('-'); return `${t} ${a}`; });
+  const evolucao = sorted.map(r=>r.pct_evolucao??null);
+  const avaliacao = sorted.map(r=>r.pct_avaliacao??null);
+  const participacao = sorted.map(r=>r.pct_participacao??null);
+
+  if(grafico) grafico.destroy();
+  grafico = new Chart(canvas.getContext('2d'), {
+    type:'line',
+    data:{
+      labels,
+      datasets:[
+        {label:'Percepção de evolução',data:evolucao,borderColor:'#FFD000',backgroundColor:'rgba(255,208,0,.1)',tension:.4,fill:true,borderWidth:2.5,spanGaps:true},
+        {label:'Avaliação do atendimento',data:avaliacao,borderColor:'#4a7c1f',backgroundColor:'rgba(74,124,31,.1)',tension:.4,fill:true,borderWidth:2.5,spanGaps:true},
+        {label:'Participação',data:participacao,borderColor:'#10b981',backgroundColor:'rgba(16,185,129,.1)',tension:.4,fill:true,borderWidth:2.5,spanGaps:true}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{font:{size:11,family:'Inter'},boxWidth:14}}},
+      scales:{
+        y:{min:0,max:100,ticks:{stepSize:20,font:{size:10},callback:v=>v+'%'}},
+        x:{ticks:{font:{size:11}}}
+      }
+    }
+  });
+}
+
+function renderQualitativo(reunioes) {
+  const el = document.getElementById('qualitativoLista');
+  const comTexto = reunioes.filter(r=>r.percepcoes).slice(-4).reverse();
+  if(!comTexto.length) { el.innerHTML='<div class="sem-dados">Nenhuma percepção qualitativa registrada.</div>'; return; }
+
+  el.innerHTML = comTexto.map(r => {
+    const [a,t]=r.periodo.split('-');
+    return `<div style="background:var(--verde-claro);border-radius:10px;padding:16px;margin-bottom:10px;border-left:3px solid var(--verde)">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:11px;font-weight:700;color:var(--verde)">${t} ${a} · ${r.unidade}</span>
+        <span style="font-size:11px;color:var(--cinza)">${r.num_familias} famílias</span>
+      </div>
+      <p style="font-size:13px;color:var(--grafite);line-height:1.6;font-style:italic">"${r.percepcoes}"</p>
+      ${r.atencao?`<div style="margin-top:10px;padding:10px;background:#fff3cd;border-radius:8px;font-size:12px;color:#856404"><strong>Pontos de atenção:</strong> ${r.atencao}</div>`:''}
+    </div>`;
+  }).join('');
+}
+</script>
+</body>
+</html>

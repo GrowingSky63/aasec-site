@@ -1,0 +1,1443 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AASEC — Associação de Assistência Social Evangélica de Carambeí</title>
+  <meta name="description" content="Cuidando de pessoas, fortalecendo famílias e servindo a comunidade em Carambeí-PR.">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    :root {
+      --azul: #1A56A0;
+      --azul-escuro: #0F3D7A;
+      --azul-profundo: #092B5A;
+      --azul-claro: #EBF2FB;
+      --azul-medio: #C8DEFA;
+      --ambar: #D97706;
+      --ambar-claro: #FEF3C7;
+      --branco: #FFFFFF;
+      --fundo: #F7F9FC;
+      --cinza-borda: #E2E8F0;
+      --cinza-claro: #F1F5F9;
+      --cinza: #64748B;
+      --grafite: #334155;
+      --preto: #0F172A;
+      --ok: #059669;
+      --ok-claro: #D1FAE5;
+      --alerta: #DC2626;
+      /* atalhos */
+      --cor: var(--azul);
+      --cor-escuro: var(--azul-escuro);
+      --cor-claro: var(--azul-claro);
+      --cor-hover: var(--azul-escuro);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--grafite);
+      background: var(--fundo);
+      font-size: 15px;
+      line-height: 1.6
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: var(--branco);
+      border-bottom: 3px solid var(--azul);
+      z-index: 1000;
+      padding: 0 4%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, .07)
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none
+    }
+
+    .nav-logo img {
+      height: 50px;
+      width: auto;
+      object-fit: contain
+    }
+
+    .nav-logo-txt strong {
+      display: block;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--preto)
+    }
+
+    .nav-logo-txt span {
+      font-size: 10px;
+      color: var(--cinza)
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 4px;
+      list-style: none;
+      align-items: center
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--grafite);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 7px 13px;
+      border-radius: 7px;
+      transition: all .2s
+    }
+
+    .nav-links a:hover {
+      background: var(--azul);
+      color: #fff
+    }
+
+    .nav-links .btn-nav {
+      background: var(--azul-escuro);
+      color: #fff;
+      font-weight: 600
+    }
+
+    .nav-links .btn-nav:hover {
+      background: var(--azul-profundo)
+    }
+
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 8px
+    }
+
+    .nav-toggle span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--preto);
+      border-radius: 2px
+    }
+
+    /* HERO */
+    #hero {
+      min-height: 90vh;
+      background: linear-gradient(150deg, var(--azul) 0%, var(--azul-escuro) 55%, var(--azul-profundo) 100%);
+      display: flex;
+      align-items: center;
+      padding: 80px 4% 40px;
+      position: relative;
+      overflow: hidden
+    }
+
+    #hero::before {
+      content: '';
+      position: absolute;
+      top: -80px;
+      right: -80px;
+      width: 400px;
+      height: 400px;
+      background: var(--azul-claro);
+      border-radius: 50%;
+      opacity: .08
+    }
+
+    #hero::after {
+      content: '';
+      position: absolute;
+      bottom: -60px;
+      left: 10%;
+      width: 250px;
+      height: 250px;
+      background: var(--ambar);
+      border-radius: 50%;
+      opacity: .05
+    }
+
+    .hero-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+      width: 100%;
+      position: relative;
+      z-index: 1
+    }
+
+    .hero-logo-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center
+    }
+
+    .hero-logo-wrap img {
+      width: 380px;
+      height: 380px;
+      object-fit: contain;
+      mix-blend-mode: screen;
+      filter: drop-shadow(0 0 40px rgba(255, 255, 255, .2))
+    }
+
+    .hero-content .htag {
+      display: inline-block;
+      background: rgba(255, 255, 255, .12);
+      color: rgba(255, 255, 255, .8);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 18px
+    }
+
+    .hero-content h1 {
+      font-size: clamp(28px, 3.5vw, 48px);
+      font-weight: 800;
+      color: var(--branco);
+      line-height: 1.15;
+      margin-bottom: 16px
+    }
+
+    .hero-content h1 span {
+      color: #93C5FD
+    }
+
+    .hero-content p {
+      font-size: 16px;
+      color: rgba(255, 255, 255, .7);
+      margin-bottom: 28px;
+      line-height: 1.7;
+      font-weight: 300
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 32px
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 12px 22px;
+      border-radius: 9px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all .25s;
+      cursor: pointer;
+      border: none;
+      font-family: 'Inter', sans-serif
+    }
+
+    .btn-primary {
+      background: var(--branco);
+      color: var(--azul-escuro)
+    }
+
+    .btn-primary:hover {
+      background: var(--azul-claro);
+      transform: translateY(-2px)
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, .1);
+      color: var(--branco);
+      border: 1.5px solid rgba(255, 255, 255, .2)
+    }
+
+    .btn-ghost:hover {
+      border-color: #93C5FD;
+      color: #93C5FD
+    }
+
+    .btn-azul {
+      background: var(--azul);
+      color: #fff
+    }
+
+    .btn-azul:hover {
+      background: var(--azul-escuro);
+      transform: translateY(-2px)
+    }
+
+    .hero-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      max-width: 380px
+    }
+
+    .hero-card {
+      background: rgba(255, 255, 255, .08);
+      border-radius: 10px;
+      padding: 14px 16px;
+      border: 1px solid rgba(255, 255, 255, .1);
+      text-decoration: none;
+      display: block;
+      transition: all .2s
+    }
+
+    .hero-card:hover {
+      background: rgba(255, 255, 255, .14);
+      transform: translateY(-2px)
+    }
+
+    .hero-card .icon {
+      font-size: 22px;
+      margin-bottom: 6px
+    }
+
+    .hero-card strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--branco);
+      margin-bottom: 3px
+    }
+
+    .hero-card span {
+      font-size: 11px;
+      color: rgba(255, 255, 255, .55)
+    }
+
+    /* FAIXA */
+    .faixa {
+      background: var(--cinza-claro);
+      padding: 20px 4%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 50px;
+      flex-wrap: wrap;
+      position: relative;
+      border-top: 1px solid var(--cinza-borda);
+      border-bottom: 1px solid var(--cinza-borda)
+    }
+
+    .faixa-item {
+      text-align: center;
+      position: relative;
+      cursor: default
+    }
+
+    .faixa-item strong {
+      display: block;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--preto)
+    }
+
+    .faixa-item span {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--cinza);
+      text-transform: uppercase;
+      letter-spacing: 1px
+    }
+
+    .faixa-tip {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--preto);
+      color: #fff;
+      font-size: 13px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      white-space: nowrap;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .3);
+      z-index: 100;
+      font-style: italic
+    }
+
+    .faixa-tip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: var(--preto)
+    }
+
+    .faixa-item:hover .faixa-tip {
+      display: block
+    }
+
+    /* SEÇÕES */
+    section {
+      padding: 56px 4%
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto
+    }
+
+    .stag {
+      display: inline-block;
+      background: var(--azul-claro);
+      color: var(--azul-escuro);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      border-left: 3px solid var(--azul)
+    }
+
+    .stitu {
+      font-size: clamp(22px, 3vw, 32px);
+      font-weight: 800;
+      color: var(--preto);
+      margin-bottom: 8px
+    }
+
+    .ssub {
+      font-size: 15px;
+      color: var(--cinza);
+      line-height: 1.7;
+      max-width: 600px
+    }
+
+    .div {
+      width: 44px;
+      height: 4px;
+      background: var(--azul);
+      border-radius: 2px;
+      margin: 10px 0 28px
+    }
+
+    /* QUEM SOMOS */
+    #quem {
+      background: var(--branco)
+    }
+
+    .mvv-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 28px
+    }
+
+    .mvv-frase {
+      margin-top: 36px;
+      padding: 28px 32px;
+      background: var(--azul-claro);
+      border-left: 5px solid var(--azul);
+      border-radius: 0 12px 12px 0
+    }
+
+    .mvv-frase blockquote {
+      font-size: 20px;
+      font-weight: 300;
+      color: var(--grafite);
+      line-height: 1.7;
+      font-style: italic
+    }
+
+    .mvv-frase blockquote strong {
+      color: var(--azul-escuro);
+      font-weight: 800;
+      font-style: normal;
+      font-size: 22px
+    }
+
+    .quem-visual {
+      background: linear-gradient(135deg, var(--azul), var(--azul-profundo));
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-self: flex-start;
+      width: 100%
+    }
+
+    .quem-visual img {
+      width: 320px;
+      height: 320px;
+      object-fit: contain;
+      mix-blend-mode: screen;
+      margin-bottom: 20px
+    }
+
+    .quem-visual blockquote {
+      color: rgba(255, 255, 255, .85);
+      font-size: 15px;
+      font-style: italic;
+      line-height: 1.6
+    }
+
+    .quem-visual blockquote strong {
+      color: #93C5FD;
+      font-style: normal
+    }
+
+    .mvv {
+      display: flex;
+      flex-direction: column;
+      gap: 10px
+    }
+
+    .mvv-item {
+      background: var(--cinza-claro);
+      border-radius: 10px;
+      padding: 18px 20px;
+      border-left: 4px solid var(--azul)
+    }
+
+    .mvv-item h3 {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--cinza);
+      margin-bottom: 6px
+    }
+
+    .mvv-item p {
+      font-size: 14px;
+      color: var(--grafite);
+      line-height: 1.5
+    }
+
+    .valores {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 8px
+    }
+
+    .vtag {
+      background: var(--azul-claro);
+      color: var(--azul-escuro);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px
+    }
+
+    /* UNIDADES */
+    #unidades {
+      background: var(--cinza-claro)
+    }
+
+    .unidades-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 32px
+    }
+
+    .unidade-card {
+      background: var(--branco);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, .06);
+      border-top: 5px solid var(--azul);
+      transition: all .3s;
+      text-decoration: none;
+      display: block
+    }
+
+    .unidade-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .12)
+    }
+
+    .unidade-card.social {
+      border-top-color: var(--azul-escuro)
+    }
+
+    .unidade-img {
+      height: 160px;
+      background: linear-gradient(135deg, var(--azul-claro), var(--azul-medio));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px
+    }
+
+    .unidade-corpo {
+      padding: 24px
+    }
+
+    .unidade-tipo {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--cinza);
+      margin-bottom: 4px
+    }
+
+    .unidade-card h3 {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--preto);
+      margin-bottom: 8px
+    }
+
+    .unidade-card p {
+      font-size: 13px;
+      color: var(--cinza);
+      line-height: 1.6;
+      margin-bottom: 16px
+    }
+
+    .unidade-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px
+    }
+
+    .unidade-tag {
+      background: var(--azul-claro);
+      color: var(--azul-escuro);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px
+    }
+
+    .unidade-link {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--azul);
+      display: flex;
+      align-items: center;
+      gap: 4px
+    }
+
+    /* TRANSPARÊNCIA */
+    #transparencia {
+      background: var(--branco)
+    }
+
+    .docs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 28px
+    }
+
+    .doc-card {
+      background: var(--azul-claro);
+      border-radius: 10px;
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all .2s;
+      border: 1px solid var(--azul-medio)
+    }
+
+    .doc-card:hover {
+      background: var(--azul-medio);
+      transform: translateX(3px)
+    }
+
+    .doc-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--azul);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      color: #fff
+    }
+
+    .doc-info strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--preto)
+    }
+
+    .doc-info span {
+      font-size: 11px;
+      color: var(--cinza)
+    }
+
+    .doc-status {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 8px;
+      margin-left: auto;
+      white-space: nowrap;
+      background: #fff3cd;
+      color: #856404
+    }
+
+    .doc-filtro {
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1.5px solid var(--cinza-borda);
+      background: var(--branco);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      color: var(--grafite);
+      font-family: 'Inter', sans-serif
+    }
+
+    .doc-filtro:hover,
+    .doc-filtro.ativo {
+      background: var(--azul);
+      color: #fff;
+      border-color: var(--azul)
+    }
+
+    /* COMO AJUDAR */
+    #como-ajudar {
+      background: var(--cinza-claro)
+    }
+
+    .ajuda-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 28px
+    }
+
+    .ajuda-card {
+      background: var(--branco);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      border-top: 3px solid var(--azul);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
+      transition: all .25s
+    }
+
+    .ajuda-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .1)
+    }
+
+    .ajuda-icon {
+      font-size: 32px;
+      margin-bottom: 12px
+    }
+
+    .ajuda-card h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--preto);
+      margin-bottom: 8px
+    }
+
+    .ajuda-card p {
+      font-size: 12px;
+      color: var(--cinza);
+      line-height: 1.5;
+      margin-bottom: 16px
+    }
+
+    /* CONTATO */
+    #contato {
+      background: var(--azul-profundo)
+    }
+
+    #contato .stag {
+      background: rgba(255, 255, 255, .12);
+      color: rgba(255, 255, 255, .8);
+      border-left-color: rgba(255, 255, 255, .4)
+    }
+
+    #contato .stitu {
+      color: var(--branco)
+    }
+
+    #contato .ssub {
+      color: rgba(255, 255, 255, .6)
+    }
+
+    #contato .div {
+      background: rgba(255, 255, 255, .3)
+    }
+
+    .contato-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      margin-top: 28px
+    }
+
+    .citem {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, .07);
+      border-radius: 10px;
+      text-decoration: none;
+      border-left: 3px solid var(--azul-medio);
+      transition: all .2s
+    }
+
+    .citem:hover {
+      background: rgba(255, 255, 255, .12);
+      transform: translateX(3px)
+    }
+
+    .cicone {
+      width: 38px;
+      height: 38px;
+      background: var(--azul);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0
+    }
+
+    .ctexto label {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, .4);
+      margin-bottom: 2px
+    }
+
+    .ctexto span {
+      color: var(--branco);
+      font-size: 13px;
+      font-weight: 500
+    }
+
+    form {
+      background: rgba(255, 255, 255, .06);
+      border-radius: 14px;
+      padding: 28px;
+      border: 1px solid rgba(255, 255, 255, .08)
+    }
+
+    form h3 {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--branco);
+      margin-bottom: 18px
+    }
+
+    .fg {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 12px
+    }
+
+    .fg label {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, .6)
+    }
+
+    .fg input,
+    .fg textarea,
+    .fg select {
+      padding: 10px 14px;
+      border: 1.5px solid rgba(255, 255, 255, .12);
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      color: var(--branco);
+      background: rgba(255, 255, 255, .07);
+      outline: none;
+      transition: border-color .2s
+    }
+
+    .fg input:focus,
+    .fg textarea:focus,
+    .fg select:focus {
+      border-color: var(--azul-medio)
+    }
+
+    .fg textarea {
+      height: 80px;
+      resize: vertical
+    }
+
+    .fg select option {
+      background: var(--azul-profundo)
+    }
+
+    /* RODAPÉ */
+    footer {
+      background: #0C1A2E;
+      padding: 36px 4% 20px;
+      border-top: 3px solid var(--azul)
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 40px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid rgba(255, 255, 255, .07);
+      margin-bottom: 16px
+    }
+
+    .fmarca {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px
+    }
+
+    .fmarca img {
+      height: 48px;
+      object-fit: contain;
+      mix-blend-mode: screen
+    }
+
+    .fmarca-txt strong {
+      display: block;
+      color: var(--branco);
+      font-size: 14px;
+      font-weight: 800
+    }
+
+    .fmarca-txt span {
+      color: rgba(255, 255, 255, .35);
+      font-size: 10px
+    }
+
+    .fdesc {
+      color: rgba(255, 255, 255, .45);
+      font-size: 12px;
+      line-height: 1.7
+    }
+
+    .fcol h4 {
+      color: #93C5FD;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px
+    }
+
+    .fcol ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    .fcol ul a {
+      color: rgba(255, 255, 255, .5);
+      text-decoration: none;
+      font-size: 12px;
+      transition: color .2s
+    }
+
+    .fcol ul a:hover {
+      color: #93C5FD
+    }
+
+    .fbottom {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px
+    }
+
+    .fbottom p {
+      color: rgba(255, 255, 255, .25);
+      font-size: 11px
+    }
+
+    .fbottom span {
+      color: #93C5FD
+    }
+
+    /* RESPONSIVO */
+    @media(max-width:900px) {
+
+      .hero-inner,
+      .quem-grid,
+      .contato-grid,
+      .footer-inner {
+        grid-template-columns: 1fr
+      }
+
+      .hero-logo-wrap img {
+        width: 220px;
+        height: 220px
+      }
+
+      .hero-content {
+        text-align: center
+      }
+
+      .hero-btns {
+        justify-content: center
+      }
+
+      .hero-cards {
+        margin: 0 auto
+      }
+
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 64px;
+        left: 0;
+        right: 0;
+        background: var(--branco);
+        padding: 16px;
+        border-top: 2px solid var(--azul);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, .1)
+      }
+
+      .nav-links.open {
+        display: flex
+      }
+
+      .nav-toggle {
+        display: flex
+      }
+
+      .unidades-grid,
+      .ajuda-grid,
+      .docs-grid {
+        grid-template-columns: 1fr 1fr
+      }
+    }
+
+    @media(max-width:600px) {
+
+      .unidades-grid,
+      .ajuda-grid,
+      .docs-grid,
+      .faixa {
+        grid-template-columns: 1fr;
+        gap: 12px
+      }
+
+      section {
+        padding: 44px 4%
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <a href="#" class="nav-logo">
+      <img src="assets/logo_aasec.png" alt="AASEC">
+      <div class="nav-logo-txt">
+        <strong>AASEC</strong>
+        <span>Carambeí — Paraná</span>
+      </div>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#quem">Quem Somos</a></li>
+      <li><a href="#unidades">Unidades</a></li>
+      <li><a href="#transparencia">Transparência</a></li>
+      <li><a href="#como-ajudar">Como Ajudar</a></li>
+      <li><a href="gestao/login.html" class="btn-nav">🔒 Área Gestão</a></li>
+      <li><a href="#contato" class="btn-nav">Contato</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-inner">
+      <div class="hero-logo-wrap">
+        <img src="assets/logo_aasec.png" alt="AASEC">
+      </div>
+      <div class="hero-content">
+        <span class="htag">Carambeí — Paraná · Desde 1977</span>
+        <h1>Cuidando de pessoas,<br><span>fortalecendo famílias.</span></h1>
+        <p>A AASEC promove assistência social, educação e cuidado humano em Carambeí. Uma associação sem fins lucrativos
+          comprometida com quem mais precisa.</p>
+        <div class="hero-btns">
+          <a href="#quem" class="btn btn-primary">Conheça a AASEC</a>
+          <a href="#como-ajudar" class="btn btn-ghost">Como Ajudar</a>
+          <a href="#contato" class="btn btn-ghost">Fale Conosco</a>
+        </div>
+        <div class="hero-cards">
+          <a href="cei-betel.html" class="hero-card">
+            <div class="icon"><img src="assets/logo_betel.png" style="height:36px;mix-blend-mode:multiply"></div>
+            <strong>CEI Betel</strong>
+            <span>Educação Infantil · 0–5 anos</span>
+          </a>
+          <a href="esco-lar.html" class="hero-card">
+            <div class="icon"><img src="assets/logo_escolar_b.png" style="height:36px;object-fit:contain"></div>
+            <strong>Esco-Lar</strong>
+            <span>Proteção Social Básica</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAIXA -->
+  <div class="faixa">
+    <div class="faixa-item" title="Levar o amor de Deus ao próximo — na prática.">
+      <strong>Amor</strong><span>Nossa missão</span>
+      <div class="faixa-tip">Levar o amor de Deus ao próximo — na prática.</div>
+    </div>
+    <div class="faixa-item" title="Educar, desenvolver e despertar o potencial de cada pessoa.">
+      <strong>Desenvolvimento</strong><span>Nossa prática</span>
+      <div class="faixa-tip">Educar, desenvolver e despertar o potencial de cada pessoa.</div>
+    </div>
+    <div class="faixa-item" title="Fortalecer famílias e transformar realidades.">
+      <strong>Transformação</strong><span>Nossa razão</span>
+      <div class="faixa-tip">Fortalecer famílias e transformar realidades.</div>
+    </div>
+  </div>
+
+  <!-- QUEM SOMOS -->
+  <section id="quem">
+    <div class="container">
+      <div class="stag">Nossa história</div>
+      <h2 class="stitu">Quem é a AASEC</h2>
+      <div class="div"></div>
+      <div class="mvv-col">
+        <div class="mvv-item">
+          <h3>Missão</h3>
+          <p>Promover cuidado, apoio social, educação e fortalecimento humano e comunitário em Carambeí, com
+            responsabilidade, ética e amor ao próximo.</p>
+        </div>
+        <div class="mvv-item">
+          <h3>Visão</h3>
+          <p>Ser referência em serviço social sério, acolhedor e transformador — uma instituição que a comunidade
+            conhece, confia e apoia.</p>
+        </div>
+        <div class="mvv-item">
+          <h3>Valores</h3>
+          <div class="valores">
+            <span class="vtag">Ética</span>
+            <span class="vtag">Responsabilidade</span>
+            <span class="vtag">Respeito</span>
+            <span class="vtag">Acolhimento</span>
+            <span class="vtag">Cooperação</span>
+            <span class="vtag">Amor ao próximo</span>
+          </div>
+        </div>
+      </div>
+      <div class="mvv-frase">
+        <blockquote>"Servir é um privilégio.<br>Cuidar de pessoas é uma <strong>responsabilidade</strong><br>que levamos
+          com amor e seriedade."</blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- UNIDADES -->
+  <section id="unidades">
+    <div class="container">
+      <div class="stag">Onde atuamos</div>
+      <h2 class="stitu">Nossas Unidades</h2>
+      <div class="div"></div>
+      <p class="ssub" style="margin-bottom:32px">A AASEC é a entidade mantenedora. Cada unidade tem natureza, função e
+        documentação próprias.</p>
+      <div class="unidades-grid">
+        <a href="cei-betel.html" class="unidade-card">
+          <div class="unidade-img"><img src="assets/logo_betel.png" style="height:90px;mix-blend-mode:multiply"></div>
+          <div class="unidade-corpo">
+            <div class="unidade-tipo">Unidade Educacional</div>
+            <h3>CEI Betel</h3>
+            <p>Centro de Educação Infantil voltado ao desenvolvimento integral de crianças de 0 a 5 anos, em parceria
+              com as famílias.</p>
+            <div class="unidade-tags">
+              <span class="unidade-tag">0 a 5 anos</span>
+              <span class="unidade-tag">Educação Infantil</span>
+            </div>
+            <div class="unidade-link">Ver CEI Betel →</div>
+          </div>
+        </a>
+        <a href="esco-lar.html" class="unidade-card social">
+          <div class="unidade-img" style="background:var(--azul-profundo)"><img src="assets/logo_escolar_b.png"
+              style="height:90px;object-fit:contain"></div>
+          <div class="unidade-corpo">
+            <div class="unidade-tipo">Unidade Socioassistencial</div>
+            <h3>Esco-Lar</h3>
+            <p>Serviço de proteção social básica voltado à convivência e fortalecimento de vínculos familiares e
+              comunitários.</p>
+            <div class="unidade-tags">
+              <span class="unidade-tag">Proteção Social</span>
+              <span class="unidade-tag">Convivência</span>
+            </div>
+            <div class="unidade-link">Ver Esco-Lar →</div>
+          </div>
+        </a>
+      </div>
+      <div
+        style="margin-top:20px;background:var(--branco);border-radius:12px;padding:16px 20px;border-left:4px solid var(--azul);display:flex;align-items:flex-start;gap:12px">
+        <span style="font-size:18px">ℹ️</span>
+        <p style="font-size:13px;color:var(--cinza);line-height:1.5"><strong style="color:var(--preto)">AASEC — Entidade
+            Mantenedora:</strong> A AASEC é a associação responsável pela manutenção institucional de suas unidades.
+          Cada unidade opera com autonomia operacional, documentação e função próprias, sob a coordenação e governança
+          da AASEC. Fundada em 11 de maio de 1977 pelas Igrejas Evangélicas Reformadas de Carambeí.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRANSPARÊNCIA -->
+  <section id="transparencia">
+    <div class="container">
+      <div class="stag">Gestão responsável</div>
+      <h2 class="stitu">Transparência</h2>
+      <div class="div"></div>
+      <p class="ssub" style="margin-bottom:28px">A AASEC acredita que a confiança se constrói com abertura. Aqui você
+        encontra nossos documentos institucionais.</p>
+
+      <!-- Filtros por unidade -->
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+        <button class="doc-filtro ativo" onclick="renderDocsPublico('docsGrid',{});setAtivo(this)">Todos</button>
+        <button class="doc-filtro"
+          onclick="renderDocsPublico('docsGrid',{unidade:'AASEC'});setAtivo(this)">AASEC</button>
+        <button class="doc-filtro" onclick="renderDocsPublico('docsGrid',{unidade:'CEI Betel'});setAtivo(this)">CEI
+          Betel</button>
+        <button class="doc-filtro"
+          onclick="renderDocsPublico('docsGrid',{unidade:'Esco-Lar'});setAtivo(this)">Esco-Lar</button>
+      </div>
+      <div style="margin-bottom:16px">
+        <a href="prestacoes.html" class="doc-card"
+          style="display:inline-flex;background:var(--azul);border-color:var(--azul);text-decoration:none;padding:14px 20px;border-radius:10px;gap:12px;align-items:center">
+          <div class="doc-icon" style="background:rgba(255,255,255,.15)">📊</div>
+          <div class="doc-info">
+            <strong style="color:#fff">Prestações de Contas</strong>
+            <span style="color:rgba(255,255,255,.7)">Ver todos os relatórios mensais — CEI Betel e Esco-Lar</span>
+          </div>
+          <span style="color:#93C5FD;font-size:18px;margin-left:auto">→</span>
+        </a>
+      </div>
+      <div class="docs-grid" id="docsGrid"></div>
+      <div id="docsVazio" style="display:none;text-align:center;padding:32px;color:var(--cinza)">
+        <div style="font-size:36px;margin-bottom:8px">📁</div>
+        <p>Nenhum documento encontrado para este filtro.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO AJUDAR -->
+  <section id="como-ajudar">
+    <div class="container">
+      <div class="stag">Faça parte</div>
+      <h2 class="stitu">Como Ajudar</h2>
+      <div class="div"></div>
+      <p class="ssub" style="margin-bottom:32px">Cada contribuição transforma vidas. Escolha como quer participar.</p>
+      <div class="ajuda-grid">
+        <div class="ajuda-card">
+          <div class="ajuda-icon">🤝</div>
+          <h3>Voluntariado</h3>
+          <p>Ofereça seu tempo e talento para atividades educativas e de cuidado.</p>
+          <a href="#contato" class="btn btn-azul"
+            style="font-size:12px;padding:9px 18px;justify-content:center;width:100%">Quero ajudar</a>
+        </div>
+        <div class="ajuda-card">
+          <div class="ajuda-icon">💛</div>
+          <h3>Doações</h3>
+          <p>Dinheiro, materiais ou alimentos — tudo ajuda diretamente as famílias.</p>
+          <a href="#contato" class="btn btn-azul"
+            style="font-size:12px;padding:9px 18px;justify-content:center;width:100%">Quero doar</a>
+        </div>
+        <div class="ajuda-card">
+          <div class="ajuda-icon">🏢</div>
+          <h3>Apoio Institucional</h3>
+          <p>Empresas podem apoiar via convênios ou responsabilidade social.</p>
+          <a href="#contato" class="btn btn-azul"
+            style="font-size:12px;padding:9px 18px;justify-content:center;width:100%">Saiba como</a>
+        </div>
+        <div class="ajuda-card">
+          <div class="ajuda-icon">🌱</div>
+          <h3>Parcerias</h3>
+          <p>Igrejas, organizações e grupos comunitários são bem-vindos.</p>
+          <a href="#contato" class="btn btn-azul"
+            style="font-size:12px;padding:9px 18px;justify-content:center;width:100%">Propor parceria</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTATO -->
+  <section id="contato">
+    <div class="container">
+      <div class="stag">Fale conosco</div>
+      <h2 class="stitu">Contato</h2>
+      <div class="div"></div>
+      <p class="ssub" style="margin-bottom:28px">Estamos aqui para conversar. Entre em contato para voluntariado,
+        doações, parcerias ou qualquer dúvida.</p>
+      <div class="contato-grid">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <a href="tel:+554232315326" class="citem">
+            <div class="cicone">📞</div>
+            <div class="ctexto"><label>CEI Betel</label><span>(42) 3231-5326</span></div>
+          </a>
+          <a href="tel:+554232314245" class="citem">
+            <div class="cicone">📞</div>
+            <div class="ctexto"><label>Esco-Lar</label><span>(42) 3231-4245</span></div>
+          </a>
+          <a href="mailto:aasec.betel@gmail.com" class="citem">
+            <div class="cicone">✉️</div>
+            <div class="ctexto"><label>E-mail CEI Betel</label><span>aasec.betel@gmail.com</span></div>
+          </a>
+          <a href="mailto:esco-lar@hotmail.com" class="citem">
+            <div class="cicone">✉️</div>
+            <div class="ctexto"><label>E-mail Esco-Lar</label><span>esco-lar@hotmail.com</span></div>
+          </a>
+          <div class="citem">
+            <div class="cicone">📍</div>
+            <div class="ctexto"><label>CEI Betel</label><span>Rua das Safiras, 120 — Centro — Carambeí/PR</span></div>
+          </div>
+          <div class="citem">
+            <div class="cicone">📍</div>
+            <div class="ctexto"><label>Esco-Lar</label><span>Rua Ouro Branco, 517 — Centro — Carambeí/PR</span></div>
+          </div>
+        </div>
+        <form>
+          <h3>Envie uma mensagem</h3>
+          <div class="fg"><label>Nome completo</label><input type="text" placeholder="Seu nome"></div>
+          <div class="fg"><label>E-mail ou WhatsApp</label><input type="text" placeholder="Como retornar?"></div>
+          <div class="fg"><label>Assunto</label>
+            <select>
+              <option>Voluntariado</option>
+              <option>Doação</option>
+              <option>Parceria institucional</option>
+              <option>Informações gerais</option>
+              <option>Outro</option>
+            </select>
+          </div>
+          <div class="fg"><label>Mensagem</label><textarea placeholder="Como podemos ajudar?"></textarea></div>
+          <button type="submit" class="btn btn-primary"
+            style="width:100%;justify-content:center;font-size:15px;padding:13px">Enviar mensagem</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- RODAPÉ -->
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <div class="fmarca">
+          <img src="assets/logo_aasec.png" alt="AASEC">
+          <div class="fmarca-txt">
+            <strong>AASEC</strong>
+            <span>Associação de Assistência Social Evangélica de Carambeí</span>
+          </div>
+        </div>
+        <p class="fdesc">Cuidando de pessoas, fortalecendo famílias e servindo a comunidade de Carambeí com
+          responsabilidade, ética e amor ao próximo. Fundada em 1977.</p>
+      </div>
+      <div class="fcol">
+        <h4>Navegação</h4>
+        <ul>
+          <li><a href="#">Início</a></li>
+          <li><a href="#quem">Quem Somos</a></li>
+          <li><a href="#unidades">Unidades</a></li>
+          <li><a href="#transparencia">Transparência</a></li>
+          <li><a href="#como-ajudar">Como Ajudar</a></li>
+          <li><a href="#contato">Contato</a></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h4>Unidades</h4>
+        <ul>
+          <li><a href="cei-betel.html">🌻 CEI Betel</a></li>
+          <li><a href="esco-lar.html">🤲 Esco-Lar</a></li>
+        </ul>
+        <h4 style="margin-top:18px">Contato</h4>
+        <ul>
+          <li><a href="mailto:aasec.betel@gmail.com">aasec.betel@gmail.com</a></li>
+          <li><a href="tel:+554232315326">(42) 3231-5326</a></li>
+          <li><a href="#">Carambeí — PR</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="fbottom">
+      <p>© 2026 <span>AASEC</span> — Todos os direitos reservados.</p>
+      <a href="gestao/login.html" style="color:rgba(255,255,255,.25);font-size:11px;text-decoration:none"
+        onmouseover="this.style.color='#93C5FD'" onmouseout="this.style.color='rgba(255,255,255,.25)'">🔒 Área
+        Gestão</a>
+      <p>Carambeí — Paraná — Brasil</p>
+    </div>
+  </footer>
+
+  <script>
+    // Transparência — carrega documentos do sistema
+    const mesesNome = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+    const tipoIcone = { prestacao: '📊', institucional: '🏛️', contrato: '📝', relatorio: '📋', outro: '📄' };
+    const tipoLabel = { prestacao: 'Prestação de Contas', institucional: 'Institucional', contrato: 'Contrato/Convênio', relatorio: 'Relatório', outro: 'Outro' };
+
+    let filtroAtualDocs = '';
+
+
+
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    toggle.addEventListener('click', () => links.classList.toggle('open'));
+    links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').style.boxShadow = window.scrollY > 10 ? '0 4px 20px rgba(0,0,0,.12)' : '';
+    });
+  </script>
+  <script src="dados_docs.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      renderDocsPublico('docsGrid', {});
+    });
+  </script>
+  <script>function setAtivo(btn) { document.querySelectorAll(".doc-filtro").forEach(function (b) { b.classList.remove("ativo") }); btn.classList.add("ativo"); }</script>
+</body>
+
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dados Operacionais — LRCO</title>
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+<button class="mobile-toggle" id="mobileToggle">☰</button>
+<div class="sidebar">
+  <div class="sidebar-logo"><img src="../assets/logo_aasec.png" alt="Betel"><strong>Área Docente Betel</strong><span>CEI Betel · AASEC</span></div>
+  <div class="sidebar-perfil"><div class="sp-nome"></div><div class="sp-cargo"></div><span class="sp-badge"></span></div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Principal</div>
+    <a class="nav-item" href="dashboard.html" data-page="dashboard"><span class="nav-icon">🏠</span> Painel</a>
+    <a class="nav-item" href="indicadores.html" data-page="indicadores"><span class="nav-icon">📊</span> Indicadores</a>
+    <div class="nav-label">Acompanhamento</div>
+    <a class="nav-item" href="lrco.html" data-page="lrco"><span class="nav-icon">📋</span> Dados LRCO</a>
+    <a class="nav-item" href="reunioes.html" data-page="reunioes"><span class="nav-icon">👨‍👩‍👧</span> Reuniões de Família</a>
+    <div class="nav-label">Cadastros</div>
+    <a class="nav-item nav-admin" href="usuarios.html" data-page="usuarios"><span class="nav-icon">👥</span> Equipe & Acessos</a>
+    <a class="nav-item nav-admin" href="turmas.html" data-page="turmas"><span class="nav-icon">👩‍👧‍👦</span> Turmas</a>
+    <a class="nav-item" href="criancas.html" data-page="criancas"><span class="nav-icon">🌻</span> Crianças</a>
+  </nav>
+  <div class="sidebar-bottom"><a href="login.html">← Sair</a></div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-esq">
+      <h2>📋 Dados Operacionais — LRCO</h2>
+      <p>Registro agregado por turma e período · Inserção pela coordenação</p>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="abrirModal()">+ Novo registro</button>
+  </div>
+
+  <div class="content">
+
+    <!-- AVISO INSTITUCIONAL -->
+    <div style="background:#fff8e0;border-left:4px solid #FFD000;border-radius:0 10px 10px 0;padding:14px 18px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px">
+      <span style="font-size:20px">ℹ️</span>
+      <div>
+        <strong style="font-size:13px;color:#5a3210">Dados agregados — sem identificação individual</strong>
+        <p style="font-size:12px;color:#666;margin-top:3px">Todos os registros são por turma ou unidade. Nenhum dado individual de criança ou professora é inserido aqui. Fonte: LRCO — inserção manual pela coordenação.</p>
+      </div>
+    </div>
+
+    <div class="bloco">
+      <div class="list-toolbar">
+        <select class="filter-select" id="filtroUnidade" onchange="renderLista()">
+          <option value="">Todas as unidades</option>
+          <option value="CEI Betel">CEI Betel</option>
+          <option value="Esco-Lar">Esco-Lar</option>
+        </select>
+        <select class="filter-select" id="filtroPeriodo" onchange="renderLista()">
+          <option value="">Todos os períodos</option>
+        </select>
+      </div>
+
+      <div class="contador" id="contador"></div>
+
+      <div class="tabela-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Período</th>
+              <th>Unidade</th>
+              <th>Turma</th>
+              <th>Frequência média</th>
+              <th>Atividades</th>
+              <th>Regularidade</th>
+              <th>Inserido em</th>
+              <th style="text-align:right">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="vazio" id="vazio" style="display:none">
+        <div class="vi">📋</div>
+        <h4>Nenhum registro encontrado</h4>
+        <p>Insira os dados mensais do LRCO para iniciar o acompanhamento.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal" style="max-width:580px">
+    <div class="modal-header"><h3 id="modalTitulo">Novo Registro LRCO</h3><button class="modal-close" onclick="fecharModal()">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="editId">
+
+      <div class="form-bloco">
+        <div class="form-bloco-titulo">Identificação do período</div>
+        <div class="form-row cols-2">
+          <div class="fg">
+            <label>Período <span class="req">*</span></label>
+            <input type="month" id="fPeriodo">
+            <div class="hint">Mês e ano de referência</div>
+          </div>
+          <div class="fg">
+            <label>Unidade <span class="req">*</span></label>
+            <select id="fUnidade">
+              <option value="">Selecione</option>
+              <option value="CEI Betel">CEI Betel</option>
+              <option value="Esco-Lar">Esco-Lar</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg">
+          <label>Turma (opcional)</label>
+          <select id="fTurma">
+            <option value="">Todas as turmas / geral</option>
+          </select>
+          <div class="hint">Deixe em branco para registrar dados gerais da unidade</div>
+        </div>
+      </div>
+
+      <div class="form-bloco">
+        <div class="form-bloco-titulo">📚 Eixo Educação — Dados operacionais</div>
+        <div class="form-row cols-2">
+          <div class="fg">
+            <label>Frequência média (%)</label>
+            <input type="number" id="fFrequencia" min="0" max="100" placeholder="Ex: 85">
+            <div class="hint">Percentual médio de presença da turma no período</div>
+          </div>
+          <div class="fg">
+            <label>Atividades realizadas</label>
+            <input type="number" id="fAtividades" min="0" placeholder="Ex: 22">
+            <div class="hint">Número total de atividades pedagógicas registradas</div>
+          </div>
+        </div>
+        <div class="fg">
+          <label>Regularidade dos registros</label>
+          <select id="fRegularidade">
+            <option value="">Selecione</option>
+            <option value="alta">Alta — registros consistentes e completos</option>
+            <option value="media">Média — alguns registros faltantes</option>
+            <option value="baixa">Baixa — registros irregulares</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-bloco">
+        <div class="form-bloco-titulo">Observações gerais</div>
+        <div class="fg">
+          <textarea id="fObs" placeholder="Contexto relevante do período — sem identificar pessoas..."></textarea>
+          <div class="hint">Texto curto e institucional. Não identificar crianças ou professoras.</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvar()">💾 Salvar registro</button>
+    </div>
+  </div>
+</div>
+
+<script src="dados.js"></script>
+<script src="sidebar.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  renderSidebar('lrco');
+  carregarTurmas();
+  carregarFiltroPeriodos();
+  renderLista();
+  // Período padrão = mês atual
+  const hoje = new Date();
+  document.getElementById('fPeriodo').value = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}`;
+});
+
+function carregarTurmas() {
+  const sel = document.getElementById('fTurma');
+  DB.getTurmas().filter(t=>t.ativo!==false).forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.nome; opt.textContent = t.nome; sel.appendChild(opt);
+  });
+}
+
+function carregarFiltroPeriodos() {
+  const sel = document.getElementById('filtroPeriodo');
+  const periodos = [...new Set(DB.getLrco().map(x=>x.periodo))].sort().reverse();
+  periodos.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p;
+    opt.textContent = fmtMes(p);
+    sel.appendChild(opt);
+  });
+}
+
+function fmtRegularidade(v) {
+  const m = {alta:'🟢 Alta', media:'🟡 Média', baixa:'🔴 Baixa'};
+  return m[v] || '—';
+}
+
+function renderLista() {
+  const filtroUnidade = document.getElementById('filtroUnidade').value;
+  const filtroPeriodo = document.getElementById('filtroPeriodo').value;
+
+  let lista = DB.getLrco().filter(x => {
+    const ok_u = !filtroUnidade || x.unidade === filtroUnidade;
+    const ok_p = !filtroPeriodo || x.periodo === filtroPeriodo;
+    return ok_u && ok_p;
+  }).sort((a,b) => b.periodo.localeCompare(a.periodo));
+
+  document.getElementById('contador').innerHTML = `<span>${lista.length}</span> registro(s)`;
+  const tbody = document.getElementById('tbody');
+  const vazio = document.getElementById('vazio');
+
+  if(!lista.length) { tbody.innerHTML=''; vazio.style.display='block'; return; }
+  vazio.style.display = 'none';
+
+  tbody.innerHTML = lista.map(x => `<tr>
+    <td><strong>${fmtMes(x.periodo)}</strong></td>
+    <td><span class="badge badge-verde">${x.unidade}</span></td>
+    <td>${x.turma||'<span style="color:var(--cinza)">Geral</span>'}</td>
+    <td>${x.frequencia_media ? `<strong style="color:var(--verde)">${x.frequencia_media}%</strong>` : '—'}</td>
+    <td>${x.num_atividades || '—'}</td>
+    <td>${fmtRegularidade(x.regularidade)}</td>
+    <td style="color:var(--cinza);font-size:11px">${fmtData(x.criado_em)}</td>
+    <td><div class="td-acoes">
+      <button class="btn btn-secondary btn-sm btn-icon" onclick="editar('${x.id}')">✏️</button>
+      <button class="btn btn-danger btn-sm btn-icon" onclick="excluir('${x.id}')">🗑️</button>
+    </div></td>
+  </tr>`).join('');
+}
+
+function abrirModal() {
+  document.getElementById('editId').value='';
+  document.getElementById('fUnidade').value='';
+  document.getElementById('fTurma').value='';
+  document.getElementById('fFrequencia').value='';
+  document.getElementById('fAtividades').value='';
+  document.getElementById('fRegularidade').value='';
+  document.getElementById('fObs').value='';
+  const hoje = new Date();
+  document.getElementById('fPeriodo').value = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}`;
+  document.getElementById('modalTitulo').textContent = 'Novo Registro LRCO';
+  document.getElementById('modal').classList.add('visivel');
+}
+
+function editar(id) {
+  const x = DB.getLrcoItem(id);
+  if(!x) return;
+  document.getElementById('editId').value=x.id;
+  document.getElementById('fPeriodo').value=x.periodo;
+  document.getElementById('fUnidade').value=x.unidade;
+  document.getElementById('fTurma').value=x.turma||'';
+  document.getElementById('fFrequencia').value=x.frequencia_media||'';
+  document.getElementById('fAtividades').value=x.num_atividades||'';
+  document.getElementById('fRegularidade').value=x.regularidade||'';
+  document.getElementById('fObs').value=x.obs||'';
+  document.getElementById('modalTitulo').textContent = 'Editar Registro LRCO';
+  document.getElementById('modal').classList.add('visivel');
+}
+
+function fecharModal() { document.getElementById('modal').classList.remove('visivel'); }
+
+function salvar() {
+  const id=document.getElementById('editId').value;
+  const periodo=document.getElementById('fPeriodo').value;
+  const unidade=document.getElementById('fUnidade').value;
+  if(!periodo||!unidade) { toast('Informe o período e a unidade.','erro'); return; }
+
+  const dados = {
+    periodo, unidade,
+    turma: document.getElementById('fTurma').value||null,
+    frequencia_media: document.getElementById('fFrequencia').value ? parseFloat(document.getElementById('fFrequencia').value) : null,
+    num_atividades: document.getElementById('fAtividades').value ? parseInt(document.getElementById('fAtividades').value) : null,
+    regularidade: document.getElementById('fRegularidade').value||null,
+    obs: document.getElementById('fObs').value.trim()||null
+  };
+
+  if(id) { DB.updateLrco(id,dados); toast('Registro atualizado!'); }
+  else { DB.addLrco(dados); toast('Registro salvo!'); }
+  fecharModal(); renderLista(); carregarFiltroPeriodos();
+}
+
+function excluir(id) {
+  if(!confirmar('Excluir este registro?')) return;
+  DB.deleteLrco(id); toast('Registro excluído.'); renderLista();
+}
+
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))fecharModal();});
+</script>
+</body>
+</html>

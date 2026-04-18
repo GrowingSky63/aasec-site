@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documentos — AASEC</title>
+<link rel="stylesheet" href="estilos.css">
+<style>
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.stat{background:#fff;border-radius:12px;padding:16px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid var(--azul)}
+.stat .sn{font-size:26px;font-weight:800;color:var(--azul)}
+.stat .sl{font-size:11px;color:var(--cinza);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.filtros-wrap{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.filtro-grupo label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cinza);display:block;margin-bottom:6px}
+.ftabs{display:flex;gap:6px;flex-wrap:wrap}
+.ftab{padding:6px 16px;border-radius:20px;border:1.5px solid var(--cinza-borda);background:#fff;font-size:12px;font-weight:600;cursor:pointer;color:var(--grafite);font-family:'Inter',sans-serif;transition:all .2s}
+.ftab:hover,.ftab.on{background:var(--azul);color:#fff;border-color:var(--azul)}
+.doc-list{display:flex;flex-direction:column;gap:6px}
+.doc-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:#fff;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.05);transition:all .2s}
+.doc-row.tem{cursor:pointer}
+.doc-row.tem:hover{background:var(--azul-claro);transform:translateX(3px)}
+.dr-ico{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;background:var(--azul-claro)}
+.doc-row.tem .dr-ico{background:#d1fae5}
+.dr-info{flex:1;min-width:0}
+.dr-info strong{display:block;font-size:13px;font-weight:700;color:var(--preto);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dr-info span{font-size:11px;color:var(--cinza)}
+.dr-tipo{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0}
+.tp-prestacao{background:#e0f2fe;color:#0369a1}
+.tp-institucional,.tp-relatorio{background:#dbeafe;color:#1e40af}
+.tp-contrato{background:#fef9c3;color:#854d0e}
+.dr-status{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0}
+.st-ok{background:#d1fae5;color:#065f46}
+.st-nd{background:#f1f5f9;color:#94a3b8}
+.ano-sep{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cinza);padding:10px 0 4px;border-bottom:1px solid var(--cinza-borda);margin-bottom:6px;margin-top:18px}
+.vazio{text-align:center;padding:48px;color:var(--cinza)}
+.vazio .vi{font-size:44px;margin-bottom:10px}
+.btn-apagar{background:#fee2e2;color:#dc2626;border:none;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:13px;flex-shrink:0}
+.btn-apagar:hover{background:#fca5a5}
+</style>
+</head>
+<body>
+<button class="mob-toggle" id="mobToggle">☰</button>
+<div class="sidebar">
+  <div class="sb-logo">
+    <a href="../index.html" style="display:contents">
+      <img src="../assets/logo_aasec.png" alt="AASEC" style="object-fit:contain">
+    </a>
+    <strong>Gestão</strong>
+    <span>CEI Betel · Esco-Lar</span>
+  </div>
+  <div class="sb-unidade"><span id="sb-unidade"></span></div>
+  <nav>
+    <div class="nav-label">Indicadores</div>
+    <a class="nav-item" href="indicadores.html" data-page="indicadores"><span class="nav-icon">📊</span> Painel Institucional</a>
+    <div class="nav-label">Registrar dados</div>
+    <a class="nav-item" href="lrco.html" data-page="lrco"><span class="nav-icon">📋</span> Dados Operacionais</a>
+    <a class="nav-item" href="reunioes.html" data-page="reunioes"><span class="nav-icon">👨‍👩‍👧</span> Reuniões de Família</a>
+    <div class="nav-label">Documentos</div>
+    <a class="nav-item" href="documentos.html" data-page="documentos"><span class="nav-icon">📁</span> Documentos & PCs</a>
+    <div class="nav-label">Configuração</div>
+    <a class="nav-item" href="cadastros.html" data-page="cadastros"><span class="nav-icon">⚙️</span> Cadastros</a>
+  </nav>
+  <div class="sb-bottom">
+    <a href="../index.html">← Voltar ao site</a>
+    <a href="login.html" style="margin-top:6px">⏻ Sair</a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-esq">
+      <h2>📁 Documentos & Prestações de Contas</h2>
+      <p>Documentos institucionais e prestações de contas · AASEC</p>
+    </div>
+  </div>
+
+  <!-- MODAL ADICIONAR -->
+  <div class="modal-overlay" id="modalAdd">
+    <div class="modal">
+      <div class="modal-h">
+        <h3 id="modalAddTitulo">Adicionar Documento</h3>
+        <button class="modal-close" onclick="fecharModal('modalAdd')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="fg">
+          <label>Nome <span class="req">*</span></label>
+          <input type="text" id="aNome" placeholder="Ex: Prestação de Contas — Abril 2026">
+        </div>
+        <div class="row2">
+          <div class="fg">
+            <label>Tipo <span class="req">*</span></label>
+            <select id="aTipo" onchange="calcularDestino()">
+              <option value="">Selecione</option>
+              <option value="prestacao">Prestação de Contas</option>
+              <option value="institucional">Institucional</option>
+              <option value="contrato">Contrato/Convênio</option>
+              <option value="relatorio">Relatório</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>Unidade <span class="req">*</span></label>
+            <select id="aUnidade" onchange="calcularDestino()">
+              <option value="">Selecione</option>
+              <option value="AASEC">AASEC</option>
+              <option value="CEI Betel">CEI Betel</option>
+              <option value="Esco-Lar">Esco-Lar</option>
+            </select>
+          </div>
+        </div>
+        <div class="row2">
+          <div class="fg">
+            <label>Ano</label>
+            <select id="aAno" onchange="calcularDestino()">
+              <option value="">—</option>
+              <option value="2026">2026</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>Mês</label>
+            <select id="aMes" onchange="calcularDestino()">
+              <option value="">—</option>
+              <option value="01">Janeiro</option><option value="02">Fevereiro</option>
+              <option value="03">Março</option><option value="04">Abril</option>
+              <option value="05">Maio</option><option value="06">Junho</option>
+              <option value="07">Julho</option><option value="08">Agosto</option>
+              <option value="09">Setembro</option><option value="10">Outubro</option>
+              <option value="11">Novembro</option><option value="12">Dezembro</option>
+            </select>
+          </div>
+        </div>
+        <div id="avisoEdicao" style="display:none;margin-bottom:12px;padding:10px 14px;background:#fef9c3;border-radius:8px;border-left:3px solid #ca8a04;font-size:12px;color:#854d0e">
+          ⚠️ <strong>Edição de metadados apenas.</strong> Para trocar o arquivo, apague este registro e cadastre novamente.
+        </div>
+        <div class="fg">
+          <label>Arquivo</label>
+          <div id="dropZone"
+            style="border:2px dashed var(--cinza-borda);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:#fafbfc"
+            onclick="document.getElementById('fileInput').click()"
+            ondragover="event.preventDefault();this.style.borderColor='var(--azul)';this.style.background='#dbeafe'"
+            ondragleave="this.style.borderColor='var(--cinza-borda)';this.style.background='#fafbfc'"
+            ondrop="handleDrop(event)">
+            <div id="dropText" style="font-size:13px;color:var(--cinza)">📂 Clique para procurar ou arraste o arquivo aqui</div>
+          </div>
+          <input type="file" id="fileInput" style="display:none" onchange="handleFile(this.files[0])">
+          <input type="text" id="aLink" placeholder="Ou cole o caminho/URL manualmente" style="margin-top:8px">
+        </div>
+        <div class="fg">
+          <label>Observação</label>
+          <input type="text" id="aObs" placeholder="Opcional">
+        </div>
+        <div id="previewDestino" style="display:none;margin-top:8px;padding:10px 14px;background:#f0fdf4;border-radius:8px;border:1px solid #bbf7d0">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div>
+              <div style="font-size:10px;font-weight:700;color:#15803d;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px">📄 Origem</div>
+              <div id="previewOrigem" style="font-size:12px;color:#166534;font-family:monospace;word-break:break-all">—</div>
+            </div>
+            <div>
+              <div style="font-size:10px;font-weight:700;color:#15803d;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px">📁 Destino</div>
+              <div id="previewPath" style="font-size:12px;color:#166534;font-family:monospace;word-break:break-all">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="fecharModal('modalAdd')">Cancelar</button>
+        <button class="btn btn-primary" onclick="salvarNovo()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+      <button class="btn btn-primary" onclick="abrirAdicionar()">+ Adicionar documento</button>
+    </div>
+
+    <div class="stats-row" id="statsRow"></div>
+
+    <div class="filtros-wrap">
+      <div class="filtro-grupo">
+        <label>Tipo</label>
+        <div class="ftabs" id="ftTipo">
+          <button class="ftab on" onclick="setF('tipo','',this)">Todos</button>
+          <button class="ftab" onclick="setF('tipo','prestacao',this)">📊 Prestações</button>
+          <button class="ftab" onclick="setF('tipo','institucional',this)">🏛️ Institucional</button>
+          <button class="ftab" onclick="setF('tipo','contrato',this)">📝 Contratos</button>
+        </div>
+      </div>
+      <div class="filtro-grupo">
+        <label>Unidade</label>
+        <div class="ftabs" id="ftUnidade">
+          <button class="ftab on" onclick="setF('unidade','',this)">Todas</button>
+          <button class="ftab" onclick="setF('unidade','AASEC',this)">AASEC</button>
+          <button class="ftab" onclick="setF('unidade','CEI Betel',this)">CEI Betel</button>
+          <button class="ftab" onclick="setF('unidade','Esco-Lar',this)">Esco-Lar</button>
+        </div>
+      </div>
+      <div class="filtro-grupo">
+        <label>Ano</label>
+        <div class="ftabs" id="ftAno">
+          <button class="ftab on" onclick="setF('ano','',this)">Todos</button>
+          <button class="ftab" onclick="setF('ano','2026',this)">2026</button>
+          <button class="ftab" onclick="setF('ano','2025',this)">2025</button>
+          <button class="ftab" onclick="setF('ano','2024',this)">2024</button>
+          <button class="ftab" onclick="setF('ano','2023',this)">2023</button>
+          <button class="ftab" onclick="setF('ano','2022',this)">2022</button>
+          <button class="ftab" onclick="setF('ano','2021',this)">2021</button>
+          <button class="ftab" onclick="setF('ano','2020',this)">2020</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="lista"></div>
+  </div>
+</div>
+
+<script src="../dados_docs.js"></script>
+<script src="dados.js"></script>
+<script src="cadastros.js"></script>
+<script src="_nav.js"></script>
+<script>
+
+// ── Constantes ────────────────────────────────────────────
+const MESES = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const TIPO_LABEL = {prestacao:'Prestação de Contas', institucional:'Institucional', contrato:'Contrato/Convênio', relatorio:'Relatório'};
+const TIPO_CLASS = {prestacao:'tp-prestacao', institucional:'tp-institucional', contrato:'tp-contrato', relatorio:'tp-institucional'};
+
+// ── Estado ────────────────────────────────────────────────
+const filtros = {tipo:'', unidade:'', ano:''};
+let _arquivo = null;
+
+// ── Init ──────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  initNav('documentos');
+  initModal('modalAdd');
+  renderStats();
+  renderLista();
+});
+
+// ── Filtros ───────────────────────────────────────────────
+function setF(campo, val, btn) {
+  filtros[campo] = val;
+  document.querySelectorAll('#ft' + campo.charAt(0).toUpperCase() + campo.slice(1) + ' .ftab')
+    .forEach(function(b) { b.classList.remove('on'); });
+  btn.classList.add('on');
+  renderLista();
+}
+
+// ── Storage ───────────────────────────────────────────────
+function getExtras()   { return JSON.parse(localStorage.getItem('aasec_docs_extra')    || '[]'); }
+function saveExtras(d) { localStorage.setItem('aasec_docs_extra', JSON.stringify(d)); }
+function getApagados() { return JSON.parse(localStorage.getItem('aasec_docs_apagados') || '[]'); }
+
+function docChave(d) {
+  return d.id || d.link || (d.nome + (d.ano||'') + (d.mes||''));
+}
+
+function getDocs() {
+  var apagados = getApagados();
+  var base   = (typeof AASEC_DOCS !== 'undefined' ? AASEC_DOCS : [])
+                 .filter(function(d) { return apagados.indexOf(docChave(d)) === -1; });
+  var extras = getExtras()
+                 .filter(function(d) { return apagados.indexOf(docChave(d)) === -1; });
+  return base.concat(extras);
+}
+
+// ── Link helpers ──────────────────────────────────────────
+// Converte link relativo (/docs/...) para URL absoluta do servidor
+function resolverLink(link) {
+  if (!link) return null;
+  // Remover aspas acidentais
+  link = link.replace(/^['"]|['"]$/g, '').trim();
+  if (link.indexOf('://') !== -1) return link; // já absoluto
+  var origin = window.location.protocol + '//' + window.location.host;
+  return origin + (link.charAt(0) === '/' ? link : '/' + link);
+}
+
+// ── Render stats ──────────────────────────────────────────
+function renderStats() {
+  var d = getDocs();
+  var disponíveis = d.filter(function(x) { return !!x.link; }).length;
+  var betel  = d.filter(function(x) { return x.unidade === 'CEI Betel'; }).length;
+  var escolar = d.filter(function(x) { return x.unidade === 'Esco-Lar'; }).length;
+  document.getElementById('statsRow').innerHTML =
+    '<div class="stat"><div class="sn">' + d.length + '</div><div class="sl">Total</div></div>' +
+    '<div class="stat"><div class="sn">' + disponíveis + '</div><div class="sl">Disponíveis</div></div>' +
+    '<div class="stat"><div class="sn">' + betel + '</div><div class="sl">CEI Betel</div></div>' +
+    '<div class="stat"><div class="sn">' + escolar + '</div><div class="sl">Esco-Lar</div></div>';
+}
+
+// ── Render lista ──────────────────────────────────────────
+function renderLista() {
+  var lista = getDocs().filter(function(d) {
+    var okT = !filtros.tipo || (filtros.tipo === 'institucional'
+      ? ['institucional','relatorio'].indexOf(d.tipo) !== -1
+      : d.tipo === filtros.tipo);
+    var okU = !filtros.unidade || d.unidade === filtros.unidade;
+    var okA = !filtros.ano || d.ano === filtros.ano;
+    return okT && okU && okA;
+  }).sort(function(a, b) {
+    if (a.ano !== b.ano) return (b.ano||'').localeCompare(a.ano||'');
+    return (b.mes||'').localeCompare(a.mes||'');
+  });
+
+  var el = document.getElementById('lista');
+
+  if (!lista.length) {
+    el.innerHTML = '<div class="vazio"><div class="vi">📁</div><h4>Nenhum documento encontrado</h4></div>';
+    return;
+  }
+
+  // Agrupar por ano
+  var porAno = {};
+  lista.forEach(function(d) {
+    var a = d.ano || '—';
+    if (!porAno[a]) porAno[a] = [];
+    porAno[a].push(d);
+  });
+
+  var html = '';
+  Object.keys(porAno).sort().reverse().forEach(function(ano) {
+    var itens = porAno[ano];
+    html += '<div class="ano-sep">' + ano + ' — ' + itens.length + ' documento(s)</div>';
+    html += '<div class="doc-list">';
+    itens.forEach(function(d) {
+      var tem  = !!d.link;
+      var url  = resolverLink(d.link);
+      var mes  = d.mes ? MESES[parseInt(d.mes, 10)] : '';
+      var periodo = mes ? mes + ' ' + d.ano : (d.ano || '');
+      var tipoC = TIPO_CLASS[d.tipo] || 'tp-institucional';
+      var tipoL = TIPO_LABEL[d.tipo] || d.tipo;
+      var chave = docChave(d).replace(/'/g, "\\'");
+      var linkSafe = (d.link || '').replace(/'/g, "\\'");
+
+      html += '<div class="doc-row' + (tem ? ' tem' : '') + '"'
+           + (tem ? ' onclick="abrirDoc(\'' + url.replace(/'/g,"\\'") + '\')"' : '') + '>';
+      html += '<div class="dr-ico">' + (tem ? '✅' : '📋') + '</div>';
+      html += '<div class="dr-info"><strong>' + d.nome + '</strong>'
+           + '<span>' + d.unidade + (periodo ? ' · ' + periodo : '') + '</span></div>';
+      html += '<span class="dr-tipo ' + tipoC + '">' + tipoL + '</span>';
+      html += '<span class="dr-status ' + (tem ? 'st-ok' : 'st-nd') + '">'
+           + (tem ? '✓ Disponível' : 'Em breve') + '</span>';
+      if (tem) {
+        html += '<a class="btn btn-primary btn-sm" href="' + url + '" target="_blank"'
+             + ' onclick="event.stopPropagation()">⬇️</a>';
+      }
+      // Serializar doc para edição
+      var docJson = encodeURIComponent(JSON.stringify({id:d.id||'',nome:d.nome,tipo:d.tipo,unidade:d.unidade,ano:d.ano||'',mes:d.mes||'',link:d.link||'',obs:d.obs||''}));
+      html += '<button class="btn-apagar" style="background:#dbeafe;color:#1e40af" onclick="event.stopPropagation();editarDoc(\'' + docJson + '\')" title="Editar">✏️</button>';
+      html += '<button class="btn-apagar" onclick="event.stopPropagation();apagarDoc(\''
+           + chave + '\',\'' + linkSafe + '\')" title="Apagar">🗑️</button>';
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+
+  el.innerHTML = html;
+}
+
+// Abre doc em nova aba
+function abrirDoc(url) {
+  window.open(url, '_blank');
+}
+
+// ── Apagar doc ────────────────────────────────────────────
+async function apagarDoc(chave, link) {
+  if (!confirm('Apagar este documento? Esta ação não pode ser desfeita.')) return;
+
+  // Limpar aspas acidentais do link
+  link = link.replace(/^['"`]|['"`]$/g, '').trim();
+
+  // Tentar apagar do servidor
+  if (link && window.location.protocol !== 'file:') {
+    try {
+      var r = await fetch('/apagar', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({link: link})
+      });
+      var j = await r.json();
+      if (!j.ok) toast('Arquivo no servidor não removido: ' + j.erro, 'aviso');
+    } catch(e) {
+      toast('Servidor indisponível — removido apenas da lista', 'aviso');
+    }
+  }
+
+  // Remover dos extras, ou marcar como apagado na base
+  var extras = getExtras();
+  var novosExtras = extras.filter(function(d) { return docChave(d) !== chave; });
+  if (novosExtras.length < extras.length) {
+    saveExtras(novosExtras);
+  } else {
+    var apagados = getApagados();
+    if (apagados.indexOf(chave) === -1) apagados.push(chave);
+    localStorage.setItem('aasec_docs_apagados', JSON.stringify(apagados));
+  }
+
+  renderStats();
+  renderLista();
+  toast('Documento removido.');
+}
+
+var _editandoId = null;
+
+function editarDoc(docJson) {
+  var d = JSON.parse(decodeURIComponent(docJson));
+  _editandoId = d.id || null;
+  document.getElementById('modalAddTitulo').textContent = 'Editar Documento';
+  document.getElementById('aNome').value    = d.nome || '';
+  document.getElementById('aTipo').value    = d.tipo || '';
+  document.getElementById('aUnidade').value = d.unidade || '';
+  document.getElementById('aAno').value     = d.ano || '';
+  document.getElementById('aMes').value     = d.mes || '';
+  document.getElementById('aLink').value    = d.link || '';
+  document.getElementById('aObs').value     = d.obs || '';
+  document.getElementById('dropZone').style.display = 'none';
+  document.getElementById('fileInput').style.display = 'none';
+  document.getElementById('aLink').style.display = 'none';
+  document.getElementById('previewDestino').style.display = 'none';
+  document.getElementById('avisoEdicao').style.display = 'block';
+  _arquivo = null;
+  abrirModal('modalAdd');
+}
+
+// ── Modal adicionar ───────────────────────────────────────
+function abrirAdicionar() {
+  document.getElementById('aNome').value  = '';
+  document.getElementById('aLink').value  = '';
+  document.getElementById('aObs').value   = '';
+  document.getElementById('aTipo').value  = '';
+  document.getElementById('aUnidade').value = '';
+  document.getElementById('aMes').value   = '';
+  document.getElementById('aAno').value   = new Date().getFullYear().toString();
+  document.getElementById('previewDestino').style.display = 'none';
+  document.getElementById('dropText').innerHTML = '📂 Clique para procurar ou arraste o arquivo aqui';
+  document.getElementById('dropZone').style.borderColor = 'var(--cinza-borda)';
+  document.getElementById('dropZone').style.background  = '#fafbfc';
+  document.getElementById('modalAddTitulo').textContent = 'Adicionar Documento';
+  document.getElementById('dropZone').style.display = '';
+  document.getElementById('fileInput').style.display = '';
+  document.getElementById('aLink').style.display = '';
+  document.getElementById('avisoEdicao').style.display = 'none';
+  _arquivo = null;
+  _editandoId = null;
+  abrirModal('modalAdd');
+}
+
+function handleFile(file) {
+  if (!file) return;
+  _arquivo = file;
+  document.getElementById('dropText').innerHTML =
+    '✅ <strong>' + file.name + '</strong> (' + (file.size/1024).toFixed(0) + ' KB)';
+  document.getElementById('dropZone').style.borderColor = '#10b981';
+  document.getElementById('dropZone').style.background  = '#ecfdf5';
+  if (!document.getElementById('aNome').value) {
+    document.getElementById('aNome').value = file.name.replace(/\.[^.]+$/, '').replace(/_/g, ' ');
+  }
+  calcularDestino();
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropZone').style.borderColor = 'var(--cinza-borda)';
+  document.getElementById('dropZone').style.background  = '#fafbfc';
+  if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+}
+
+function calcularDestino() {
+  var tipo    = document.getElementById('aTipo').value;
+  var unidade = document.getElementById('aUnidade').value;
+  var ano     = document.getElementById('aAno').value;
+  var mes     = document.getElementById('aMes').value;
+  var prev    = document.getElementById('previewDestino');
+
+  if (!tipo || !unidade) { prev.style.display = 'none'; return; }
+
+  var destino;
+  if (tipo === 'prestacao' && mes && ano) {
+    var pasta = unidade === 'CEI Betel' ? 'betel' : 'escoLar';
+    destino = 'docs/prestacoes/' + pasta + '/' + ano + '/' + mes + ano + '.pdf';
+  } else {
+    var nomeArq = _arquivo ? _arquivo.name : '(nome do arquivo)';
+    destino = 'docs/institucional/' + nomeArq;
+  }
+
+  document.getElementById('previewPath').textContent   = destino;
+  document.getElementById('previewOrigem').textContent = _arquivo ? _arquivo.name : '(nenhum arquivo selecionado)';
+  prev.style.display = 'block';
+}
+
+async function salvarNovo() {
+  var nome    = document.getElementById('aNome').value.trim();
+  var tipo    = document.getElementById('aTipo').value;
+  var unidade = document.getElementById('aUnidade').value;
+  var ano     = document.getElementById('aAno').value || null;
+  var mes     = document.getElementById('aMes').value || null;
+  var obs     = document.getElementById('aObs').value.trim();
+  var linkManual = document.getElementById('aLink').value.trim();
+
+  if (!nome || !tipo || !unidade) {
+    toast('Preencha nome, tipo e unidade.', 'erro');
+    return;
+  }
+
+  var link = linkManual || null;
+
+  // Upload via servidor
+  console.log('protocolo:', window.location.protocol, 'arquivo:', _arquivo ? _arquivo.name : 'nenhum');
+  if (_arquivo && window.location.protocol !== 'file:') {
+    toast('Enviando arquivo...');
+    try {
+      var fd = new FormData();
+      fd.append('file', _arquivo);
+      fd.append('tipo', tipo);
+      fd.append('unidade', unidade);
+      fd.append('ano', ano || '');
+      fd.append('mes', mes || '');
+      var resp = await fetch('/upload', {method:'POST', body:fd});
+      var r = await resp.json();
+      if (r.ok) {
+        link = r.link;
+      } else {
+        toast('Erro no upload: ' + r.erro, 'erro');
+        return;
+      }
+    } catch(e) {
+      toast('Erro: ' + e.message, 'erro');
+      console.error('Upload erro:', e);
+      return;
+    }
+  }
+
+  var extras = getExtras();
+  if (_editandoId) {
+    // Editar existente
+    var idx = extras.findIndex(function(d) { return d.id === _editandoId; });
+    if (idx !== -1) {
+      extras[idx] = Object.assign(extras[idx], {nome:nome, tipo:tipo, unidade:unidade, ano:ano, mes:mes, link:link, obs:obs});
+    } else {
+      // Era doc da base — criar extra com mesmos dados editados
+      extras.push({id:_editandoId, nome:nome, tipo:tipo, unidade:unidade, ano:ano, mes:mes, link:link, obs:obs, editado_em:new Date().toISOString()});
+    }
+    toast('Documento atualizado!');
+  } else {
+    extras.push({id:Date.now().toString(), nome:nome, tipo:tipo, unidade:unidade, ano:ano, mes:mes, link:link, obs:obs, criado_em:new Date().toISOString()});
+    toast('Documento adicionado!');
+  }
+  saveExtras(extras);
+  _arquivo = null;
+  _editandoId = null;
+
+  fecharModal('modalAdd');
+  renderStats();
+  renderLista();
+}
+
+</script>
+</body>
+</html>

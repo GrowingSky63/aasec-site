@@ -1,0 +1,325 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reuniões de Família — AASEC</title>
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+<div class="layout">
+  <div id="nav-placeholder"></div>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h2>👨‍👩‍👧 Reuniões de Família</h2>
+        <p>Percepção das famílias · coleta trimestral · dados consolidados</p>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="abrirModal('modal')">+ Nova reunião</button>
+    </div>
+
+    <div class="content">
+
+      <div class="aviso verde">
+        <div class="aviso-ico">🌱</div>
+        <div>
+          <strong>Dados consolidados — sem identificação de famílias</strong>
+          <p>Registre apenas totais e percentuais após a reunião. Nenhuma família é identificada individualmente.</p>
+        </div>
+      </div>
+
+      <!-- CARDS RESUMO -->
+      <div id="cardsResumo" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px"></div>
+
+      <div class="bloco">
+        <div class="toolbar">
+          <select class="fselect" id="filtroUnidade" onchange="renderLista()">
+            <option value="">Todas as unidades</option>
+          </select>
+          <select class="fselect" id="filtroPeriodo" onchange="renderLista()">
+            <option value="">Todos os períodos</option>
+          </select>
+        </div>
+
+        <div class="tabela-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Período</th>
+                <th>Unidade</th>
+                <th>Famílias</th>
+                <th>% Evolução</th>
+                <th>% Atendimento</th>
+                <th>% Participação</th>
+                <th style="text-align:right">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <div class="vazio" id="vazio" style="display:none">
+          <div class="vi">👨‍👩‍👧</div>
+          <h4>Nenhuma reunião registrada</h4>
+          <p>Registre após cada reunião trimestral com famílias.</p>
+        </div>
+      </div>
+
+      <!-- QUALITATIVO -->
+      <div class="bloco" style="margin-top:20px" id="blocoQual" style="display:none">
+        <div class="bloco-titulo" style="margin-bottom:14px">💬 Percepções das Famílias</div>
+        <div id="qualLista"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal" style="max-width:580px">
+    <div class="modal-h">
+      <h3 id="modalTitulo">Nova Reunião de Família</h3>
+      <button class="modal-close" onclick="fecharModal('modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editId">
+
+      <div class="bloco-form">
+        <div class="bloco-form-titulo">Identificação</div>
+        <div class="row2">
+          <div class="fg">
+            <label>Trimestre <span class="req">*</span></label>
+            <select id="fPeriodo"></select>
+          </div>
+          <div class="fg">
+            <label>Unidade <span class="req">*</span></label>
+            <select id="fUnidade" class="select-unidade"><option value="">Selecione</option></select>
+          </div>
+        </div>
+        <div class="fg">
+          <label>Famílias presentes <span class="req">*</span></label>
+          <input type="number" id="fFamilias" min="0" placeholder="Número de famílias na reunião">
+        </div>
+      </div>
+
+      <div class="bloco-form">
+        <div class="bloco-form-titulo">Indicadores de percepção (%)</div>
+        <div class="row2">
+          <div class="fg">
+            <label>% Percebem evolução positiva na criança</label>
+            <input type="number" id="fEvolucao" min="0" max="100" placeholder="Ex: 78">
+          </div>
+          <div class="fg">
+            <label>% Avaliam o atendimento como bom/excelente</label>
+            <input type="number" id="fAtendimento" min="0" max="100" placeholder="Ex: 92">
+          </div>
+        </div>
+        <div class="fg">
+          <label>% Participação (presentes / total de famílias matriculadas)</label>
+          <input type="number" id="fParticipacao" min="0" max="100" placeholder="Ex: 65">
+        </div>
+      </div>
+
+      <div class="bloco-form">
+        <div class="bloco-form-titulo">Percepções qualitativas</div>
+        <div class="fg">
+          <label>Principais percepções das famílias</label>
+          <textarea id="fPercepcoes" placeholder="Resumo das percepções coletadas — sem identificar famílias..."></textarea>
+          <div class="hint">Texto institucional. Não identificar famílias individualmente.</div>
+        </div>
+        <div class="fg">
+          <label>Pontos de atenção levantados</label>
+          <textarea id="fAtencao" placeholder="Aspectos que precisam de atenção ou melhoria... (opcional)"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="fecharModal('modal')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvar()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script src="dados.js"></script>
+<script src="cadastros.js"></script>
+<script src="_nav.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  carregarSelectsUnidade();
+  document.getElementById('nav-placeholder').innerHTML = renderSidebar();
+  initNav('reunioes');
+  initModal('modal');
+  gerarTrimestres();
+  carregarFiltroPeriodos();
+  renderCards();
+  renderLista();
+  renderQualitativo();
+});
+
+function gerarTrimestres() {
+  const sel = document.getElementById('fPeriodo');
+  const ano = new Date().getFullYear();
+  [ano - 1, ano, ano + 1].forEach(a => {
+    ['T1', 'T2', 'T3', 'T4'].forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = `${a}-${t}`; opt.textContent = `${t} ${a}`; sel.appendChild(opt);
+    });
+  });
+  sel.value = trimestreAtual();
+}
+
+function carregarFiltroPeriodos() {
+  const sel = document.getElementById('filtroPeriodo');
+  DB.periodosTrimestre().forEach(p => {
+    const opt = document.createElement('option');
+    const [a, t] = p.split('-');
+    opt.value = p; opt.textContent = `${t} ${a}`; sel.appendChild(opt);
+  });
+}
+
+function media(arr, campo) {
+  const v = arr.filter(x => x[campo] != null);
+  return v.length ? Math.round(v.reduce((s, x) => s + x[campo], 0) / v.length) : null;
+}
+
+function renderCards() {
+  const r = DB.getReunioes();
+  if (!r.length) { document.getElementById('cardsResumo').innerHTML = ''; return; }
+
+  const me = media(r, 'evolucao');
+  const ma = media(r, 'atendimento');
+  const mp = media(r, 'participacao');
+
+  const card = (val, label, cor) => `
+    <div style="background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.05);border-top:4px solid ${cor};text-align:center">
+      <div style="font-size:30px;font-weight:800;color:${cor}">${val != null ? val + '%' : '—'}</div>
+      <div style="font-size:12px;font-weight:600;color:var(--cinza);margin-top:4px">${label}</div>
+      <div style="font-size:10px;color:var(--cinza);margin-top:2px">Média dos registros</div>
+    </div>`;
+
+  document.getElementById('cardsResumo').innerHTML =
+    card(me, 'Percebem evolução positiva', 'var(--verde)') +
+    card(ma, 'Avaliação bom/excelente', 'var(--amarelo)') +
+    card(mp, 'Participação nas reuniões', '#10b981');
+}
+
+function renderLista() {
+  const u = document.getElementById('filtroUnidade').value;
+  const p = document.getElementById('filtroPeriodo').value;
+
+  let lista = DB.getReunioes()
+    .filter(x => (!u || x.unidade === u) && (!p || x.periodo === p))
+    .sort((a, b) => b.periodo.localeCompare(a.periodo));
+
+  const tbody = document.getElementById('tbody');
+  const vazio = document.getElementById('vazio');
+  if (!lista.length) { tbody.innerHTML = ''; vazio.style.display = 'block'; return; }
+  vazio.style.display = 'none';
+
+  const pctCell = v => v != null
+    ? `<strong style="color:${corPct(v)}">${v}%</strong>`
+    : '—';
+
+  tbody.innerHTML = lista.map(x => {
+    const [a, t] = x.periodo.split('-');
+    return `<tr>
+      <td><strong>${t} ${a}</strong></td>
+      <td><span class="badge b-verde">${x.unidade}</span></td>
+      <td><strong>${x.familias || '—'}</strong> famílias</td>
+      <td>${pctCell(x.evolucao)}</td>
+      <td>${pctCell(x.atendimento)}</td>
+      <td>${pctCell(x.participacao)}</td>
+      <td><div class="td-acoes">
+        <button class="btn btn-secondary btn-sm btn-icon" onclick="editar('${x.id}')">✏️</button>
+        <button class="btn btn-danger btn-sm btn-icon" onclick="excluir('${x.id}')">🗑️</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderQualitativo() {
+  const com = DB.getReunioes().filter(r => r.percepcoes).slice(-5).reverse();
+  const bloco = document.getElementById('blocoQual');
+  const lista = document.getElementById('qualLista');
+  if (!com.length) { bloco.style.display = 'none'; return; }
+  bloco.style.display = 'block';
+
+  lista.innerHTML = com.map(r => {
+    const [a, t] = r.periodo.split('-');
+    return `<div style="background:var(--verde-claro);border-radius:10px;padding:16px;margin-bottom:10px;border-left:3px solid var(--verde)">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:11px;font-weight:700;color:var(--verde)">${t} ${a} · ${r.unidade}</span>
+        ${r.familias ? `<span style="font-size:11px;color:var(--cinza)">${r.familias} famílias</span>` : ''}
+      </div>
+      <p style="font-size:13px;color:var(--grafite);line-height:1.6;font-style:italic">"${r.percepcoes}"</p>
+      ${r.atencao ? `<div style="margin-top:10px;padding:10px;background:#fff3cd;border-radius:8px;font-size:12px;color:#856404"><strong>Atenção:</strong> ${r.atencao}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function limparForm() {
+  ['editId','fPercepcoes','fAtencao'].forEach(id => document.getElementById(id).value = '');
+  ['fFamilias','fEvolucao','fAtendimento','fParticipacao'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fUnidade').value = '';
+  document.getElementById('fPeriodo').value = trimestreAtual();
+}
+
+function editar(id) {
+  const x = DB.getReuniaoItem(id);
+  if (!x) return;
+  document.getElementById('editId').value = x.id;
+  document.getElementById('fPeriodo').value = x.periodo;
+  document.getElementById('fUnidade').value = x.unidade;
+  document.getElementById('fFamilias').value = x.familias ?? '';
+  document.getElementById('fEvolucao').value = x.evolucao ?? '';
+  document.getElementById('fAtendimento').value = x.atendimento ?? '';
+  document.getElementById('fParticipacao').value = x.participacao ?? '';
+  document.getElementById('fPercepcoes').value = x.percepcoes || '';
+  document.getElementById('fAtencao').value = x.atencao || '';
+  document.getElementById('modalTitulo').textContent = 'Editar Reunião';
+  abrirModal('modal');
+}
+
+function salvar() {
+  const periodo = document.getElementById('fPeriodo').value;
+  const unidade = document.getElementById('fUnidade').value;
+  const familias = document.getElementById('fFamilias').value;
+  if (!periodo || !unidade || !familias) { toast('Informe o período, unidade e número de famílias.', 'erro'); return; }
+
+  const pct = id => {
+    const v = document.getElementById(id).value;
+    return v !== '' ? parseFloat(v) : null;
+  };
+
+  const id = document.getElementById('editId').value;
+  const dados = {
+    periodo, unidade,
+    familias: parseInt(familias),
+    evolucao: pct('fEvolucao'),
+    atendimento: pct('fAtendimento'),
+    participacao: pct('fParticipacao'),
+    percepcoes: document.getElementById('fPercepcoes').value.trim() || null,
+    atencao: document.getElementById('fAtencao').value.trim() || null
+  };
+
+  if (id) { DB.updateReuniao(id, dados); toast('Reunião atualizada!'); }
+  else { DB.addReuniao(dados); toast('Reunião registrada!'); }
+
+  fecharModal('modal');
+  renderCards();
+  renderLista();
+  renderQualitativo();
+}
+
+function excluir(id) {
+  if (!confirmar('Excluir este registro?')) return;
+  DB.deleteReuniao(id);
+  toast('Registro excluído.');
+  renderCards();
+  renderLista();
+  renderQualitativo();
+}
+</script>
+</body>
+</html>

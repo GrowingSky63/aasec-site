@@ -1,0 +1,330 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avaliação Mensal — Área Docente Betel</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --verde:#4a7c1f;--verde-claro:#eef5e6;--verde-medio:#d4eac4;
+  --amarelo:#FFD000;--amarelo-claro:#fffdf0;
+  --marrom:#5a3210;--creme:#FFFDF4;
+  --preto:#1a1a1a;--grafite:#333;--cinza:#666;
+  --branco:#fff;--alerta:#ef4444;--atencao:#f59e0b;--ok:#10b981;
+}
+body{font-family:'Inter',sans-serif;background:var(--creme);color:var(--grafite);min-height:100vh;display:flex}
+
+.sidebar{width:230px;background:var(--preto);min-height:100vh;display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;bottom:0;z-index:100}
+.sidebar-logo{padding:20px 16px;border-bottom:1px solid rgba(255,255,255,.07)}
+.sidebar-logo img{height:40px;mix-blend-mode:screen;margin-bottom:8px;display:block}
+.sidebar-logo strong{display:block;color:var(--branco);font-size:13px;font-weight:800}
+.sidebar-logo span{font-size:10px;color:rgba(255,255,255,.35)}
+.sidebar-perfil{padding:12px 16px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.05)}
+.sp-nome{font-size:12px;font-weight:600;color:var(--branco)}
+.sp-cargo{font-size:10px;color:rgba(255,255,255,.35)}
+.sp-badge{display:inline-block;margin-top:4px;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--amarelo);color:var(--marrom)}
+nav.sidebar-nav{flex:1;padding:12px 0}
+.nav-label{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.25);padding:8px 16px 4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;color:rgba(255,255,255,.55);text-decoration:none;font-size:13px;font-weight:500;transition:all .2s;border-left:3px solid transparent;cursor:pointer}
+.nav-item:hover,.nav-item.ativo{background:rgba(255,255,255,.06);color:var(--branco);border-left-color:var(--amarelo)}
+.nav-icon{font-size:16px;width:20px;text-align:center}
+.sidebar-bottom{padding:12px 16px;border-top:1px solid rgba(255,255,255,.07)}
+.sidebar-bottom a{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.4);font-size:12px;text-decoration:none}
+
+.main{margin-left:230px;flex:1}
+.topbar{background:var(--branco);border-bottom:2px solid var(--verde-claro);padding:0 28px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar-titulo{font-size:16px;font-weight:700;color:var(--preto)}
+.topbar-sub{font-size:11px;color:var(--cinza)}
+.content{padding:24px 28px}
+
+/* SELETOR DE TURMA */
+.turma-select{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap}
+.ts-btn{padding:8px 18px;border-radius:20px;border:1.5px solid #e0e0e0;background:var(--branco);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;color:var(--grafite)}
+.ts-btn.ativo{background:var(--verde);color:var(--branco);border-color:var(--verde)}
+.ts-btn:hover:not(.ativo){border-color:var(--verde);color:var(--verde)}
+
+/* PROGRESSO DA TURMA */
+.prog-bar-wrap{background:var(--branco);border-radius:14px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.prog-label{font-size:13px;font-weight:600;color:var(--preto);flex-shrink:0}
+.prog-bar{flex:1;background:#f0f0f0;border-radius:20px;height:10px;overflow:hidden}
+.prog-fill{height:10px;border-radius:20px;background:linear-gradient(90deg,var(--verde),#7bc142);transition:width .5s}
+.prog-pct{font-size:13px;font-weight:700;color:var(--verde);flex-shrink:0}
+.prog-restante{font-size:12px;color:var(--cinza);flex-shrink:0}
+
+/* LISTA DE CRIANÇAS */
+.criancas-lista{display:flex;flex-direction:column;gap:12px}
+.crianca-card{background:var(--branco);border-radius:14px;padding:0;box-shadow:0 2px 10px rgba(0,0,0,.05);overflow:hidden;transition:all .3s}
+.crianca-card.avaliada{border-left:4px solid var(--ok)}
+.crianca-card.pendente{border-left:4px solid #e0e0e0}
+.crianca-header{display:flex;align-items:center;gap:14px;padding:16px 20px;cursor:pointer;user-select:none}
+.crianca-header:hover{background:#fafafa}
+.crianca-avatar{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.crianca-info{flex:1}
+.crianca-nome{font-size:14px;font-weight:700;color:var(--preto)}
+.crianca-meta{font-size:11px;color:var(--cinza)}
+.crianca-status{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.status-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px}
+.status-badge.ok{background:#d1fae5;color:#065f46}
+.status-badge.pendente{background:#f3f4f6;color:#9ca3af}
+.toggle-icon{font-size:14px;color:var(--cinza);transition:transform .3s}
+.toggle-icon.aberto{transform:rotate(180deg)}
+
+/* FORMULÁRIO DE AVALIAÇÃO */
+.avaliacao-form{padding:20px 20px 24px;border-top:1px solid #f0f0f0;display:none}
+.avaliacao-form.visivel{display:block}
+.param-titulo{font-size:12px;font-weight:700;color:var(--preto);margin-bottom:4px}
+.param-desc{font-size:11px;color:var(--cinza);margin-bottom:10px;line-height:1.4}
+.nota-btns{display:flex;gap:8px;margin-bottom:18px}
+.nota-btn{flex:1;padding:10px;border:2px solid #e0e0e0;border-radius:10px;background:var(--branco);cursor:pointer;text-align:center;transition:all .2s;font-family:'Inter',sans-serif}
+.nota-btn:hover{border-color:var(--verde)}
+.nota-btn.selecionado-0{border-color:var(--alerta);background:#fef2f2}
+.nota-btn.selecionado-1{border-color:var(--atencao);background:#fffbeb}
+.nota-btn.selecionado-2{border-color:var(--ok);background:#f0fdf4}
+.nota-btn .nb-num{font-size:20px;font-weight:800;display:block}
+.nota-btn .nb-label{font-size:10px;font-weight:600;display:block;margin-top:2px}
+.nota-btn:nth-child(1) .nb-num{color:var(--alerta)}
+.nota-btn:nth-child(2) .nb-num{color:var(--atencao)}
+.nota-btn:nth-child(3) .nb-num{color:var(--ok)}
+.destaque-select{width:100%;padding:10px 14px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;color:var(--grafite);background:var(--creme);outline:none;margin-bottom:14px;transition:border-color .2s}
+.destaque-select:focus{border-color:var(--verde)}
+.obs-field{width:100%;padding:10px 14px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;color:var(--grafite);background:var(--creme);outline:none;resize:none;height:70px;margin-bottom:16px;line-height:1.5;transition:border-color .2s}
+.obs-field:focus{border-color:var(--verde)}
+.form-actions{display:flex;gap:10px}
+.btn-salvar{flex:1;padding:11px;background:var(--verde);color:var(--branco);border:none;border-radius:9px;font-size:14px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:all .25s}
+.btn-salvar:hover{background:#3d6615;transform:translateY(-1px)}
+.btn-cancelar{padding:11px 18px;background:var(--creme);color:var(--cinza);border:1.5px solid #e0e0e0;border-radius:9px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s}
+.btn-cancelar:hover{background:#f0f0f0}
+.salvo-msg{display:none;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ok);padding:8px 14px;background:#f0fdf4;border-radius:8px;border:1px solid #d1fae5}
+
+.separador{width:100%;height:1px;background:#f0f0f0;margin:14px 0}
+
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);transition:transform .3s}
+  .main{margin-left:0}
+  .nota-btns{gap:5px}
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <img src="../assets/logo_aasec.png" alt="Betel">
+    <strong>Área Docente Betel</strong>
+    <span>CEI Betel · AASEC</span>
+  </div>
+  <div class="sidebar-perfil">
+    <div class="sp-nome" id="sp-nome">—</div>
+    <div class="sp-cargo" id="sp-cargo">—</div>
+    <span class="sp-badge" id="sp-badge">—</span>
+  </div>
+  <nav class="sidebar-nav">    <div class="nav-label">Principal</div>
+    <a class="nav-item" href="dashboard.html" data-page="dashboard"><span class="nav-icon">🏠</span> Painel</a>
+    <a class="nav-item" href="avaliacao.html" data-page="avaliacao"><span class="nav-icon">📝</span> Avaliação Mensal</a>
+    <div class="nav-label">Cadastros</div>
+    <a class="nav-item nav-admin" href="usuarios.html" data-page="usuarios"><span class="nav-icon">👥</span> Usuários</a>
+    <a class="nav-item nav-admin" href="turmas.html" data-page="turmas"><span class="nav-icon">👩‍👧‍👦</span> Turmas</a>
+    <a class="nav-item" href="criancas.html" data-page="criancas"><span class="nav-icon">🌻</span> Crianças</a>
+    <a class="nav-item" href="responsaveis.html" data-page="responsaveis"><span class="nav-icon">👨‍👩‍👧</span> Responsáveis</a>
+    <div class="nav-label">Relatórios</div>
+    <a class="nav-item" href="#" data-page="relatorios"><span class="nav-icon">📊</span> Relatórios</a>    </nav>
+  <div class="sidebar-bottom">
+    <a href="login.html">← Sair do sistema</a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-titulo">Avaliação Mensal</div>
+      <div class="topbar-sub">Preencha para cada criança da sua turma · Abril 2026</div>
+    </div>
+    <a href="dashboard.html" style="font-size:13px;color:var(--verde);text-decoration:none;font-weight:600">← Voltar ao painel</a>
+  </div>
+
+  <div class="content">
+
+    <!-- SELETOR DE TURMA -->
+    <div class="turma-select">
+      <button class="ts-btn ativo" onclick="selecionarTurma('Berçário', this)">👶 Berçário (8)</button>
+      <button class="ts-btn" onclick="selecionarTurma('Maternal I', this)">🐣 Maternal I (11)</button>
+      <button class="ts-btn" onclick="selecionarTurma('Maternal II', this)">🌱 Maternal II (12)</button>
+      <button class="ts-btn" onclick="selecionarTurma('Jardim I', this)">🌻 Jardim I (11)</button>
+    </div>
+
+    <!-- PROGRESSO -->
+    <div class="prog-bar-wrap">
+      <div class="prog-label">Berçário · Abril 2026</div>
+      <div class="prog-bar"><div class="prog-fill" style="width:75%"></div></div>
+      <div class="prog-pct">6/8</div>
+      <div class="prog-restante">2 pendentes</div>
+    </div>
+
+    <!-- LISTA DE CRIANÇAS -->
+    <div class="criancas-lista" id="listaCriancas">
+      <!-- Crianças geradas pelo JS -->
+    </div>
+
+  </div>
+</div>
+
+<script>
+const perfis = {
+  diretora:{nome:'Diretora Geral',cargo:'Gestão e Coordenação',badge:'Diretora'},
+  coordenacao:{nome:'Coordenação Pedagógica',cargo:'Pedagógico',badge:'Coordenação'},
+  professora:{nome:'Profª Mariana Silva',cargo:'Berçário',badge:'Professora'},
+  admin:{nome:'Administrativo',cargo:'Secretaria',badge:'Admin'}
+};
+const p = perfis[sessionStorage.getItem('perfil')||'professora'];
+document.getElementById('sp-nome').textContent = p.nome;
+document.getElementById('sp-cargo').textContent = p.cargo;
+document.getElementById('sp-badge').textContent = p.badge;
+
+const criancas = [
+  {nome:'Isabela Santos',idade:'2 anos',avatar:'👧',avaliada:true,notas:{f:2,a:2,pot:2},destaque:'Linguagem e comunicação',obs:'Muito comunicativa. Lidera brincadeiras com os colegas.'},
+  {nome:'Pedro Oliveira',idade:'2 anos',avatar:'👦',avaliada:true,notas:{f:1,a:1,pot:1},destaque:'Coordenação motora',obs:''},
+  {nome:'Laura Ferreira',idade:'1 ano',avatar:'👧',avaliada:true,notas:{f:2,a:2,pot:2},destaque:'Música e ritmo',obs:'Reage muito bem às músicas. Bate palmas no ritmo correto.'},
+  {nome:'Miguel Alves',idade:'1 ano',avatar:'👦',avaliada:false,notas:{f:0,a:0,pot:0},destaque:'',obs:''},
+  {nome:'Sofia Torres',idade:'2 anos',avatar:'👧',avaliada:true,notas:{f:0,a:1,pot:1},destaque:'Artes e criatividade',obs:'Família muito ausente. Choro matinal frequente.'},
+  {nome:'Davi Costa',idade:'1 ano',avatar:'👦',avaliada:true,notas:{f:1,a:2,pot:2},destaque:'Socialização',obs:'Muito sociável, já interage bem.'},
+  {nome:'Maria Lima',idade:'2 anos',avatar:'👧',avaliada:true,notas:{f:2,a:2,pot:1},destaque:'Autonomia',obs:''},
+  {nome:'Lucas Martins',idade:'1 ano',avatar:'👦',avaliada:false,notas:{f:0,a:0,pot:0},destaque:'',obs:''}
+];
+
+const destaques = ['Linguagem e comunicação','Socialização','Coordenação motora','Música e ritmo','Artes e criatividade','Curiosidade e investigação','Autonomia','Iniciativa e liderança'];
+
+function selecionarTurma(nome, btn) {
+  document.querySelectorAll('.ts-btn').forEach(b=>b.classList.remove('ativo'));
+  btn.classList.add('ativo');
+  renderLista();
+}
+
+function renderLista() {
+  const lista = document.getElementById('listaCriancas');
+  lista.innerHTML = criancas.map((c, idx) => `
+    <div class="crianca-card ${c.avaliada?'avaliada':'pendente'}" id="card-${idx}">
+      <div class="crianca-header" onclick="toggleForm(${idx})">
+        <div class="crianca-avatar" style="background:${c.avaliada?'#d1fae5':'#f3f4f6'}">${c.avatar}</div>
+        <div class="crianca-info">
+          <div class="crianca-nome">${c.nome}</div>
+          <div class="crianca-meta">${c.idade} · Berçário</div>
+        </div>
+        <div class="crianca-status">
+          ${c.avaliada
+            ? `<span class="status-badge ok">✓ Avaliada</span>
+               <div style="display:flex;gap:4px">
+                 <span style="font-size:10px;background:#f0f0f0;padding:2px 7px;border-radius:6px;font-weight:600">F:${c.notas.f}</span>
+                 <span style="font-size:10px;background:#f0f0f0;padding:2px 7px;border-radius:6px;font-weight:600">A:${c.notas.a}</span>
+                 <span style="font-size:10px;background:#f0f0f0;padding:2px 7px;border-radius:6px;font-weight:600">P:${c.notas.pot}</span>
+               </div>`
+            : `<span class="status-badge pendente">Pendente</span>`
+          }
+          <span class="toggle-icon" id="toggle-${idx}">▼</span>
+        </div>
+      </div>
+      <div class="avaliacao-form ${!c.avaliada?'visivel':''}" id="form-${idx}">
+
+        <!-- PARÂMETRO 1 -->
+        <div class="param-titulo">1. Família presente</div>
+        <div class="param-desc">Os responsáveis estão envolvidos de forma real com a criança?</div>
+        <div class="nota-btns">
+          <button class="nota-btn ${c.avaliada&&c.notas.f===0?'selecionado-0':''}" onclick="selecionarNota(${idx},'f',0,this)">
+            <span class="nb-num">0</span><span class="nb-label">Pouco envolvimento</span>
+          </button>
+          <button class="nota-btn ${c.avaliada&&c.notas.f===1?'selecionado-1':''}" onclick="selecionarNota(${idx},'f',1,this)">
+            <span class="nb-num">1</span><span class="nb-label">Irregular</span>
+          </button>
+          <button class="nota-btn ${c.avaliada&&c.notas.f===2?'selecionado-2':''}" onclick="selecionarNota(${idx},'f',2,this)">
+            <span class="nb-num">2</span><span class="nb-label">Presente e consistente</span>
+          </button>
+        </div>
+
+        <div class="separador"></div>
+
+        <!-- PARÂMETRO 2 -->
+        <div class="param-titulo">2. Criança acolhida</div>
+        <div class="param-desc">A criança está segura e bem vinculada à rotina e às pessoas da creche?</div>
+        <div class="nota-btns">
+          <button class="nota-btn ${c.avaliada&&c.notas.a===0?'selecionado-0':''}" onclick="selecionarNota(${idx},'a',0,this)">
+            <span class="nb-num">0</span><span class="nb-label">Adaptação difícil</span>
+          </button>
+          <button class="nota-btn ${c.avaliada&&c.notas.a===1?'selecionado-1':''}" onclick="selecionarNota(${idx},'a',1,this)">
+            <span class="nb-num">1</span><span class="nb-label">Oscilante</span>
+          </button>
+          <button class="nota-btn ${c.avaliada&&c.notas.a===2?'selecionado-2':''}" onclick="selecionarNota(${idx},'a',2,this)">
+            <span class="nb-num">2</span><span class="nb-label">Segura e conectada</span>
+          </button>
+        </div>
+
+        <div class="separador"></div>
+
+        <!-- PARÂMETRO 3 -->
+        <div class="param-titulo">3. Potencial em destaque</div>
+        <div class="param-desc">Em qual área a criança demonstra mais potencial neste momento?</div>
+        <div class="nota-btns">
+          <button class="nota-btn ${c.avaliada&&c.notas.pot===0?'selecionado-0':''}" onclick="selecionarNota(${idx},'pot',0,this)">
+            <span class="nb-num">0</span><span class="nb-label">Ainda não claro</span>
+          </button>
+          <button class="nota-btn ${c.avaliada&&c.notas.pot===1?'selecionado-1':''}" onclick="selecionarNota(${idx},'pot',1,this)">
+            <span class="nb-num">1</span><span class="nb-label">Em desenvolvimento</span>
+          </button>
+          <button class="nota-btn ${c.avaliada&&c.notas.pot===2?'selecionado-2':''}" onclick="selecionarNota(${idx},'pot',2,this)">
+            <span class="nb-num">2</span><span class="nb-label">Destaque perceptível</span>
+          </button>
+        </div>
+        <select class="destaque-select" id="dest-${idx}">
+          <option value="">Área principal de destaque (opcional)</option>
+          ${destaques.map(d=>`<option value="${d}" ${c.destaque===d?'selected':''}>${d}</option>`).join('')}
+        </select>
+
+        <div class="separador"></div>
+
+        <!-- OBSERVAÇÃO -->
+        <div class="param-titulo">Observação (opcional)</div>
+        <textarea class="obs-field" id="obs-${idx}" placeholder="Algum registro importante sobre esta criança este mês...">${c.obs||''}</textarea>
+
+        <div class="form-actions">
+          <button class="btn-salvar" onclick="salvar(${idx})">💾 Salvar avaliação</button>
+          <button class="btn-cancelar" onclick="toggleForm(${idx})">Cancelar</button>
+        </div>
+        <div class="salvo-msg" id="msg-${idx}">✅ Avaliação salva com sucesso!</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleForm(idx) {
+  const form = document.getElementById(`form-${idx}`);
+  const toggle = document.getElementById(`toggle-${idx}`);
+  form.classList.toggle('visivel');
+  toggle.classList.toggle('aberto');
+}
+
+const notas = {};
+function selecionarNota(idx, param, val, btn) {
+  if(!notas[idx]) notas[idx]={};
+  notas[idx][param]=val;
+  const container = btn.parentElement;
+  container.querySelectorAll('.nota-btn').forEach(b=>{
+    b.classList.remove('selecionado-0','selecionado-1','selecionado-2');
+  });
+  btn.classList.add(`selecionado-${val}`);
+}
+
+function salvar(idx) {
+  criancas[idx].avaliada = true;
+  if(notas[idx]) Object.assign(criancas[idx].notas, notas[idx]);
+  criancas[idx].destaque = document.getElementById(`dest-${idx}`)?.value || '';
+  criancas[idx].obs = document.getElementById(`obs-${idx}`)?.value || '';
+
+  const msg = document.getElementById(`msg-${idx}`);
+  msg.style.display = 'flex';
+  setTimeout(() => { msg.style.display = 'none'; renderLista(); }, 1500);
+}
+
+renderLista();
+</script>
+</body>
+</html>

@@ -1,0 +1,398 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastros — AASEC</title>
+<link rel="stylesheet" href="estilos.css">
+<style>
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--verde-claro);margin-bottom:20px}
+.tab{padding:10px 20px;font-size:13px;font-weight:600;color:var(--cinza);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;background:none;border-left:none;border-right:none;border-top:none;font-family:'Inter',sans-serif}
+.tab:hover{color:var(--verde)}
+.tab.on{color:var(--verde);border-bottom-color:var(--verde)}
+.painel{display:none}.painel.on{display:block}
+.tipo-badge{font-size:10px;font-weight:700;padding:2px 9px;border-radius:10px;white-space:nowrap}
+.tipo-admin{background:#fff3c4;color:var(--marrom)}
+.tipo-coord{background:var(--verde-claro);color:var(--verde)}
+.tipo-view{background:#f3f4f6;color:#374151}
+.tipo-educ{background:#dbeafe;color:#1d4ed8}
+.tipo-social{background:#d1fae5;color:#065f46}
+.tipo-outro{background:#f3f4f6;color:#374151}
+</style>
+</head>
+<body>
+<div class="layout">
+  <div id="nav-placeholder"></div>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h2>⚙️ Cadastros</h2>
+        <p>Usuários, unidades e turmas · apenas para administradores</p>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="bloco">
+        <div class="tabs">
+          <button class="tab on" onclick="mudarTab('usuarios',this)">👥 Usuários</button>
+          <button class="tab" onclick="mudarTab('unidades',this)">🏛️ Unidades</button>
+          <button class="tab" onclick="mudarTab('turmas',this)">👩‍👧‍👦 Turmas</button>
+        </div>
+
+        <!-- USUÁRIOS -->
+        <div class="painel on" id="painel-usuarios">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+            <div style="font-size:12px;color:var(--cinza)" id="ctr-usuarios"></div>
+            <button class="btn btn-primary btn-sm" onclick="abrirUsuario()">+ Novo usuário</button>
+          </div>
+          <div class="tabela-wrap">
+            <table>
+              <thead><tr><th>Nome</th><th>E-mail</th><th>Tipo</th><th>Status</th><th style="text-align:right">Ações</th></tr></thead>
+              <tbody id="tb-usuarios"></tbody>
+            </table>
+          </div>
+          <div class="vazio" id="vz-usuarios" style="display:none"><div class="vi">👥</div><h4>Nenhum usuário</h4><p>Cadastre os usuários do sistema.</p></div>
+        </div>
+
+        <!-- UNIDADES -->
+        <div class="painel" id="painel-unidades">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+            <div style="font-size:12px;color:var(--cinza)" id="ctr-unidades"></div>
+            <button class="btn btn-primary btn-sm" onclick="abrirUnidade()">+ Nova unidade</button>
+          </div>
+          <div class="tabela-wrap">
+            <table>
+              <thead><tr><th>Nome</th><th>Tipo</th><th>Status</th><th style="text-align:right">Ações</th></tr></thead>
+              <tbody id="tb-unidades"></tbody>
+            </table>
+          </div>
+          <div class="vazio" id="vz-unidades" style="display:none"><div class="vi">🏛️</div><h4>Nenhuma unidade</h4><p>Cadastre as unidades da AASEC.</p></div>
+        </div>
+
+        <!-- TURMAS -->
+        <div class="painel" id="painel-turmas">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <div style="font-size:12px;color:var(--cinza)" id="ctr-turmas"></div>
+              <select class="fselect" id="filtro-unidade-turma" onchange="renderTurmas()" style="font-size:12px;padding:6px 12px">
+                <option value="">Todas as unidades</option>
+              </select>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="abrirTurma()">+ Nova turma</button>
+          </div>
+          <div class="tabela-wrap">
+            <table>
+              <thead><tr><th>Turma</th><th>Unidade</th><th>Período</th><th>Status</th><th style="text-align:right">Ações</th></tr></thead>
+              <tbody id="tb-turmas"></tbody>
+            </table>
+          </div>
+          <div class="vazio" id="vz-turmas" style="display:none"><div class="vi">👩‍👧‍👦</div><h4>Nenhuma turma</h4><p>Cadastre as turmas vinculadas às unidades.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL USUÁRIO -->
+<div class="modal-overlay" id="modal-usuario">
+  <div class="modal">
+    <div class="modal-h"><h3 id="tit-usuario">Novo Usuário</h3><button class="modal-close" onclick="fecharModal('modal-usuario')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="u-id">
+      <div class="fg"><label>Nome <span class="req">*</span></label><input type="text" id="u-nome" placeholder="Nome completo"></div>
+      <div class="fg"><label>E-mail <span class="req">*</span></label><input type="email" id="u-email" placeholder="email@aasec.org.br"></div>
+      <div class="fg"><label>Senha <span class="req">*</span></label><input type="password" id="u-senha" placeholder="Mínimo 6 caracteres"><div class="hint">Deixe em branco para manter a senha atual ao editar.</div></div>
+      <div class="fg"><label>Tipo de acesso <span class="req">*</span></label>
+        <select id="u-tipo">
+          <option value="">Selecione</option>
+          <option value="admin">Admin — acesso total</option>
+          <option value="coord">Coordenação — cadastra dados</option>
+          <option value="view">Visualização — só dashboards</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+        <input type="checkbox" id="u-ativo" checked style="width:16px;height:16px;accent-color:var(--verde)">
+        <label for="u-ativo" style="font-size:13px;font-weight:500;color:var(--grafite);cursor:pointer">Usuário ativo</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="fecharModal('modal-usuario')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarUsuario()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL UNIDADE -->
+<div class="modal-overlay" id="modal-unidade">
+  <div class="modal">
+    <div class="modal-h"><h3 id="tit-unidade">Nova Unidade</h3><button class="modal-close" onclick="fecharModal('modal-unidade')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="un-id">
+      <div class="fg"><label>Nome da unidade <span class="req">*</span></label><input type="text" id="un-nome" placeholder="Ex: CEI Betel, Esco-Lar"></div>
+      <div class="fg"><label>Tipo <span class="req">*</span></label>
+        <select id="un-tipo">
+          <option value="">Selecione</option>
+          <option value="educacional">Educacional</option>
+          <option value="socioassistencial">Socioassistencial</option>
+          <option value="outro">Outro</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+        <input type="checkbox" id="un-ativa" checked style="width:16px;height:16px;accent-color:var(--verde)">
+        <label for="un-ativa" style="font-size:13px;font-weight:500;color:var(--grafite);cursor:pointer">Unidade ativa</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="fecharModal('modal-unidade')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarUnidade()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL TURMA -->
+<div class="modal-overlay" id="modal-turma">
+  <div class="modal">
+    <div class="modal-h"><h3 id="tit-turma">Nova Turma</h3><button class="modal-close" onclick="fecharModal('modal-turma')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="t-id">
+      <div class="fg"><label>Nome da turma <span class="req">*</span></label><input type="text" id="t-nome" placeholder="Ex: Maternal I, Berçário, Jardim II"></div>
+      <div class="fg"><label>Unidade <span class="req">*</span></label>
+        <select id="t-unidade"><option value="">Selecione a unidade</option></select>
+      </div>
+      <div class="fg"><label>Período</label>
+        <select id="t-periodo">
+          <option value="">Selecione</option>
+          <option value="manha">Manhã</option>
+          <option value="tarde">Tarde</option>
+          <option value="integral">Integral</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+        <input type="checkbox" id="t-ativa" checked style="width:16px;height:16px;accent-color:var(--verde)">
+        <label for="t-ativa" style="font-size:13px;font-weight:500;color:var(--grafite);cursor:pointer">Turma ativa</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="fecharModal('modal-turma')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarTurma()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script src="dados.js"></script>
+<script src="_nav.js"></script>
+<script>
+// DBc carregado via cadastros.js
+
+// ── Tabs ────────────────────────────────────────────
+function mudarTab(id, btn) {
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.painel').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('painel-'+id).classList.add('on');
+}
+
+// ── Init ────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('nav-placeholder').innerHTML = renderSidebar();
+  initNav('cadastros');
+  ['modal-usuario','modal-unidade','modal-turma'].forEach(id => initModal(id));
+  carregarSelectUnidades();
+  renderUsuarios();
+  renderUnidades();
+  renderTurmas();
+});
+
+function carregarSelectUnidades() {
+  const sels = ['t-unidade','filtro-unidade-turma'];
+  sels.forEach(sid => {
+    const sel = document.getElementById(sid);
+    // manter primeira option, limpar resto
+    while(sel.options.length > 1) sel.remove(1);
+    DBc.getUnidades().filter(u=>u.ativa).forEach(u => {
+      const o = document.createElement('option'); o.value=u.id; o.textContent=u.nome; sel.appendChild(o);
+    });
+  });
+}
+
+// ── USUÁRIOS ────────────────────────────────────────
+const tipoLabel = { admin:'Admin', coord:'Coordenação', view:'Visualização' };
+const tipoClass = { admin:'tipo-admin', coord:'tipo-coord', view:'tipo-view' };
+
+function renderUsuarios() {
+  const lista = DBc.getUsuarios();
+  const tb = document.getElementById('tb-usuarios');
+  document.getElementById('ctr-usuarios').textContent = `${lista.length} usuário(s)`;
+  if (!lista.length) { tb.innerHTML=''; document.getElementById('vz-usuarios').style.display='block'; return; }
+  document.getElementById('vz-usuarios').style.display='none';
+  tb.innerHTML = lista.map(u => `<tr>
+    <td><strong>${u.nome}</strong></td>
+    <td style="color:var(--cinza);font-size:12px">${u.email}</td>
+    <td><span class="tipo-badge ${tipoClass[u.tipo]||'tipo-view'}">${tipoLabel[u.tipo]||u.tipo}</span></td>
+    <td><span class="badge ${u.ativo!==false?'b-ok':'b-cinza'}">${u.ativo!==false?'Ativo':'Inativo'}</span></td>
+    <td><div class="td-acoes">
+      <button class="btn btn-secondary btn-sm btn-icon" onclick="editarUsuario('${u.id}')">✏️</button>
+      <button class="btn btn-danger btn-sm btn-icon" onclick="excluirUsuario('${u.id}')">🗑️</button>
+    </div></td>
+  </tr>`).join('');
+}
+
+function abrirUsuario() {
+  ['u-id','u-nome','u-email','u-senha'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('u-tipo').value='';
+  document.getElementById('u-ativo').checked=true;
+  document.getElementById('tit-usuario').textContent='Novo Usuário';
+  abrirModal('modal-usuario');
+}
+
+function editarUsuario(id) {
+  const u=DBc.getUsuario(id); if(!u) return;
+  document.getElementById('u-id').value=u.id;
+  document.getElementById('u-nome').value=u.nome;
+  document.getElementById('u-email').value=u.email;
+  document.getElementById('u-senha').value='';
+  document.getElementById('u-tipo').value=u.tipo;
+  document.getElementById('u-ativo').checked=u.ativo!==false;
+  document.getElementById('tit-usuario').textContent='Editar Usuário';
+  abrirModal('modal-usuario');
+}
+
+function salvarUsuario() {
+  const id=document.getElementById('u-id').value;
+  const nome=document.getElementById('u-nome').value.trim();
+  const email=document.getElementById('u-email').value.trim();
+  const senha=document.getElementById('u-senha').value;
+  const tipo=document.getElementById('u-tipo').value;
+  if (!nome||!email||!tipo) { toast('Preencha nome, e-mail e tipo.','erro'); return; }
+  if (!id&&!senha) { toast('Defina uma senha para o novo usuário.','erro'); return; }
+  const dados={nome,email,tipo,ativo:document.getElementById('u-ativo').checked};
+  if (senha) dados.senha=senha;
+  if (id) { DBc.updateUsuario(id,dados); toast('Usuário atualizado!'); }
+  else { DBc.addUsuario(dados); toast('Usuário cadastrado!'); }
+  fecharModal('modal-usuario'); renderUsuarios();
+}
+
+function excluirUsuario(id) {
+  if (!confirmar('Excluir este usuário?')) return;
+  DBc.deleteUsuario(id); toast('Usuário excluído.'); renderUsuarios();
+}
+
+// ── UNIDADES ────────────────────────────────────────
+const tipoUnLabel = { educacional:'Educacional', socioassistencial:'Socioassistencial', outro:'Outro' };
+const tipoUnClass = { educacional:'tipo-educ', socioassistencial:'tipo-social', outro:'tipo-outro' };
+
+function renderUnidades() {
+  const lista=DBc.getUnidades();
+  const tb=document.getElementById('tb-unidades');
+  document.getElementById('ctr-unidades').textContent=`${lista.length} unidade(s)`;
+  if (!lista.length) { tb.innerHTML=''; document.getElementById('vz-unidades').style.display='block'; return; }
+  document.getElementById('vz-unidades').style.display='none';
+  tb.innerHTML=lista.map(u=>`<tr>
+    <td><strong>${u.nome}</strong></td>
+    <td><span class="tipo-badge ${tipoUnClass[u.tipo]||'tipo-outro'}">${tipoUnLabel[u.tipo]||u.tipo}</span></td>
+    <td><span class="badge ${u.ativa!==false?'b-ok':'b-cinza'}">${u.ativa!==false?'Ativa':'Inativa'}</span></td>
+    <td><div class="td-acoes">
+      <button class="btn btn-secondary btn-sm btn-icon" onclick="editarUnidade('${u.id}')">✏️</button>
+      <button class="btn btn-danger btn-sm btn-icon" onclick="excluirUnidade('${u.id}')">🗑️</button>
+    </div></td>
+  </tr>`).join('');
+}
+
+function abrirUnidade() {
+  ['un-id','un-nome'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('un-tipo').value='';
+  document.getElementById('un-ativa').checked=true;
+  document.getElementById('tit-unidade').textContent='Nova Unidade';
+  abrirModal('modal-unidade');
+}
+
+function editarUnidade(id) {
+  const u=DBc.getUnidade(id); if(!u) return;
+  document.getElementById('un-id').value=u.id;
+  document.getElementById('un-nome').value=u.nome;
+  document.getElementById('un-tipo').value=u.tipo;
+  document.getElementById('un-ativa').checked=u.ativa!==false;
+  document.getElementById('tit-unidade').textContent='Editar Unidade';
+  abrirModal('modal-unidade');
+}
+
+function salvarUnidade() {
+  const id=document.getElementById('un-id').value;
+  const nome=document.getElementById('un-nome').value.trim();
+  const tipo=document.getElementById('un-tipo').value;
+  if (!nome||!tipo) { toast('Informe o nome e o tipo.','erro'); return; }
+  const dados={nome,tipo,ativa:document.getElementById('un-ativa').checked};
+  if (id) { DBc.updateUnidade(id,dados); toast('Unidade atualizada!'); }
+  else { DBc.addUnidade(dados); toast('Unidade cadastrada!'); }
+  fecharModal('modal-unidade'); renderUnidades(); carregarSelectUnidades();
+}
+
+function excluirUnidade(id) {
+  const turmas=DBc.getTurmas().filter(t=>t.unidade_id===id).length;
+  if (turmas) { toast(`Não é possível excluir: há ${turmas} turma(s) vinculada(s).`,'erro'); return; }
+  if (!confirmar('Excluir esta unidade?')) return;
+  DBc.deleteUnidade(id); toast('Unidade excluída.'); renderUnidades(); carregarSelectUnidades();
+}
+
+// ── TURMAS ──────────────────────────────────────────
+const periodoLabel = { manha:'Manhã', tarde:'Tarde', integral:'Integral' };
+
+function renderTurmas() {
+  const filtro=document.getElementById('filtro-unidade-turma').value;
+  const lista=DBc.getTurmas().filter(t=>!filtro||t.unidade_id===filtro);
+  const tb=document.getElementById('tb-turmas');
+  document.getElementById('ctr-turmas').textContent=`${lista.length} turma(s)`;
+  if (!lista.length) { tb.innerHTML=''; document.getElementById('vz-turmas').style.display='block'; return; }
+  document.getElementById('vz-turmas').style.display='none';
+  tb.innerHTML=lista.map(t=>`<tr>
+    <td><strong>${t.nome}</strong></td>
+    <td><span class="badge b-verde">${t.unidade_nome||'—'}</span></td>
+    <td>${t.periodo?periodoLabel[t.periodo]:'—'}</td>
+    <td><span class="badge ${t.ativa!==false?'b-ok':'b-cinza'}">${t.ativa!==false?'Ativa':'Inativa'}</span></td>
+    <td><div class="td-acoes">
+      <button class="btn btn-secondary btn-sm btn-icon" onclick="editarTurma('${t.id}')">✏️</button>
+      <button class="btn btn-danger btn-sm btn-icon" onclick="excluirTurma('${t.id}')">🗑️</button>
+    </div></td>
+  </tr>`).join('');
+}
+
+function abrirTurma() {
+  ['t-id','t-nome'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('t-unidade').value='';
+  document.getElementById('t-periodo').value='';
+  document.getElementById('t-ativa').checked=true;
+  document.getElementById('tit-turma').textContent='Nova Turma';
+  abrirModal('modal-turma');
+}
+
+function editarTurma(id) {
+  const t=DBc.getTurma(id); if(!t) return;
+  document.getElementById('t-id').value=t.id;
+  document.getElementById('t-nome').value=t.nome;
+  document.getElementById('t-unidade').value=t.unidade_id||'';
+  document.getElementById('t-periodo').value=t.periodo||'';
+  document.getElementById('t-ativa').checked=t.ativa!==false;
+  document.getElementById('tit-turma').textContent='Editar Turma';
+  abrirModal('modal-turma');
+}
+
+function salvarTurma() {
+  const id=document.getElementById('t-id').value;
+  const nome=document.getElementById('t-nome').value.trim();
+  const unidade_id=document.getElementById('t-unidade').value;
+  if (!nome||!unidade_id) { toast('Informe o nome e a unidade.','erro'); return; }
+  const un=DBc.getUnidade(unidade_id);
+  const dados={nome,unidade_id,unidade_nome:un?.nome||'',periodo:document.getElementById('t-periodo').value||null,ativa:document.getElementById('t-ativa').checked};
+  if (id) { DBc.updateTurma(id,dados); toast('Turma atualizada!'); }
+  else { DBc.addTurma(dados); toast('Turma cadastrada!'); }
+  fecharModal('modal-turma'); renderTurmas();
+}
+
+function excluirTurma(id) {
+  if (!confirmar('Excluir esta turma?')) return;
+  DBc.deleteTurma(id); toast('Turma excluída.'); renderTurmas();
+}
+</script>
+</body>
+</html>

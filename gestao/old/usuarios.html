@@ -1,0 +1,288 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Usuários — Área Docente Betel</title>
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+<button class="mobile-toggle" id="mobileToggle">☰</button>
+
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <img src="../assets/logo_aasec.png" alt="Betel">
+    <strong>Área Docente Betel</strong>
+    <span>CEI Betel · AASEC</span>
+  </div>
+  <div class="sidebar-perfil">
+    <div class="sp-nome"></div>
+    <div class="sp-cargo"></div>
+    <span class="sp-badge"></span>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Principal</div>
+    <a class="nav-item" href="dashboard.html" data-page="dashboard"><span class="nav-icon">🏠</span> Painel</a>
+    <a class="nav-item" href="avaliacao.html" data-page="avaliacao"><span class="nav-icon">📝</span> Avaliação Mensal</a>
+    <div class="nav-label">Cadastros</div>
+    <a class="nav-item nav-admin" href="usuarios.html" data-page="usuarios"><span class="nav-icon">👥</span> Usuários</a>
+    <a class="nav-item nav-admin" href="turmas.html" data-page="turmas"><span class="nav-icon">👩‍👧‍👦</span> Turmas</a>
+    <a class="nav-item" href="criancas.html" data-page="criancas"><span class="nav-icon">🌻</span> Crianças</a>
+    <a class="nav-item" href="responsaveis.html" data-page="responsaveis"><span class="nav-icon">👨‍👩‍👧</span> Responsáveis</a>
+    <div class="nav-label">Relatórios</div>
+    <a class="nav-item" href="#" data-page="relatorios"><span class="nav-icon">📊</span> Relatórios</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <a href="login.html">← Sair</a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-esq">
+      <h2>👥 Equipe & Acessos</h2>
+      <p>Cadastre professoras, coordenação e administrativo</p>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="abrirModal()">+ Novo usuário</button>
+  </div>
+
+  <div class="content">
+    <div class="bloco">
+      <div class="list-toolbar">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="busca" placeholder="Buscar por nome ou e-mail..." oninput="renderLista()">
+        </div>
+        <select class="filter-select" id="filtroPerfil" onchange="renderLista()">
+          <option value="">Todos os perfis</option>
+          <option value="diretora">Diretora</option>
+          <option value="coordenacao">Coordenação</option>
+          <option value="professora">Professora</option>
+          <option value="admin">Administrativo</option>
+        </select>
+        <select class="filter-select" id="filtroStatus" onchange="renderLista()">
+          <option value="">Todos os status</option>
+          <option value="ativo">Ativos</option>
+          <option value="inativo">Inativos</option>
+        </select>
+      </div>
+
+      <div class="contador" id="contador"></div>
+
+      <div class="tabela-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>E-mail</th>
+              <th>Perfil</th>
+              <th>Turma vinculada</th>
+              <th>Status</th>
+              <th style="text-align:right">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="vazio" id="vazio" style="display:none">
+        <div class="vi">👥</div>
+        <h4>Nenhum usuário encontrado</h4>
+        <p>Tente ajustar os filtros ou cadastre um novo usuário.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitulo">Novo Usuário</h3>
+      <button class="modal-close" onclick="fecharModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editId">
+      <div class="form-bloco">
+        <div class="form-bloco-titulo">Dados pessoais</div>
+        <div class="form-row cols-2">
+          <div class="fg"><label>Nome completo <span class="req">*</span></label><input type="text" id="fNome" placeholder="Nome completo"></div>
+          <div class="fg"><label>E-mail <span class="req">*</span></label><input type="email" id="fEmail" placeholder="email@betel.org.br"></div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="fg"><label>Senha <span class="req">*</span></label><input type="password" id="fSenha" placeholder="Mínimo 6 caracteres"><div class="hint">Deixe em branco para manter a atual ao editar</div></div>
+          <div class="fg"><label>Perfil de acesso <span class="req">*</span></label>
+            <select id="fPerfil" onchange="toggleTurma()">
+              <option value="">Selecione o perfil</option>
+              <option value="diretora">Diretora</option>
+              <option value="coordenacao">Coordenação Pedagógica</option>
+              <option value="professora">Professora</option>
+              <option value="admin">Administrativo</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-bloco" id="blocoTurma" style="display:none">
+        <div class="form-bloco-titulo">Vínculo de turma</div>
+        <div class="fg"><label>Turma responsável <span class="req">*</span></label>
+          <select id="fTurma"><option value="">Selecione a turma</option></select>
+        </div>
+      </div>
+      <div class="form-bloco">
+        <div class="form-bloco-titulo">Status</div>
+        <div class="toggle-wrap">
+          <button class="toggle on" id="toggleAtivo" onclick="toggleAtivo()"></button>
+          <span id="toggleLabel" style="font-size:13px;font-weight:600;color:var(--grafite)">Usuário ativo</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvar()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script src="dados.js"></script>
+<script src="sidebar.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  renderSidebar('usuarios');
+  renderLista();
+  carregarTurmas();
+});
+
+let ativo = true;
+function toggleAtivo() {
+  ativo = !ativo;
+  document.getElementById('toggleAtivo').className = `toggle ${ativo?'on':'off'}`;
+  document.getElementById('toggleLabel').textContent = ativo ? 'Usuário ativo' : 'Usuário inativo';
+}
+
+function toggleTurma() {
+  const p = document.getElementById('fPerfil').value;
+  document.getElementById('blocoTurma').style.display = p === 'professora' ? 'block' : 'none';
+}
+
+function carregarTurmas() {
+  const sel = document.getElementById('fTurma');
+  DB.getTurmas().filter(t=>t.ativo).forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.id;
+    opt.textContent = t.nome;
+    sel.appendChild(opt);
+  });
+}
+
+function renderLista() {
+  const busca = document.getElementById('busca').value.toLowerCase();
+  const filtroPerfil = document.getElementById('filtroPerfil').value;
+  const filtroStatus = document.getElementById('filtroStatus').value;
+
+  let lista = DB.getUsuarios().filter(u => {
+    const ok_busca = !busca || u.nome.toLowerCase().includes(busca) || u.email.toLowerCase().includes(busca);
+    const ok_perfil = !filtroPerfil || u.perfil === filtroPerfil;
+    const ok_status = !filtroStatus || (filtroStatus==='ativo' ? u.ativo!==false : u.ativo===false);
+    return ok_busca && ok_perfil && ok_status;
+  });
+
+  const tbody = document.getElementById('tbody');
+  const vazio = document.getElementById('vazio');
+  document.getElementById('contador').innerHTML = `Exibindo <span>${lista.length}</span> de <span>${DB.getUsuarios().length}</span> usuário(s)`;
+
+  if(lista.length === 0) { tbody.innerHTML=''; vazio.style.display='block'; return; }
+  vazio.style.display = 'none';
+
+  const perfilLabel = {diretora:'Diretora',coordenacao:'Coordenação',professora:'Professora',admin:'Administrativo'};
+  const perfilCor = {diretora:'perfil-diretora',coordenacao:'perfil-coordenacao',professora:'perfil-professora',admin:'perfil-admin'};
+
+  tbody.innerHTML = lista.map(u => {
+    const turma = u.turma_id ? (DB.getTurma(u.turma_id)?.nome || '—') : '—';
+    return `<tr>
+      <td><strong>${u.nome}</strong></td>
+      <td style="color:var(--cinza)">${u.email}</td>
+      <td><span class="badge perfil-badge ${perfilCor[u.perfil]||''}">${perfilLabel[u.perfil]||u.perfil}</span></td>
+      <td>${u.perfil==='professora' ? turma : '<span style="color:var(--cinza)">—</span>'}</td>
+      <td><span class="badge ${u.ativo!==false?'badge-ok':'badge-inativo'}">${u.ativo!==false?'✓ Ativo':'Inativo'}</span></td>
+      <td><div class="td-acoes">
+        <button class="btn btn-secondary btn-sm btn-icon" onclick="editar('${u.id}')" title="Editar">✏️</button>
+        <button class="btn btn-danger btn-sm btn-icon" onclick="excluir('${u.id}')" title="Excluir">🗑️</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function abrirModal(id) {
+  document.getElementById('editId').value = '';
+  document.getElementById('fNome').value = '';
+  document.getElementById('fEmail').value = '';
+  document.getElementById('fSenha').value = '';
+  document.getElementById('fPerfil').value = '';
+  document.getElementById('fTurma').value = '';
+  ativo = true;
+  document.getElementById('toggleAtivo').className = 'toggle on';
+  document.getElementById('toggleLabel').textContent = 'Usuário ativo';
+  document.getElementById('blocoTurma').style.display = 'none';
+  document.getElementById('modalTitulo').textContent = 'Novo Usuário';
+  document.getElementById('modal').classList.add('visivel');
+}
+
+function editar(id) {
+  const u = DB.getUsuario(id);
+  if(!u) return;
+  document.getElementById('editId').value = u.id;
+  document.getElementById('fNome').value = u.nome;
+  document.getElementById('fEmail').value = u.email;
+  document.getElementById('fSenha').value = '';
+  document.getElementById('fPerfil').value = u.perfil;
+  document.getElementById('fTurma').value = u.turma_id || '';
+  ativo = u.ativo !== false;
+  document.getElementById('toggleAtivo').className = `toggle ${ativo?'on':'off'}`;
+  document.getElementById('toggleLabel').textContent = ativo ? 'Usuário ativo' : 'Usuário inativo';
+  toggleTurma();
+  document.getElementById('modalTitulo').textContent = 'Editar Usuário';
+  document.getElementById('modal').classList.add('visivel');
+}
+
+function fecharModal() { document.getElementById('modal').classList.remove('visivel'); }
+
+function salvar() {
+  const id = document.getElementById('editId').value;
+  const nome = document.getElementById('fNome').value.trim();
+  const email = document.getElementById('fEmail').value.trim();
+  const senha = document.getElementById('fSenha').value;
+  const perfil = document.getElementById('fPerfil').value;
+  const turma_id = document.getElementById('fTurma').value;
+
+  if(!nome || !email || !perfil) { toast('Preencha os campos obrigatórios.','erro'); return; }
+  if(!id && !senha) { toast('Defina uma senha para o novo usuário.','erro'); return; }
+  if(perfil === 'professora' && !turma_id) { toast('Selecione a turma da professora.','erro'); return; }
+
+  // Buscar nome da turma
+  const turma = turma_id ? DB.getTurma(turma_id) : null;
+
+  const dados = { nome, email, perfil, turma_id: turma_id||null, cargo_turma: turma?.nome||null, ativo };
+  if(senha) dados.senha = senha;
+
+  if(id) {
+    DB.updateUsuario(id, dados);
+    toast('Usuário atualizado com sucesso!');
+  } else {
+    DB.addUsuario(dados);
+    toast('Usuário cadastrado com sucesso!');
+  }
+  fecharModal();
+  renderLista();
+}
+
+function excluir(id) {
+  if(!confirmar('Excluir este usuário? Esta ação não pode ser desfeita.')) return;
+  DB.deleteUsuario(id);
+  toast('Usuário excluído.','ok');
+  renderLista();
+}
+
+document.getElementById('modal').addEventListener('click', e => { if(e.target===document.getElementById('modal')) fecharModal(); });
+</script>
+</body>
+</html>

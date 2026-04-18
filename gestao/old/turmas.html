@@ -1,0 +1,227 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Turmas — Área Docente Betel</title>
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+<button class="mobile-toggle" id="mobileToggle">☰</button>
+<div class="sidebar">
+  <div class="sidebar-logo"><img src="../assets/logo_aasec.png" alt="Betel"><strong>Área Docente Betel</strong><span>CEI Betel · AASEC</span></div>
+  <div class="sidebar-perfil"><div class="sp-nome"></div><div class="sp-cargo"></div><span class="sp-badge"></span></div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Principal</div>
+    <a class="nav-item" href="dashboard.html" data-page="dashboard"><span class="nav-icon">🏠</span> Painel</a>
+    <a class="nav-item" href="avaliacao.html" data-page="avaliacao"><span class="nav-icon">📝</span> Avaliação Mensal</a>
+    <div class="nav-label">Cadastros</div>
+    <a class="nav-item nav-admin" href="usuarios.html" data-page="usuarios"><span class="nav-icon">👥</span> Usuários</a>
+    <a class="nav-item nav-admin" href="turmas.html" data-page="turmas"><span class="nav-icon">👩‍👧‍👦</span> Turmas</a>
+    <a class="nav-item" href="criancas.html" data-page="criancas"><span class="nav-icon">🌻</span> Crianças</a>
+    <a class="nav-item" href="responsaveis.html" data-page="responsaveis"><span class="nav-icon">👨‍👩‍👧</span> Responsáveis</a>
+  </nav>
+  <div class="sidebar-bottom"><a href="login.html">← Sair</a></div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-esq"><h2>👩‍👧‍👦 Turmas</h2><p>Organize as turmas do CEI Betel</p></div>
+    <button class="btn btn-primary btn-sm" onclick="abrirModal()">+ Nova turma</button>
+  </div>
+  <div class="content">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:20px" id="gridTurmas"></div>
+
+    <div class="bloco">
+      <div class="bloco-titulo" style="margin-bottom:14px">📋 Todas as Turmas</div>
+      <div class="tabela-wrap">
+        <table>
+          <thead><tr><th>Turma</th><th>Faixa etária</th><th>Professora</th><th>Auxiliar</th><th>Capacidade</th><th>Crianças</th><th>Status</th><th style="text-align:right">Ações</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-header"><h3 id="modalTitulo">Nova Turma</h3><button class="modal-close" onclick="fecharModal()">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="editId">
+      <div class="form-bloco">
+        <div class="form-bloco-titulo">Identificação</div>
+        <div class="form-row cols-2">
+          <div class="fg"><label>Nome da turma <span class="req">*</span></label><input type="text" id="fNome" placeholder="Ex: Berçário"></div>
+          <div class="fg"><label>Faixa etária <span class="req">*</span></label><input type="text" id="fFaixa" placeholder="Ex: 0 a 1 ano"></div>
+        </div>
+        <div class="fg"><label>Capacidade máxima</label><input type="number" id="fCapacidade" placeholder="Ex: 12" min="1" max="30"></div>
+      </div>
+      <div class="form-bloco">
+        <div class="form-bloco-titulo">Equipe</div>
+        <div class="form-row cols-2">
+          <div class="fg"><label>Professora responsável</label>
+            <select id="fProfessora"><option value="">Selecionar professora</option></select>
+          </div>
+          <div class="fg"><label>Auxiliar</label><input type="text" id="fAuxiliar" placeholder="Nome da auxiliar"></div>
+        </div>
+      </div>
+      <div class="form-bloco">
+        <div class="form-bloco-titulo">Status</div>
+        <div class="toggle-wrap">
+          <button class="toggle on" id="toggleAtivo" onclick="toggleAtivo()"></button>
+          <span id="toggleLabel" style="font-size:13px;font-weight:600">Turma ativa</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvar()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script src="dados.js"></script>
+<script src="sidebar.js"></script>
+<script>
+const emojis = {Berçário:'👶','Maternal I':'🐣','Maternal II':'🌱','Jardim I':'🌻','Jardim II':'🌼'};
+let ativo = true;
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderSidebar('turmas');
+  renderGrid();
+  renderLista();
+  carregarProfessoras();
+});
+
+function toggleAtivo() {
+  ativo = !ativo;
+  document.getElementById('toggleAtivo').className = `toggle ${ativo?'on':'off'}`;
+  document.getElementById('toggleLabel').textContent = ativo ? 'Turma ativa' : 'Turma inativa';
+}
+
+function carregarProfessoras() {
+  const sel = document.getElementById('fProfessora');
+  DB.getUsuarios().filter(u=>u.perfil==='professora'&&u.ativo!==false).forEach(u => {
+    const opt = document.createElement('option');
+    opt.value = u.id;
+    opt.textContent = u.nome;
+    sel.appendChild(opt);
+  });
+}
+
+function renderGrid() {
+  const turmas = DB.getTurmas().filter(t=>t.ativo!==false);
+  document.getElementById('gridTurmas').innerHTML = turmas.map(t => {
+    const criancas = DB.getCriancasPorTurma(t.id).length;
+    const cap = t.capacidade || 0;
+    const pct = cap > 0 ? Math.round((criancas/cap)*100) : 0;
+    const emoji = emojis[t.nome] || '🏫';
+    return `<div style="background:#fff;border-radius:14px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.06);border-top:4px solid var(--verde)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div style="width:44px;height:44px;background:var(--verde-claro);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px">${emoji}</div>
+        <div><strong style="font-size:15px;color:var(--preto)">${t.nome}</strong><div style="font-size:11px;color:var(--cinza)">${t.faixa||'—'}</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--cinza);margin-bottom:6px">${t.professora_nome||'Sem professora vinculada'}</div>
+      <div style="background:#f0f0f0;border-radius:20px;height:8px;margin-bottom:6px;overflow:hidden">
+        <div style="width:${pct}%;height:8px;background:linear-gradient(90deg,var(--verde),#7bc142);border-radius:20px"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--cinza)">
+        <span><strong style="color:var(--preto)">${criancas}</strong> crianças</span>
+        <span>Cap: ${cap}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderLista() {
+  const turmas = DB.getTurmas();
+  const tbody = document.getElementById('tbody');
+  if(!turmas.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--cinza)">Nenhuma turma cadastrada</td></tr>'; return; }
+
+  tbody.innerHTML = turmas.map(t => {
+    const criancas = DB.getCriancasPorTurma(t.id).length;
+    const emoji = emojis[t.nome] || '🏫';
+    return `<tr>
+      <td><strong>${emoji} ${t.nome}</strong></td>
+      <td>${t.faixa||'—'}</td>
+      <td>${t.professora_nome||'<span style="color:var(--cinza)">Não vinculada</span>'}</td>
+      <td>${t.auxiliar||'<span style="color:var(--cinza)">—</span>'}</td>
+      <td>${t.capacidade||'—'}</td>
+      <td><span class="badge badge-verde">${criancas} criança${criancas!==1?'s':''}</span></td>
+      <td><span class="badge ${t.ativo!==false?'badge-ok':'badge-inativo'}">${t.ativo!==false?'✓ Ativa':'Inativa'}</span></td>
+      <td><div class="td-acoes">
+        <button class="btn btn-secondary btn-sm btn-icon" onclick="editar('${t.id}')">✏️</button>
+        <button class="btn btn-danger btn-sm btn-icon" onclick="excluir('${t.id}')">🗑️</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function abrirModal() {
+  document.getElementById('editId').value='';
+  document.getElementById('fNome').value='';
+  document.getElementById('fFaixa').value='';
+  document.getElementById('fCapacidade').value='';
+  document.getElementById('fProfessora').value='';
+  document.getElementById('fAuxiliar').value='';
+  ativo=true;
+  document.getElementById('toggleAtivo').className='toggle on';
+  document.getElementById('toggleLabel').textContent='Turma ativa';
+  document.getElementById('modalTitulo').textContent='Nova Turma';
+  document.getElementById('modal').classList.add('visivel');
+}
+
+function editar(id) {
+  const t = DB.getTurma(id);
+  if(!t) return;
+  document.getElementById('editId').value=t.id;
+  document.getElementById('fNome').value=t.nome;
+  document.getElementById('fFaixa').value=t.faixa||'';
+  document.getElementById('fCapacidade').value=t.capacidade||'';
+  document.getElementById('fProfessora').value=t.professora_id||'';
+  document.getElementById('fAuxiliar').value=t.auxiliar||'';
+  ativo=t.ativo!==false;
+  document.getElementById('toggleAtivo').className=`toggle ${ativo?'on':'off'}`;
+  document.getElementById('toggleLabel').textContent=ativo?'Turma ativa':'Turma inativa';
+  document.getElementById('modalTitulo').textContent='Editar Turma';
+  document.getElementById('modal').classList.add('visivel');
+}
+
+function fecharModal() { document.getElementById('modal').classList.remove('visivel'); }
+
+function salvar() {
+  const id=document.getElementById('editId').value;
+  const nome=document.getElementById('fNome').value.trim();
+  const faixa=document.getElementById('fFaixa').value.trim();
+  const capacidade=parseInt(document.getElementById('fCapacidade').value)||0;
+  const professora_id=document.getElementById('fProfessora').value;
+  const auxiliar=document.getElementById('fAuxiliar').value.trim();
+
+  if(!nome) { toast('Informe o nome da turma.','erro'); return; }
+
+  const prof = professora_id ? DB.getUsuario(professora_id) : null;
+  const dados = {nome,faixa,capacidade,professora_id:professora_id||null,professora_nome:prof?.nome||null,auxiliar:auxiliar||null,ativo};
+
+  if(id) { DB.updateTurma(id,dados); toast('Turma atualizada!'); }
+  else { DB.addTurma(dados); toast('Turma cadastrada!'); }
+
+  // Atualizar turma_id na professora
+  if(professora_id) DB.updateUsuario(professora_id,{turma_id:id||null});
+
+  fecharModal(); renderGrid(); renderLista();
+}
+
+function excluir(id) {
+  const t=DB.getTurma(id);
+  const criancas=DB.getCriancasPorTurma(id).length;
+  if(criancas>0) { toast(`Não é possível excluir: turma tem ${criancas} criança(s) vinculada(s).`,'erro'); return; }
+  if(!confirmar(`Excluir turma "${t?.nome}"?`)) return;
+  DB.deleteTurma(id); toast('Turma excluída.'); renderGrid(); renderLista();
+}
+
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))fecharModal();});
+</script>
+</body>
+</html>

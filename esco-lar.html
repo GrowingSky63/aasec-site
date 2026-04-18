@@ -1,0 +1,1297 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Esco-Lar — Unidade da AASEC</title>
+  <meta name="description"
+    content="Esco-Lar — Proteção Social Básica, convivência e fortalecimento de vínculos. Unidade da AASEC em Carambeí-PR.">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    :root {
+      /* Azul institucional — base da identidade */
+      --azul: #1A56A0;
+      --azul-escuro: #0F3D7A;
+      --azul-profundo: #092B5A;
+      --azul-claro: #EBF2FB;
+      --azul-medio: #C8DEFA;
+
+      /* Acento — âmbar quente, discreto */
+      --ambar: #D97706;
+      --ambar-claro: #FEF3C7;
+
+      /* Neutros — clean e profissional */
+      --branco: #FFFFFF;
+      --fundo: #F7F9FC;
+      --cinza-borda: #E2E8F0;
+      --cinza-claro: #F1F5F9;
+      --cinza: #64748B;
+      --grafite: #334155;
+      --preto: #0F172A;
+
+      /* Feedback */
+      --ok: #059669;
+      --ok-claro: #D1FAE5;
+      --alerta: #DC2626;
+
+      /* Legados (compatibilidade) */
+      --verde: #1A56A0;
+      --verde-claro: #EBF2FB;
+      --amarelo: #D97706;
+      --amarelo-claro: #FEF3C7;
+      --marrom: #0F3D7A;
+      --creme: #F7F9FC;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--grafite);
+      background: var(--fundo);
+      font-size: 15px;
+      line-height: 1.6
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: var(--branco);
+      border-bottom: 3px solid var(--cor);
+      z-index: 1000;
+      padding: 0 4%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, .07)
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none
+    }
+
+    .nav-logo img {
+      height: 64px;
+      width: auto;
+      mix-blend-mode: multiply
+    }
+
+    .nav-logo-txt strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--preto)
+    }
+
+    .nav-logo-txt span {
+      font-size: 10px;
+      color: var(--cinza)
+    }
+
+    .nav-back {
+      text-decoration: none;
+      background: var(--azul);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: all .2s
+    }
+
+    .nav-back:hover {
+      background: var(--azul-escuro)
+    }
+
+    #hero {
+      min-height: 90vh;
+      background: linear-gradient(150deg, #1B5FA8 0%, #0d3b6e 40%, #0a2d5a 100%);
+      display: flex;
+      align-items: center;
+      padding: 80px 4% 40px;
+      position: relative;
+      overflow: hidden
+    }
+
+    #hero::before {
+      content: '';
+      position: absolute;
+      top: -80px;
+      right: -80px;
+      width: 400px;
+      height: 400px;
+      background: var(--cor);
+      border-radius: 50%;
+      opacity: .1
+    }
+
+    #hero::after {
+      content: '';
+      position: absolute;
+      bottom: -60px;
+      left: 10%;
+      width: 250px;
+      height: 250px;
+      background: var(--amarelo);
+      border-radius: 50%;
+      opacity: .06
+    }
+
+    .hero-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+      width: 100%;
+      position: relative;
+      z-index: 1
+    }
+
+    .hero-logo-wrap {
+      display: flex;
+      justify-content: center
+    }
+
+    .hero-logo-wrap img {
+      width: 340px;
+      height: 340px;
+      object-fit: contain;
+      mix-blend-mode: screen;
+      filter: drop-shadow(0 0 40px rgba(74, 124, 31, .5))
+    }
+
+    .htag {
+      display: inline-block;
+      background: rgba(255, 255, 255, .12);
+      color: rgba(255, 255, 255, .7);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+      margin-right: 6px
+    }
+
+    .htag-cor {
+      background: var(--cor);
+      color: var(--branco)
+    }
+
+    h1 {
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 800;
+      color: var(--branco);
+      line-height: 1.15;
+      margin-bottom: 14px
+    }
+
+    h1 span {
+      color: #6ee7b7
+    }
+
+    .hero-desc {
+      font-size: 16px;
+      color: rgba(255, 255, 255, .7);
+      margin-bottom: 28px;
+      line-height: 1.7;
+      font-weight: 300
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 12px 22px;
+      border-radius: 9px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all .25s;
+      border: none;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer
+    }
+
+    .btn-cor {
+      background: var(--cor);
+      color: var(--branco)
+    }
+
+    .btn-cor:hover {
+      background: var(--cor-hover);
+      transform: translateY(-2px)
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, .1);
+      color: var(--branco);
+      border: 1.5px solid rgba(255, 255, 255, .2)
+    }
+
+    .btn-ghost:hover {
+      border-color: #6ee7b7;
+      color: #6ee7b7
+    }
+
+    .faixa {
+      background: var(--cor);
+      padding: 18px 4%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 50px;
+      flex-wrap: wrap
+    }
+
+    .faixa-item {
+      text-align: center
+    }
+
+    .faixa-item strong {
+      display: block;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--branco)
+    }
+
+    .faixa-item span {
+      font-size: 10px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, .7);
+      text-transform: uppercase;
+      letter-spacing: 1px
+    }
+
+    section {
+      padding: 56px 4%
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto
+    }
+
+    .stag {
+      display: inline-block;
+      background: var(--cor-claro);
+      color: var(--cor-hover);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      border-left: 3px solid var(--cor)
+    }
+
+    .stitu {
+      font-size: clamp(22px, 3vw, 30px);
+      font-weight: 800;
+      color: var(--preto);
+      margin-bottom: 8px
+    }
+
+    .ssub {
+      font-size: 15px;
+      color: var(--cinza);
+      line-height: 1.7;
+      max-width: 600px
+    }
+
+    .div {
+      width: 44px;
+      height: 4px;
+      background: var(--cor);
+      border-radius: 2px;
+      margin: 10px 0 24px
+    }
+
+    #apresentacao {
+      background: var(--branco)
+    }
+
+    .apres-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: start;
+      margin-top: 32px
+    }
+
+    .apres-card {
+      background: var(--cinza-claro);
+      border-radius: 10px;
+      padding: 20px 24px;
+      border-left: none
+    }
+
+    .apres-card h3 {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--cinza);
+      margin-bottom: 6px
+    }
+
+    .apres-card p {
+      font-size: 14px;
+      color: var(--grafite);
+      line-height: 1.6
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px
+    }
+
+    .tag {
+      background: var(--azul-claro);
+      color: var(--azul-escuro);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 14px;
+      border-radius: 20px
+    }
+
+    #atividades {
+      background: var(--cinza-claro)
+    }
+
+    .ativ-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 28px
+    }
+
+    .ativ-card {
+      background: var(--branco);
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, .05);
+      border-top: 3px solid var(--cor);
+      transition: all .25s
+    }
+
+    .ativ-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .1)
+    }
+
+    .ativ-icon {
+      font-size: 28px;
+      margin-bottom: 10px
+    }
+
+    .ativ-card h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--preto);
+      margin-bottom: 6px
+    }
+
+    .ativ-card p {
+      font-size: 12px;
+      color: var(--cinza);
+      line-height: 1.5
+    }
+
+    #funcionamento {
+      background: var(--branco)
+    }
+
+    .func-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-top: 28px
+    }
+
+    .func-bloco {
+      background: var(--cor-claro);
+      border-radius: 14px;
+      padding: 28px
+    }
+
+    .func-bloco h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--preto);
+      margin-bottom: 14px
+    }
+
+    .func-bloco ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    .func-bloco ul li {
+      font-size: 13px;
+      color: var(--grafite);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      line-height: 1.5
+    }
+
+    .func-bloco ul li::before {
+      content: '→';
+      color: var(--cor);
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px
+    }
+
+    #limites {
+      background: var(--cinza-claro)
+    }
+
+    .limite-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 28px
+    }
+
+    .limite-card {
+      border-radius: 12px;
+      padding: 24px
+    }
+
+    .limite-card.faz {
+      background: #d1fae5;
+      border-left: 4px solid #10b981
+    }
+
+    .limite-card.nfaz {
+      background: #fee2e2;
+      border-left: 4px solid #ef4444
+    }
+
+    .limite-card h3 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 12px
+    }
+
+    .limite-card.faz h3 {
+      color: #065f46
+    }
+
+    .limite-card.nfaz h3 {
+      color: #991b1b
+    }
+
+    .limite-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px
+    }
+
+    .limite-card ul li {
+      font-size: 13px;
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      line-height: 1.5
+    }
+
+    .limite-card.faz ul li {
+      color: #064e3b
+    }
+
+    .limite-card.nfaz ul li {
+      color: #7f1d1d
+    }
+
+    .limite-card.faz ul li::before {
+      content: '✓';
+      font-weight: 700;
+      color: #10b981;
+      flex-shrink: 0
+    }
+
+    .limite-card.nfaz ul li::before {
+      content: '✗';
+      font-weight: 700;
+      color: #ef4444;
+      flex-shrink: 0
+    }
+
+    #vinculo {
+      background: var(--preto);
+      padding: 56px 4%
+    }
+
+    .vinculo-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center
+    }
+
+    .vinculo-texto h2 {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--branco);
+      margin-bottom: 12px
+    }
+
+    .vinculo-texto h2 span {
+      color: #6ee7b7
+    }
+
+    .vinculo-texto p {
+      font-size: 14px;
+      color: rgba(255, 255, 255, .65);
+      line-height: 1.7
+    }
+
+    .vinculo-estrutura {
+      background: rgba(255, 255, 255, .05);
+      border-radius: 14px;
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, .08)
+    }
+
+    .ve-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 8px
+    }
+
+    .ve-item.principal {
+      background: rgba(255, 208, 0, .1);
+      border-left: 3px solid var(--amarelo)
+    }
+
+    .ve-item.outro {
+      background: rgba(255, 255, 255, .05);
+      border-left: 3px solid rgba(255, 255, 255, .15)
+    }
+
+    .ve-item.atual {
+      background: rgba(74, 124, 31, .2);
+      border-left: 3px solid var(--cor)
+    }
+
+    .ve-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      overflow: hidden;
+      padding: 4px
+    }
+
+    .ve-item.principal .ve-icon {
+      background: var(--amarelo)
+    }
+
+    .ve-item.atual .ve-icon {
+      background: var(--cor)
+    }
+
+    .ve-item.outro .ve-icon {
+      background: rgba(255, 255, 255, .1)
+    }
+
+    .ve-info strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 700
+    }
+
+    .ve-item.principal .ve-info strong {
+      color: var(--amarelo)
+    }
+
+    .ve-item.atual .ve-info strong {
+      color: #6ee7b7
+    }
+
+    .ve-item.outro .ve-info strong {
+      color: rgba(255, 255, 255, .5)
+    }
+
+    .ve-info span {
+      font-size: 11px;
+      color: rgba(255, 255, 255, .35)
+    }
+
+    #documentos {
+      background: var(--branco)
+    }
+
+    .docs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 28px
+    }
+
+    .doc-card {
+      background: var(--cor-claro);
+      border-radius: 10px;
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all .2s;
+      border: 1px solid #d4eac4
+    }
+
+    .doc-card:hover {
+      background: #d4eac4;
+      transform: translateX(3px)
+    }
+
+    .doc-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--cor);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0
+    }
+
+    .doc-info strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--preto)
+    }
+
+    .doc-info span {
+      font-size: 11px;
+      color: var(--cinza)
+    }
+
+    .status {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 8px;
+      margin-left: auto;
+      white-space: nowrap;
+      background: #fff3cd;
+      color: #856404
+    }
+
+    #contato {
+      background: var(--cinza-claro)
+    }
+
+    .contato-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-top: 28px
+    }
+
+    .citem {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--branco);
+      border-radius: 10px;
+      text-decoration: none;
+      border-left: 3px solid var(--cor);
+      transition: all .2s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .04)
+    }
+
+    .citem:hover {
+      transform: translateX(3px)
+    }
+
+    .cicone {
+      width: 38px;
+      height: 38px;
+      background: var(--cor);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0
+    }
+
+    .ctexto label {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--cinza);
+      margin-bottom: 2px
+    }
+
+    .ctexto span {
+      color: var(--preto);
+      font-size: 13px;
+      font-weight: 500
+    }
+
+    form {
+      background: var(--branco);
+      border-radius: 14px;
+      padding: 28px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, .05)
+    }
+
+    form h3 {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--preto);
+      margin-bottom: 18px
+    }
+
+    .fg {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 12px
+    }
+
+    .fg label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--grafite)
+    }
+
+    .fg input,
+    .fg textarea,
+    .fg select {
+      padding: 10px 14px;
+      border: 1.5px solid #e0d8c8;
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      color: var(--grafite);
+      background: var(--fundo);
+      outline: none;
+      transition: border-color .2s
+    }
+
+    .fg input:focus,
+    .fg textarea:focus,
+    .fg select:focus {
+      border-color: var(--cor)
+    }
+
+    .fg textarea {
+      height: 80px;
+      resize: vertical
+    }
+
+    footer {
+      background: #0C1A2E;
+      padding: 36px 4% 20px;
+      border-top: 3px solid var(--cor)
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, .07);
+      margin-bottom: 16px
+    }
+
+    .fmarca {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .fmarca img {
+      height: 64px;
+      mix-blend-mode: screen
+    }
+
+    .fmarca-txt strong {
+      display: block;
+      color: var(--branco);
+      font-size: 13px;
+      font-weight: 800
+    }
+
+    .fmarca-txt span {
+      color: rgba(255, 255, 255, .35);
+      font-size: 10px
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap
+    }
+
+    .footer-links a {
+      color: rgba(255, 255, 255, .45);
+      text-decoration: none;
+      font-size: 12px;
+      transition: color .2s
+    }
+
+    .footer-links a:hover {
+      color: #6ee7b7
+    }
+
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px
+    }
+
+    .footer-bottom p {
+      color: rgba(255, 255, 255, .25);
+      font-size: 11px
+    }
+
+    .footer-bottom span {
+      color: #6ee7b7
+    }
+
+    @media(max-width:900px) {
+
+      .hero-inner,
+      .apres-grid,
+      .func-grid,
+      .limite-grid,
+      .vinculo-inner,
+      .contato-grid {
+        grid-template-columns: 1fr
+      }
+
+      .hero-logo-wrap img {
+        width: 220px;
+        height: 220px
+      }
+
+      .ativ-grid,
+      .docs-grid {
+        grid-template-columns: 1fr 1fr
+      }
+    }
+
+    @media(max-width:600px) {
+
+      .ativ-grid,
+      .docs-grid,
+      .faixa {
+        grid-template-columns: 1fr;
+        gap: 12px
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <img src="assets/logo_escolar_b.png" alt="AASEC">
+      <div class="nav-logo-txt">
+        <strong>AASEC · Esco-Lar</strong>
+        <span>Unidade Socioassistencial</span>
+      </div>
+    </a>
+    <a href="index.html" class="nav-back">← Voltar à AASEC</a>
+  </nav>
+
+  <section id="hero">
+    <div class="hero-inner">
+      <div class="hero-logo-wrap"><a href="index.html"><img src="assets/logo_escolar_b.png" alt="Esco-Lar"></a></div>
+      <div>
+        <span class="htag">Unidade da AASEC</span>
+        <span class="htag htag-cor">Proteção Social Básica</span>
+        <h1>Esco-Lar<br><span>Convivência, acolhimento</span><br>e fortalecimento de vínculos.</h1>
+        <p class="hero-desc">Unidade socioassistencial da AASEC voltada à proteção social básica. Promove convivência,
+          acolhimento e fortalecimento de vínculos familiares e comunitários em Carambeí-PR.</p>
+        <div class="hero-btns">
+          <a href="#apresentacao" class="btn btn-cor">Conheça a Esco-Lar</a>
+          <a href="#contato" class="btn btn-ghost">Entre em contato</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="faixa">
+    <div class="faixa-item"><strong>Social</strong><span>Proteção básica</span></div>
+    <div class="faixa-item"><strong>Vínculos</strong><span>Fortalecimento</span></div>
+    <div class="faixa-item"><strong>Família</strong><span>Apoio e orientação</span></div>
+    <div class="faixa-item"><strong>AASEC</strong><span>Mantenedora</span></div>
+  </div>
+
+  <section id="apresentacao">
+    <div class="container">
+      <div class="stag">Sobre a unidade</div>
+      <h2 class="stitu">O que é a Esco-Lar</h2>
+      <div class="div"></div>
+      <div class="apres-grid">
+        <div>
+          <p style="font-size:15px;color:var(--grafite);line-height:1.8;margin-bottom:20px">A Esco-Lar é uma unidade da
+            AASEC voltada à proteção social básica, convivência e fortalecimento de vínculos. Atua com acolhimento,
+            apoio socioeducativo, orientação e articulação com famílias e rede de atendimento, dentro dos limites
+            institucionais da unidade.</p>
+          <div class="tags">
+            <span class="tag">Proteção social básica</span>
+            <span class="tag">Convivência</span>
+            <span class="tag">Fortalecimento de vínculos</span>
+            <span class="tag">Apoio socioeducativo</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="apres-card">
+            <h3>Natureza</h3>
+            <p>Unidade socioassistencial — foco em proteção social básica, convivência e fortalecimento de vínculos
+              familiares e comunitários.</p>
+          </div>
+          <div class="apres-card">
+            <h3>Público</h3>
+            <p>Famílias e pessoas em situação de vulnerabilidade social, com foco em convivência e apoio socioeducativo.
+            </p>
+          </div>
+          <div class="apres-card">
+            <h3>Vínculo institucional</h3>
+            <p>Unidade mantida pela AASEC — Associação de Assistência Social Evangélica de Carambeí.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="atividades">
+    <div class="container">
+      <div class="stag">O que fazemos</div>
+      <h2 class="stitu">Atividades e Serviços</h2>
+      <div class="div"></div>
+      <div class="ativ-grid">
+        <div class="ativ-card">
+          <div class="ativ-icon">🤲</div>
+          <h4>Acolhimento</h4>
+          <p>Recepção respeitosa e acolhedora de pessoas e famílias em situação de vulnerabilidade.</p>
+        </div>
+        <div class="ativ-card">
+          <div class="ativ-icon">🌱</div>
+          <h4>Convivência</h4>
+          <p>Promoção de espaços de convivência que fortalecem relações e constroem pertencimento.</p>
+        </div>
+        <div class="ativ-card">
+          <div class="ativ-icon">👨‍👩‍👧</div>
+          <h4>Fortalecimento de Vínculos</h4>
+          <p>Ações que fortalecem vínculos familiares e comunitários de forma estruturada.</p>
+        </div>
+        <div class="ativ-card">
+          <div class="ativ-icon">📚</div>
+          <h4>Apoio Socioeducativo</h4>
+          <p>Atividades socioeducativas que apoiam o desenvolvimento e a autonomia.</p>
+        </div>
+        <div class="ativ-card">
+          <div class="ativ-icon">🗺️</div>
+          <h4>Orientação e Articulação</h4>
+          <p>Orientação às famílias e articulação com a rede de atendimento quando necessário.</p>
+        </div>
+        <div class="ativ-card">
+          <div class="ativ-icon">📋</div>
+          <h4>Registro e Acompanhamento</h4>
+          <p>Documentação e acompanhamento das ações realizadas com as famílias e indivíduos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="funcionamento">
+    <div class="container">
+      <div class="stag">Como funciona</div>
+      <h2 class="stitu">Funcionamento e Modelo de Atuação</h2>
+      <div class="div"></div>
+      <div class="func-grid">
+        <div class="func-bloco">
+          <h3>🤲 Modelo de atendimento</h3>
+          <ul>
+            <li>Atendimento presencial em espaço de convivência</li>
+            <li>Atividades coletivas e grupais</li>
+            <li>Escuta ativa e acolhimento sem julgamento</li>
+            <li>Acompanhamento de famílias e indivíduos</li>
+            <li>Registro e documentação das ações</li>
+          </ul>
+        </div>
+        <div class="func-bloco">
+          <h3>🗺️ Articulação com a rede</h3>
+          <ul>
+            <li>Quando a demanda excede a capacidade da unidade, é encaminhada à rede competente</li>
+            <li>Comunicação com CRAS, CAPS e outros serviços</li>
+            <li>Não substitui atendimento especializado</li>
+            <li>Atua dentro dos limites da proteção social básica</li>
+            <li>Tudo documentado e registrado</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="limites">
+    <div class="container">
+      <div class="stag">Atuação clara</div>
+      <h2 class="stitu">O que a Esco-Lar faz e não faz</h2>
+      <div class="div"></div>
+      <p class="ssub" style="margin-bottom:24px">A clareza sobre os limites de atuação protege quem atendemos e garante
+        que cada situação receba o suporte adequado.</p>
+      <div class="limite-grid">
+        <div class="limite-card faz">
+          <h3>✅ A Esco-Lar faz</h3>
+          <ul>
+            <li>Promove convivência e acolhimento</li>
+            <li>Fortalece vínculos familiares e comunitários</li>
+            <li>Desenvolve apoio socioeducativo</li>
+            <li>Orienta famílias e articula encaminhamentos</li>
+            <li>Documenta e acompanha as ações</li>
+            <li>Atua dentro da proteção social básica</li>
+          </ul>
+        </div>
+        <div class="limite-card nfaz">
+          <h3>✗ A Esco-Lar não é</h3>
+          <ul>
+            <li>Escola ou unidade educacional</li>
+            <li>Serviço clínico ou terapêutico</li>
+            <li>Serviço de média ou alta complexidade</li>
+            <li>Substituto para CRAS, CAPS ou atendimento especializado</li>
+            <li>Serviço de contenção de crise</li>
+            <li>Serviço de acolhimento institucional</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="vinculo" style="padding:0">
+    <div id="vinculo">
+      <div class="vinculo-inner">
+        <div class="vinculo-texto">
+          <h2>Parte de algo <span>maior</span></h2>
+          <p style="margin-bottom:14px">A Esco-Lar é uma unidade mantida pela AASEC — Associação de Assistência Social
+            Evangélica de Carambeí. A AASEC é a entidade responsável pela governança, sustentação institucional e
+            coordenação de suas unidades.</p>
+          <p>A Esco-Lar integra a estrutura da AASEC como unidade socioassistencial, complementando a atuação
+            educacional do CEI Betel. Juntas, as unidades compõem uma resposta organizada às necessidades da comunidade.
+          </p>
+          <a href="index.html" class="btn btn-cor" style="margin-top:20px">Conheça a AASEC</a>
+        </div>
+        <div class="vinculo-estrutura">
+          <div class="ve-item principal">
+            <div class="ve-icon">🏛️</div>
+            <div class="ve-info"><strong>AASEC</strong><span>Entidade mantenedora · Governança</span></div>
+          </div>
+          <div style="padding-left:16px;border-left:2px solid rgba(255,255,255,.1);margin-left:18px">
+            <div class="ve-item outro" style="margin-left:0">
+              <div class="ve-icon">🌻</div>
+              <div class="ve-info"><strong>CEI Betel</strong><span>Educação Infantil · 0–5 anos</span></div>
+            </div>
+            <div class="ve-item atual" style="margin-left:0">
+              <div class="ve-icon">🤲</div>
+              <div class="ve-info"><strong>Esco-Lar</strong><span>Proteção Social Básica · você está aqui</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="documentos">
+    <div class="container">
+      <div class="stag">Transparência</div>
+      <h2 class="stitu">Documentação da Esco-Lar</h2>
+      <div class="div"></div>
+      <p class="ssub" style="margin-bottom:24px">Documentos próprios da unidade — distintos da documentação
+        institucional da AASEC.</p>
+      <div class="docs-grid" id="docsInstGrid">
+        <div class="doc-card">
+          <div class="doc-icon">📋</div>
+          <div class="doc-info"><strong>Regimento Interno</strong><span>Normas da unidade</span></div><span
+            class="status">Em breve</span>
+        </div>
+        <div class="doc-card">
+          <div class="doc-icon">🚪</div>
+          <div class="doc-info"><strong>Protocolo de Entrada</strong><span>Critérios e fluxo de acesso</span></div><span
+            class="status">Em breve</span>
+        </div>
+        <div class="doc-card">
+          <div class="doc-icon">⚡</div>
+          <div class="doc-info"><strong>Protocolo de Crise</strong><span>Procedimentos para situações críticas</span>
+          </div><span class="status">Em breve</span>
+        </div>
+        <div class="doc-card">
+          <div class="doc-icon">🤝</div>
+          <div class="doc-info"><strong>Protocolo de Atendimento</strong><span>Fluxo de acompanhamento</span></div><span
+            class="status">Em breve</span>
+        </div>
+        <div class="doc-card">
+          <div class="doc-icon">📊</div>
+          <div class="doc-info"><strong>Plano de Trabalho</strong><span>Planejamento de ações</span></div><span
+            class="status">Em breve</span>
+        </div>
+        <div class="doc-card">
+          <div class="doc-icon">📄</div>
+          <div class="doc-info"><strong>Relatórios e Ofícios</strong><span>Documentação operacional</span></div><span
+            class="status">Em breve</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contato">
+    <div class="container">
+      <div class="stag">Fale conosco</div>
+      <h2 class="stitu">Contato</h2>
+      <div class="div"></div>
+      <div class="contato-grid">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <p style="font-size:14px;color:var(--cinza);margin-bottom:8px">Para informações sobre a Esco-Lar, entre em
+            contato pelo canal da AASEC.</p>
+          <a href="tel:+554232314245" class="citem">
+            <div class="cicone">📞</div>
+            <div class="ctexto"><label>Telefone</label><span>(42) 3231-4245</span></div>
+          </a>
+          <a href="https://wa.me/554232314245" class="citem" target="_blank">
+            <div class="cicone">💬</div>
+            <div class="ctexto"><label>WhatsApp</label><span>(42) 3231-4245</span></div>
+          </a>
+          <a href="mailto:esco-lar@hotmail.com" class="citem">
+            <div class="cicone">✉️</div>
+            <div class="ctexto"><label>E-mail</label><span>esco-lar@hotmail.com</span></div>
+          </a>
+          <div class="citem">
+            <div class="cicone">📍</div>
+            <div class="ctexto"><label>Endereço</label><span>Rua Ouro Branco, 517 — Centro — Carambeí/PR</span></div>
+          </div>
+        </div>
+        <form>
+          <h3>Envie uma mensagem</h3>
+          <div class="fg"><label>Nome</label><input type="text" placeholder="Seu nome"></div>
+          <div class="fg"><label>Contato</label><input type="text" placeholder="E-mail ou WhatsApp"></div>
+          <div class="fg"><label>Assunto</label>
+            <select>
+              <option>Informações gerais</option>
+              <option>Voluntariado</option>
+              <option>Parceria</option>
+              <option>Outro</option>
+            </select>
+          </div>
+          <div class="fg"><label>Mensagem</label><textarea placeholder="Como podemos ajudar?"></textarea></div>
+          <button type="submit" class="btn btn-cor" style="width:100%;justify-content:center">Enviar</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="fmarca"><a href="index.html"><img src="assets/logo_escolar_b.png" alt="AASEC">
+          <div class="fmarca-txt"><strong>Esco-Lar · AASEC</strong><span>Proteção Social Básica — Carambeí/PR</span>
+          </div>
+      </div>
+      <div class="footer-links">
+        <a href="index.html">← AASEC</a>
+        <a href="cei-betel.html">CEI Betel</a>
+        <a href="#apresentacao">Apresentação</a>
+        <a href="#atividades">Atividades</a>
+        <a href="#documentos">Documentos</a>
+        <a href="#contato">Contato</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 <span>Esco-Lar · AASEC</span> — Todos os direitos reservados.</p>
+      <p>Carambeí — Paraná — Brasil</p>
+    </div>
+  </footer>
+
+  <script>
+    window.addEventListener('scroll', () => {
+      document.querySelector('nav').style.boxShadow = window.scrollY > 10 ? '0 4px 20px rgba(0,0,0,.12)' : '';
+    });
+  </script>
+
+  <script>
+    (function () {
+      const meses = ['', 'Janeiro', 'Fevereiro', 'Marco', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+      const docs = JSON.parse(localStorage.getItem('aasec_docs') || '[]')
+        .filter(d => d.unidade === 'Esco-Lar' && d.tipo !== 'prestacao');
+      const grid = document.getElementById('docsInstGrid');
+      if (!grid || !docs.length) return;
+      grid.innerHTML = docs.map(d => {
+        const tem = !!d.link;
+        return <div class="doc-card" style="">
+          <div class="doc-icon"></div>
+          <div class="doc-info"><strong>+d.nome+</strong><span>+(d.ano||'')+</span></div>
+          <span class="status" style=""></span>
+        </div>;
+      }).join('');
+    })();
+  </script>
+  <script src="dados_docs.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      renderDocsPublico('docsInstGrid', { unidade: 'Esco-Lar' });
+    });
+  </script>
+</body>
+
+</html>

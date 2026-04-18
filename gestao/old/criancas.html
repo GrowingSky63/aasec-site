@@ -1,0 +1,291 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crianças — Área Docente Betel</title>
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+<button class="mobile-toggle" id="mobileToggle">☰</button>
+<div class="sidebar">
+  <div class="sidebar-logo"><img src="../assets/logo_aasec.png" alt="Betel"><strong>Área Docente Betel</strong><span>CEI Betel · AASEC</span></div>
+  <div class="sidebar-perfil"><div class="sp-nome"></div><div class="sp-cargo"></div><span class="sp-badge"></span></div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Principal</div>
+    <a class="nav-item" href="dashboard.html" data-page="dashboard"><span class="nav-icon">🏠</span> Painel</a>
+    <a class="nav-item" href="avaliacao.html" data-page="avaliacao"><span class="nav-icon">📝</span> Avaliação Mensal</a>
+    <div class="nav-label">Cadastros</div>
+    <a class="nav-item nav-admin" href="usuarios.html" data-page="usuarios"><span class="nav-icon">👥</span> Usuários</a>
+    <a class="nav-item nav-admin" href="turmas.html" data-page="turmas"><span class="nav-icon">👩‍👧‍👦</span> Turmas</a>
+    <a class="nav-item" href="criancas.html" data-page="criancas"><span class="nav-icon">🌻</span> Crianças</a>
+    <a class="nav-item" href="responsaveis.html" data-page="responsaveis"><span class="nav-icon">👨‍👩‍👧</span> Responsáveis</a>
+  </nav>
+  <div class="sidebar-bottom"><a href="login.html">← Sair</a></div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-esq"><h2>🌻 Crianças</h2><p>Cadastro e acompanhamento das crianças matriculadas</p></div>
+    <button class="btn btn-primary btn-sm" onclick="abrirModal()">+ Cadastrar criança</button>
+  </div>
+  <div class="content">
+    <div class="bloco">
+      <div class="list-toolbar">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="busca" placeholder="Buscar por nome ou responsável..." oninput="renderLista()">
+        </div>
+        <select class="filter-select" id="filtroTurma" onchange="renderLista()">
+          <option value="">Todas as turmas</option>
+        </select>
+        <select class="filter-select" id="filtroStatus" onchange="renderLista()">
+          <option value="ativo">Ativas</option>
+          <option value="inativo">Inativas</option>
+          <option value="">Todas</option>
+        </select>
+      </div>
+      <div class="contador" id="contador"></div>
+      <div class="tabela-wrap">
+        <table>
+          <thead><tr><th>Criança</th><th>Idade</th><th>Turma</th><th>Matrícula</th><th>Responsável</th><th>Contato</th><th>Status</th><th style="text-align:right">Ações</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="vazio" id="vazio" style="display:none"><div class="vi">🌻</div><h4>Nenhuma criança encontrada</h4><p>Ajuste os filtros ou cadastre uma nova criança.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal" style="max-width:680px">
+    <div class="modal-header"><h3 id="modalTitulo">Cadastrar Criança</h3><button class="modal-close" onclick="fecharModal()">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="editId">
+
+      <div class="form-bloco">
+        <div class="form-bloco-titulo">Dados da criança</div>
+        <div class="form-row cols-2">
+          <div class="fg"><label>Nome completo <span class="req">*</span></label><input type="text" id="fNome" placeholder="Nome completo da criança"></div>
+          <div class="fg"><label>Data de nascimento <span class="req">*</span></label><input type="date" id="fNasc"></div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="fg"><label>Turma <span class="req">*</span></label><select id="fTurma"><option value="">Selecione a turma</option></select></div>
+          <div class="fg"><label>Data de matrícula</label><input type="date" id="fMatricula"></div>
+        </div>
+      </div>
+
+      <div class="form-bloco">
+        <div class="form-bloco-titulo">Responsável principal</div>
+        <div class="form-row cols-2">
+          <div class="fg"><label>Nome do responsável <span class="req">*</span></label><input type="text" id="fRespNome" placeholder="Nome completo"></div>
+          <div class="fg"><label>Parentesco</label>
+            <select id="fRespParent">
+              <option value="Mãe">Mãe</option><option value="Pai">Pai</option>
+              <option value="Avó/Avô">Avó/Avô</option><option value="Tio/Tia">Tio/Tia</option>
+              <option value="Responsável legal">Responsável legal</option><option value="Outro">Outro</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row cols-2">
+          <div class="fg"><label>Telefone principal <span class="req">*</span></label><input type="tel" id="fRespTel" placeholder="(42) 9 9999-9999"></div>
+          <div class="fg"><label>WhatsApp</label><input type="tel" id="fRespWpp" placeholder="(42) 9 9999-9999"></div>
+        </div>
+      </div>
+
+      <div class="form-bloco">
+        <div class="form-bloco-titulo">Informações complementares</div>
+        <div class="fg" style="margin-bottom:12px"><label>Alergias</label><input type="text" id="fAlergias" placeholder="Descreva alergias conhecidas (ou deixe em branco)"></div>
+        <div class="fg" style="margin-bottom:12px"><label>Restrições alimentares</label><input type="text" id="fRestricoes" placeholder="Restrições alimentares (ou deixe em branco)"></div>
+        <div class="fg" style="margin-bottom:12px"><label>Quem pode buscar a criança</label><input type="text" id="fBusca" placeholder="Nome das pessoas autorizadas a buscar"></div>
+        <div class="fg"><label>Observações gerais</label><textarea id="fObs" placeholder="Necessidades específicas, informações importantes..."></textarea></div>
+      </div>
+
+      <div class="form-bloco">
+        <div class="form-bloco-titulo">Status</div>
+        <div class="toggle-wrap">
+          <button class="toggle on" id="toggleAtivo" onclick="toggleAtivo()"></button>
+          <span id="toggleLabel" style="font-size:13px;font-weight:600">Criança ativa / matriculada</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvar()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script src="dados.js"></script>
+<script src="sidebar.js"></script>
+<script>
+let ativo = true;
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderSidebar('criancas');
+  carregarFiltroTurmas();
+  carregarSelectTurmas();
+  renderLista();
+  // Data matrícula padrão = hoje
+  document.getElementById('fMatricula').value = new Date().toISOString().split('T')[0];
+});
+
+function toggleAtivo() {
+  ativo = !ativo;
+  document.getElementById('toggleAtivo').className = `toggle ${ativo?'on':'off'}`;
+  document.getElementById('toggleLabel').textContent = ativo ? 'Criança ativa / matriculada' : 'Desligada / inativa';
+}
+
+function carregarFiltroTurmas() {
+  const sel = document.getElementById('filtroTurma');
+  DB.getTurmas().forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.id; opt.textContent = t.nome; sel.appendChild(opt);
+  });
+}
+
+function carregarSelectTurmas() {
+  const sel = document.getElementById('fTurma');
+  DB.getTurmas().filter(t=>t.ativo!==false).forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.id; opt.textContent = `${t.nome} (${t.faixa||'—'})`; sel.appendChild(opt);
+  });
+}
+
+function renderLista() {
+  const busca = document.getElementById('busca').value.toLowerCase();
+  const filtroTurma = document.getElementById('filtroTurma').value;
+  const filtroStatus = document.getElementById('filtroStatus').value;
+
+  let lista = DB.getCriancas().filter(c => {
+    const ok_b = !busca || c.nome.toLowerCase().includes(busca) || (c.resp_nome||'').toLowerCase().includes(busca);
+    const ok_t = !filtroTurma || c.turma_id === filtroTurma;
+    const ok_s = !filtroStatus || (filtroStatus==='ativo' ? c.ativo!==false : c.ativo===false);
+    return ok_b && ok_t && ok_s;
+  });
+
+  document.getElementById('contador').innerHTML = `Exibindo <span>${lista.length}</span> de <span>${DB.getCriancas().length}</span> criança(s)`;
+
+  const tbody = document.getElementById('tbody');
+  const vazio = document.getElementById('vazio');
+  if(!lista.length) { tbody.innerHTML=''; vazio.style.display='block'; return; }
+  vazio.style.display='none';
+
+  tbody.innerHTML = lista.map(c => {
+    const turma = c.turma_id ? DB.getTurma(c.turma_id)?.nome : '—';
+    const idade = calcIdade(c.dt_nasc);
+    const alertas = [];
+    if(c.alergias) alertas.push('⚠️ Alergia');
+    return `<tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:36px;height:36px;background:var(--verde-claro);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🌻</div>
+          <div>
+            <strong style="color:var(--preto)">${c.nome}</strong>
+            ${alertas.map(a=>`<span style="font-size:10px;color:var(--atencao);display:block">${a}</span>`).join('')}
+          </div>
+        </div>
+      </td>
+      <td>${idade}</td>
+      <td><span class="badge badge-verde">${turma||'—'}</span></td>
+      <td>${fmtData(c.matricula)}</td>
+      <td>${c.resp_nome||'—'}</td>
+      <td><a href="tel:${c.resp_tel}" style="color:var(--verde);text-decoration:none;font-size:12px">${c.resp_tel||'—'}</a></td>
+      <td><span class="badge ${c.ativo!==false?'badge-ok':'badge-inativo'}">${c.ativo!==false?'✓ Ativa':'Inativa'}</span></td>
+      <td><div class="td-acoes">
+        <button class="btn btn-secondary btn-sm btn-icon" onclick="editar('${c.id}')" title="Editar">✏️</button>
+        <button class="btn btn-secondary btn-sm btn-icon" onclick="verResponsaveis('${c.id}')" title="Responsáveis">👨‍👩‍👧</button>
+        <button class="btn btn-danger btn-sm btn-icon" onclick="excluir('${c.id}')" title="Excluir">🗑️</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function abrirModal() {
+  document.getElementById('editId').value='';
+  document.getElementById('fNome').value='';
+  document.getElementById('fNasc').value='';
+  document.getElementById('fTurma').value='';
+  document.getElementById('fMatricula').value=new Date().toISOString().split('T')[0];
+  document.getElementById('fRespNome').value='';
+  document.getElementById('fRespParent').value='Mãe';
+  document.getElementById('fRespTel').value='';
+  document.getElementById('fRespWpp').value='';
+  document.getElementById('fAlergias').value='';
+  document.getElementById('fRestricoes').value='';
+  document.getElementById('fBusca').value='';
+  document.getElementById('fObs').value='';
+  ativo=true;
+  document.getElementById('toggleAtivo').className='toggle on';
+  document.getElementById('toggleLabel').textContent='Criança ativa / matriculada';
+  document.getElementById('modalTitulo').textContent='Cadastrar Criança';
+  document.getElementById('modal').classList.add('visivel');
+}
+
+function editar(id) {
+  const c=DB.getCrianca(id);
+  if(!c) return;
+  document.getElementById('editId').value=c.id;
+  document.getElementById('fNome').value=c.nome;
+  document.getElementById('fNasc').value=c.dt_nasc||'';
+  document.getElementById('fTurma').value=c.turma_id||'';
+  document.getElementById('fMatricula').value=c.matricula||'';
+  document.getElementById('fRespNome').value=c.resp_nome||'';
+  document.getElementById('fRespParent').value=c.resp_parentesco||'Mãe';
+  document.getElementById('fRespTel').value=c.resp_tel||'';
+  document.getElementById('fRespWpp').value=c.resp_wpp||'';
+  document.getElementById('fAlergias').value=c.alergias||'';
+  document.getElementById('fRestricoes').value=c.restricoes||'';
+  document.getElementById('fBusca').value=c.quem_busca||'';
+  document.getElementById('fObs').value=c.obs||'';
+  ativo=c.ativo!==false;
+  document.getElementById('toggleAtivo').className=`toggle ${ativo?'on':'off'}`;
+  document.getElementById('toggleLabel').textContent=ativo?'Criança ativa / matriculada':'Desligada / inativa';
+  document.getElementById('modalTitulo').textContent='Editar Criança';
+  document.getElementById('modal').classList.add('visivel');
+}
+
+function fecharModal() { document.getElementById('modal').classList.remove('visivel'); }
+
+function salvar() {
+  const id=document.getElementById('editId').value;
+  const nome=document.getElementById('fNome').value.trim();
+  const dt_nasc=document.getElementById('fNasc').value;
+  const turma_id=document.getElementById('fTurma').value;
+  const resp_nome=document.getElementById('fRespNome').value.trim();
+  const resp_tel=document.getElementById('fRespTel').value.trim();
+
+  if(!nome||!dt_nasc||!turma_id||!resp_nome||!resp_tel) { toast('Preencha os campos obrigatórios.','erro'); return; }
+
+  const dados={
+    nome, dt_nasc, turma_id, ativo,
+    matricula: document.getElementById('fMatricula').value,
+    resp_nome, resp_parentesco: document.getElementById('fRespParent').value,
+    resp_tel, resp_wpp: document.getElementById('fRespWpp').value.trim(),
+    alergias: document.getElementById('fAlergias').value.trim(),
+    restricoes: document.getElementById('fRestricoes').value.trim(),
+    quem_busca: document.getElementById('fBusca').value.trim(),
+    obs: document.getElementById('fObs').value.trim()
+  };
+
+  if(id) { DB.updateCrianca(id,dados); toast('Criança atualizada com sucesso!'); }
+  else { DB.addCrianca(dados); toast('Criança cadastrada com sucesso!'); }
+  fecharModal(); renderLista();
+}
+
+function excluir(id) {
+  const c=DB.getCrianca(id);
+  if(!confirmar(`Excluir "${c?.nome}"? As avaliações serão mantidas.`)) return;
+  DB.deleteCrianca(id); toast('Criança excluída.'); renderLista();
+}
+
+function verResponsaveis(id) {
+  const c = DB.getCrianca(id);
+  window.location.href = `responsaveis.html?crianca=${id}`;
+}
+
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))fecharModal();});
+</script>
+</body>
+</html>
