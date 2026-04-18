@@ -1,0 +1,16 @@
+[Unit]
+Description=AASEC Server
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/aasec
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=5
+Environment=NODE_ENV=production
+Environment=PORT=8080
+
+[Install]
+WantedBy=multi-user.target
