@@ -1,9 +1,3 @@
-/**
- * AASEC — Servidor de uploads
- * node server.js
- * Acesse: http://localhost:3000
- */
-
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -11,7 +5,7 @@ const url = require('url');
 const Busboy = require('busboy');
 
 const ROOT = __dirname;
-const PORT = 3000;
+const PORT = 8080;
 
 // Parse multipart form-data simples
 function parseMultipart(body, boundary) {
@@ -221,7 +215,7 @@ function fazerBackup() {
 fazerBackup();
 
 server.listen(PORT, () => {
-  console.log(`\n✅ AASEC servidor rodando em http://localhost:${PORT}`);
+  console.log(`\n✅ AASEC servidor rodando em http://192.168.1.70:${PORT}`);
   console.log(`   Uploads aceitos em POST /upload`);
   console.log(`   Ctrl+C para parar\n`);
 });

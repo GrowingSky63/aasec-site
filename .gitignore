@@ -9,3 +9,6 @@ yarn-error.log*
 Thumbs.db
 docs/
 docs_backup/
+
+*.md
+!README.md
