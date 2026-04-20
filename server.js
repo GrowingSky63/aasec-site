@@ -152,9 +152,8 @@ const server = http.createServer((req, res) => {
 
   fs.readFile(filePath, (err, data) => {
     if (err) {
-      // Tentar index.html em subpastas
       if (err.code === 'ENOENT') { res.writeHead(404); res.end('Não encontrado'); }
-      else { res.writeHead(500); res.end('Erro interno'); }
+      else { console.error('ERRO ao ler arquivo:', filePath, err.code, err.message); res.writeHead(500); res.end('Erro interno'); }
       return;
     }
     const ext = path.extname(filePath).toLowerCase();
