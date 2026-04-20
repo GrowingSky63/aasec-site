@@ -81,13 +81,8 @@ const server = http.createServer((req, res) => {
         }
         // Destino
         let destDir;
-        if (meta.tipo === 'prestacao' && meta.unidade === 'CEI Betel' && meta.ano) {
-          destDir = path.join(ROOT, 'docs', 'prestacoes', 'betel', meta.ano);
-        } else if (meta.tipo === 'prestacao' && meta.unidade === 'Esco-Lar' && meta.ano) {
-          destDir = path.join(ROOT, 'docs', 'prestacoes', 'escoLar', meta.ano);
-        } else {
-          destDir = path.join(ROOT, 'docs', 'institucional');
-        }
+        const tipoPasta = meta.tipo === 'prestacao' ? 'prestacoes' : meta.tipo;
+        destDir = path.join(ROOT, 'docs', tipoPasta, meta.unidade);
         // Nome padronizado
         let destName = fileName;
         if (meta.tipo === 'prestacao' && meta.mes && meta.ano) {
@@ -122,7 +117,7 @@ const server = http.createServer((req, res) => {
         const body = JSON.parse(Buffer.concat(chunks).toString());
         const link = (body.link || '').replace(/^['"]|['"]$/g, '').trim();
         console.log('APAGAR link recebido:', link);
-        // link vem como /docs/prestacoes/betel/2026/042026.pdf
+        // link vem como /docs/prestacoes/CEI Betel/042026.pdf
         const rel = link.startsWith('/') ? link.slice(1) : link;
         const filePath = path.join(ROOT, rel);
         // Segurança: só apagar dentro de /docs/

@@ -477,12 +477,12 @@ function calcularDestino() {
   if (!tipo || !unidade) { prev.style.display = 'none'; return; }
 
   var destino;
+  var tipoPasta = tipo === 'prestacao' ? 'prestacoes' : tipo;
   if (tipo === 'prestacao' && mes && ano) {
-    var pasta = unidade === 'CEI Betel' ? 'betel' : 'escoLar';
-    destino = 'docs/prestacoes/' + pasta + '/' + ano + '/' + mes + ano + '.pdf';
+    destino = 'docs/' + tipoPasta + '/' + unidade + '/' + mes + ano + '.pdf';
   } else {
     var nomeArq = _arquivo ? _arquivo.name : '(nome do arquivo)';
-    destino = 'docs/institucional/' + nomeArq;
+    destino = 'docs/' + tipoPasta + '/' + unidade + '/' + nomeArq;
   }
 
   document.getElementById('previewPath').textContent   = destino;

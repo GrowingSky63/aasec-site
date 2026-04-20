@@ -7,7 +7,7 @@
   docs = docs.filter(d => d.tipo !== 'prestacao');
 
   const agora = new Date().toISOString();
-  const base = 'docs/prestacoes/betel/'; // relativo ao index.html
+  const base = 'docs/prestacoes/CEI Betel/'; // relativo ao index.html
   const meses = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   const registros = [];
 
