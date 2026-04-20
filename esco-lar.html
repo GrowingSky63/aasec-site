@@ -167,15 +167,24 @@
 
     .hero-logo-wrap {
       display: flex;
-      justify-content: center
+      justify-content: center;
+      align-items: center
+    }
+
+    .hero-logo-wrap a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle, rgba(255,255,255,.18) 0%, rgba(255,255,255,.08) 40%, rgba(255,255,255,.02) 60%, transparent 75%);
+      border-radius: 50%;
+      padding: 40px
     }
 
     .hero-logo-wrap img {
       width: 340px;
       height: 340px;
       object-fit: contain;
-      mix-blend-mode: screen;
-      filter: drop-shadow(0 0 40px rgba(74, 124, 31, .5))
+      filter: drop-shadow(0 0 40px rgba(255,255,255,.3)) drop-shadow(0 0 80px rgba(74,124,31,.25)) drop-shadow(0 4px 12px rgba(0,0,0,.3))
     }
 
     .htag {
@@ -1162,38 +1171,7 @@
       <div class="div"></div>
       <p class="ssub" style="margin-bottom:24px">Documentos próprios da unidade — distintos da documentação
         institucional da AASEC.</p>
-      <div class="docs-grid" id="docsInstGrid">
-        <div class="doc-card">
-          <div class="doc-icon">📋</div>
-          <div class="doc-info"><strong>Regimento Interno</strong><span>Normas da unidade</span></div><span
-            class="status">Em breve</span>
-        </div>
-        <div class="doc-card">
-          <div class="doc-icon">🚪</div>
-          <div class="doc-info"><strong>Protocolo de Entrada</strong><span>Critérios e fluxo de acesso</span></div><span
-            class="status">Em breve</span>
-        </div>
-        <div class="doc-card">
-          <div class="doc-icon">⚡</div>
-          <div class="doc-info"><strong>Protocolo de Crise</strong><span>Procedimentos para situações críticas</span>
-          </div><span class="status">Em breve</span>
-        </div>
-        <div class="doc-card">
-          <div class="doc-icon">🤝</div>
-          <div class="doc-info"><strong>Protocolo de Atendimento</strong><span>Fluxo de acompanhamento</span></div><span
-            class="status">Em breve</span>
-        </div>
-        <div class="doc-card">
-          <div class="doc-icon">📊</div>
-          <div class="doc-info"><strong>Plano de Trabalho</strong><span>Planejamento de ações</span></div><span
-            class="status">Em breve</span>
-        </div>
-        <div class="doc-card">
-          <div class="doc-icon">📄</div>
-          <div class="doc-info"><strong>Relatórios e Ofícios</strong><span>Documentação operacional</span></div><span
-            class="status">Em breve</span>
-        </div>
-      </div>
+      <div class="docs-grid" id="docsInstGrid"></div>
     </div>
   </section>
 
