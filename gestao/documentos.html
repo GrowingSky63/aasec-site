@@ -186,6 +186,7 @@
           <button class="ftab" onclick="setF('tipo','prestacao',this)">📊 Prestações</button>
           <button class="ftab" onclick="setF('tipo','institucional',this)">🏛️ Institucional</button>
           <button class="ftab" onclick="setF('tipo','contrato',this)">📝 Contratos</button>
+          <button class="ftab" onclick="setF('tipo','relatorio',this)">📈 Relatórios</button>
         </div>
       </div>
       <div class="filtro-grupo">
@@ -293,9 +294,7 @@ function renderStats() {
 // ── Render lista ──────────────────────────────────────────
 function renderLista() {
   var lista = getDocs().filter(function(d) {
-    var okT = !filtros.tipo || (filtros.tipo === 'institucional'
-      ? ['institucional','relatorio'].indexOf(d.tipo) !== -1
-      : d.tipo === filtros.tipo);
+    var okT = !filtros.tipo || d.tipo === filtros.tipo;
     var okU = !filtros.unidade || d.unidade === filtros.unidade;
     var okA = !filtros.ano || d.ano === filtros.ano;
     return okT && okU && okA;
