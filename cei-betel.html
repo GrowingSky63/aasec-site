@@ -735,6 +735,26 @@
       color: var(--cinza)
     }
 
+    .doc-filtro {
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1.5px solid var(--cinza-borda);
+      background: var(--branco);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      color: var(--grafite);
+      font-family: 'Inter', sans-serif
+    }
+
+    .doc-filtro:hover,
+    .doc-filtro.ativo {
+      background: var(--azul);
+      color: #fff;
+      border-color: var(--azul)
+    }
+
     .status {
       font-size: 10px;
       font-weight: 600;
@@ -1208,6 +1228,12 @@
       <div class="div"></div>
       <p class="ssub" style="margin-bottom:24px">Documentos próprios da unidade — distintos da documentação
         institucional da AASEC.</p>
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+        <button class="doc-filtro" data-grupo="tipo-betel" onclick="filtrarDocsBetel(this,'')">Todos</button>
+        <button class="doc-filtro" data-grupo="tipo-betel" onclick="filtrarDocsBetel(this,'institucional')">Institucional</button>
+        <button class="doc-filtro" data-grupo="tipo-betel" onclick="filtrarDocsBetel(this,'contrato')">Contratos</button>
+        <button class="doc-filtro" data-grupo="tipo-betel" onclick="filtrarDocsBetel(this,'relatorio')">Relatórios</button>
+      </div>
       <div class="docs-grid" id="docsInstGrid"></div>
     </div>
   </section>
@@ -1277,28 +1303,16 @@
     });
   </script>
 
-  <script>
-    (function () {
-      const meses = ['', 'Janeiro', 'Fevereiro', 'Marco', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-      const docs = JSON.parse(localStorage.getItem('aasec_docs') || '[]')
-        .filter(d => d.unidade === 'CEI Betel' && d.tipo !== 'prestacao');
-      const grid = document.getElementById('docsInstGrid');
-      if (!grid || !docs.length) return;
-      grid.innerHTML = docs.map(d => {
-        const tem = !!d.link;
-        return <div class="doc-card" style="">
-          <div class="doc-icon"></div>
-          <div class="doc-info"><strong>+d.nome+</strong><span>+(d.ano||'')+</span></div>
-          <span class="status" style=""></span>
-        </div>;
-      }).join('');
-    })();
-  </script>
   <script src="dados_docs.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      renderDocsPublico('docsInstGrid', { unidade: 'CEI Betel' });
-    });
+    function filtrarDocsBetel(btn, tipo) {
+      document.querySelectorAll('.doc-filtro[data-grupo="tipo-betel"]').forEach(function (b) { b.classList.remove('ativo'); });
+      btn.classList.add('ativo');
+      var filtros = { unidade: 'CEI Betel' };
+      if (tipo) filtros.tipo = tipo;
+      renderDocsPublico('docsInstGrid', filtros);
+    }
+    document.addEventListener('DOMContentLoaded', function () {});
   </script>
 </body>
 

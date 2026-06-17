@@ -1240,15 +1240,17 @@
       <p class="ssub" style="margin-bottom:28px">A AASEC acredita que a confiança se constrói com abertura. Aqui você
         encontra nossos documentos institucionais.</p>
 
+      <!-- Filtros por tipo -->
+      <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+        <button class="doc-filtro" data-grupo="tipo" onclick="filtrarDocs(this,'tipo','institucional')">Institucional</button>
+        <button class="doc-filtro" data-grupo="tipo" onclick="filtrarDocs(this,'tipo','contrato')">Contratos</button>
+        <button class="doc-filtro" data-grupo="tipo" onclick="filtrarDocs(this,'tipo','relatorio')">Relatórios</button>
+      </div>
       <!-- Filtros por unidade -->
       <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-        <button class="doc-filtro ativo" onclick="renderDocsPublico('docsGrid',{});setAtivo(this)">Todos</button>
-        <button class="doc-filtro"
-          onclick="renderDocsPublico('docsGrid',{unidade:'AASEC'});setAtivo(this)">AASEC</button>
-        <button class="doc-filtro" onclick="renderDocsPublico('docsGrid',{unidade:'CEI Betel'});setAtivo(this)">CEI
-          Betel</button>
-        <button class="doc-filtro"
-          onclick="renderDocsPublico('docsGrid',{unidade:'Esco-Lar'});setAtivo(this)">Esco-Lar</button>
+        <button class="doc-filtro" data-grupo="unidade" onclick="filtrarDocs(this,'unidade','AASEC')">AASEC</button>
+        <button class="doc-filtro" data-grupo="unidade" onclick="filtrarDocs(this,'unidade','CEI Betel')">CEI Betel</button>
+        <button class="doc-filtro" data-grupo="unidade" onclick="filtrarDocs(this,'unidade','Esco-Lar')">Esco-Lar</button>
       </div>
       <div style="margin-bottom:16px">
         <a href="prestacoes.html" class="doc-card"
@@ -1433,11 +1435,20 @@
   </script>
   <script src="dados_docs.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      renderDocsPublico('docsGrid', {});
-    });
+    var _filtroTipo = '';
+    var _filtroUnidade = '';
+    function filtrarDocs(btn, grupo, valor) {
+      if (grupo === 'tipo') _filtroTipo = valor;
+      if (grupo === 'unidade') _filtroUnidade = valor;
+      document.querySelectorAll('.doc-filtro[data-grupo="' + grupo + '"]').forEach(function (b) { b.classList.remove('ativo'); });
+      btn.classList.add('ativo');
+      var filtros = {};
+      if (_filtroTipo) filtros.tipo = _filtroTipo;
+      if (_filtroUnidade) filtros.unidade = _filtroUnidade;
+      renderDocsPublico('docsGrid', filtros);
+    }
+    document.addEventListener('DOMContentLoaded', function () {});
   </script>
-  <script>function setAtivo(btn) { document.querySelectorAll(".doc-filtro").forEach(function (b) { b.classList.remove("ativo") }); btn.classList.add("ativo"); }</script>
 </body>
 
 </html>

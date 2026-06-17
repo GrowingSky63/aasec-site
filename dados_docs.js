@@ -130,9 +130,9 @@ const AASEC_DOCS = [
 ];
 
 /**
- * Renderiza documentos institucionais (sem prestações) num elemento
+ * Renderiza documentos (sem prestações) num elemento
  * @param {string} elementId — id do elemento alvo
- * @param {object} filtros — {unidade}
+ * @param {object} filtros — {unidade, tipo}
  */
 function renderDocsPublico(elementId, filtros) {
   filtros = filtros || {};
@@ -140,10 +140,12 @@ function renderDocsPublico(elementId, filtros) {
   if (!el) return;
 
   var tipoIcone = { prestacao: '📊', institucional: '🏛️', contrato: '📝', relatorio: '📋' };
+  var tipoLabel = { institucional: 'Institucional', contrato: 'Contrato/Convênio', relatorio: 'Relatório' };
 
   var lista = AASEC_DOCS.filter(function (d) {
     if (d.tipo === 'prestacao') return false;
     if (!d.link) return false;
+    if (filtros.tipo && d.tipo !== filtros.tipo) return false;
     if (filtros.unidade && d.unidade !== filtros.unidade && d.unidade !== 'AASEC') return false;
     return true;
   });
@@ -155,12 +157,13 @@ function renderDocsPublico(elementId, filtros) {
 
   el.innerHTML = lista.map(function (d) {
     var icone = tipoIcone[d.tipo] || '📄';
+    var label = tipoLabel[d.tipo] || '';
     var periodo = d.ano || '';
     return '<a class="doc-card" href="' + d.link + '" target="_blank" style="text-decoration:none;cursor:pointer">'
       + '<div class="doc-icon">' + icone + '</div>'
       + '<div class="doc-info">'
       + '<strong>' + d.nome + '</strong>'
-      + '<span>' + d.unidade + (periodo ? ' · ' + periodo : '') + '</span>'
+      + '<span>' + d.unidade + (periodo ? ' · ' + periodo : '') + (label ? ' · ' + label : '') + '</span>'
       + '</div>'
       + '</a>';
   }).join('');
