@@ -87,6 +87,12 @@
           <label>Nome <span class="req">*</span></label>
           <input type="text" id="aNome" placeholder="Ex: Prestação de Contas — Abril 2026">
         </div>
+        <div class="fg">
+          <label>Convênio</label>
+          <select id="aConvenio" onchange="aoSelecionarConvenio();calcularDestino()">
+            <option value="">— Sem convênio (documento institucional) —</option>
+          </select>
+        </div>
         <div class="row2">
           <div class="fg">
             <label>Tipo <span class="req">*</span></label>
@@ -234,10 +240,34 @@ const filtros = {tipo:'', unidade:'', ano:''};
 let _arquivo = null;
 
 // ── Init ──────────────────────────────────────────────────
+var _convenios = [];
+
+async function carregarConvenios() {
+  try {
+    var resp = await fetch('/api/convenios');
+    _convenios = await resp.json();
+  } catch(e) { _convenios = []; }
+  var sel = document.getElementById('aConvenio');
+  sel.innerHTML = '<option value="">— Sem convênio (documento institucional) —</option>';
+  _convenios.forEach(function(c) {
+    var label = c.nome + ' — ' + c.unidade;
+    sel.innerHTML += '<option value="' + c.id + '" data-unidade="' + c.unidade + '" data-slug="' + c.slug + '">' + label + '</option>';
+  });
+}
+
+function aoSelecionarConvenio() {
+  var sel = document.getElementById('aConvenio');
+  var opt = sel.options[sel.selectedIndex];
+  if (opt && opt.dataset.unidade) {
+    document.getElementById('aUnidade').value = opt.dataset.unidade;
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async function() {
   initNav('documentos');
   initModal('modalAdd');
   await carregarExtras();
+  await carregarConvenios();
   renderStats();
   renderLista();
 });
@@ -438,6 +468,7 @@ function editarDoc(docJson) {
   document.getElementById('aMes').value     = d.mes || '';
   document.getElementById('aLink').value    = d.link || '';
   document.getElementById('aObs').value     = d.obs || '';
+  document.getElementById('aConvenio').value = d.convenio_id || '';
   document.getElementById('dropZone').style.display = 'none';
   document.getElementById('fileInput').style.display = 'none';
   document.getElementById('aLink').style.display = 'none';
@@ -456,6 +487,7 @@ function abrirAdicionar() {
   document.getElementById('aUnidade').value = '';
   document.getElementById('aMes').value   = '';
   document.getElementById('aAno').value   = new Date().getFullYear().toString();
+  document.getElementById('aConvenio').value = '';
   document.getElementById('previewDestino').style.display = 'none';
   document.getElementById('dropText').innerHTML = '📂 Clique para procurar ou arraste o arquivo aqui';
   document.getElementById('dropZone').style.borderColor = 'var(--cinza-borda)';
@@ -495,17 +527,30 @@ function calcularDestino() {
   var unidade = document.getElementById('aUnidade').value;
   var ano     = document.getElementById('aAno').value;
   var mes     = document.getElementById('aMes').value;
+  var convSel = document.getElementById('aConvenio');
+  var convOpt = convSel.options[convSel.selectedIndex];
+  var slug    = convOpt && convOpt.dataset.slug ? convOpt.dataset.slug : '';
   var prev    = document.getElementById('previewDestino');
 
   if (!tipo || !unidade) { prev.style.display = 'none'; return; }
 
   var destino;
-  var tipoPasta = tipo === 'prestacao' ? 'prestacoes' : tipo;
-  if (tipo === 'prestacao' && mes && ano) {
-    destino = 'docs/' + tipoPasta + '/' + unidade + '/' + mes + ano + '.pdf';
+  if (slug) {
+    var subpasta = tipo === 'prestacao' ? 'prestacoes' : 'documentos';
+    if (tipo === 'prestacao' && mes && ano) {
+      destino = 'docs/convenios/' + slug + '/' + subpasta + '/' + mes + ano + '.pdf';
+    } else {
+      var nomeArq = _arquivo ? _arquivo.name : '(nome do arquivo)';
+      destino = 'docs/convenios/' + slug + '/' + subpasta + '/' + nomeArq;
+    }
   } else {
-    var nomeArq = _arquivo ? _arquivo.name : '(nome do arquivo)';
-    destino = 'docs/' + tipoPasta + '/' + unidade + '/' + nomeArq;
+    var tipoPasta = tipo === 'prestacao' ? 'prestacoes' : tipo;
+    if (tipo === 'prestacao' && mes && ano) {
+      destino = 'docs/' + tipoPasta + '/' + unidade + '/' + mes + ano + '.pdf';
+    } else {
+      var nomeArq = _arquivo ? _arquivo.name : '(nome do arquivo)';
+      destino = 'docs/' + tipoPasta + '/' + unidade + '/' + nomeArq;
+    }
   }
 
   document.getElementById('previewPath').textContent   = destino;
@@ -521,6 +566,10 @@ async function salvarNovo() {
   var mes     = document.getElementById('aMes').value || null;
   var obs     = document.getElementById('aObs').value.trim();
   var linkManual = document.getElementById('aLink').value.trim();
+  var convSel = document.getElementById('aConvenio');
+  var convId  = convSel.value || null;
+  var convOpt = convSel.options[convSel.selectedIndex];
+  var convSlug = convOpt && convOpt.dataset.slug ? convOpt.dataset.slug : null;
 
   if (!nome || !tipo || !unidade) {
     toast('Preencha nome, tipo e unidade.', 'erro');
@@ -540,6 +589,7 @@ async function salvarNovo() {
       fd.append('unidade', unidade);
       fd.append('ano', ano || '');
       fd.append('mes', mes || '');
+      if (convSlug) fd.append('convenio_slug', convSlug);
       var resp = await fetch('/upload', {method:'POST', body:fd});
       var r = await resp.json();
       if (r.ok) {
@@ -557,17 +607,15 @@ async function salvarNovo() {
 
   var extras = getExtras();
   if (_editandoId) {
-    // Editar existente
     var idx = extras.findIndex(function(d) { return d.id === _editandoId; });
     if (idx !== -1) {
-      extras[idx] = Object.assign(extras[idx], {nome:nome, tipo:tipo, unidade:unidade, ano:ano, mes:mes, link:link, obs:obs});
+      extras[idx] = Object.assign(extras[idx], {nome:nome, tipo:tipo, unidade:unidade, ano:ano, mes:mes, link:link, obs:obs, convenio_id:convId});
     } else {
-      // Era doc da base — criar extra com mesmos dados editados
-      extras.push({id:_editandoId, nome:nome, tipo:tipo, unidade:unidade, ano:ano, mes:mes, link:link, obs:obs, editado_em:new Date().toISOString()});
+      extras.push({id:_editandoId, nome:nome, tipo:tipo, unidade:unidade, ano:ano, mes:mes, link:link, obs:obs, convenio_id:convId, editado_em:new Date().toISOString()});
     }
     toast('Documento atualizado!');
   } else {
-    extras.push({id:Date.now().toString(), nome:nome, tipo:tipo, unidade:unidade, ano:ano, mes:mes, link:link, obs:obs, criado_em:new Date().toISOString()});
+    extras.push({id:Date.now().toString(), nome:nome, tipo:tipo, unidade:unidade, ano:ano, mes:mes, link:link, obs:obs, convenio_id:convId, criado_em:new Date().toISOString()});
     toast('Documento adicionado!');
   }
   saveExtras(extras);

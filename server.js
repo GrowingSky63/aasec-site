@@ -137,8 +137,13 @@ const server = http.createServer((req, res) => {
         }
         // Destino
         let destDir;
-        const tipoPasta = meta.tipo === 'prestacao' ? 'prestacoes' : meta.tipo;
-        destDir = path.join(ROOT, 'docs', tipoPasta, meta.unidade);
+        if (meta.convenio_slug) {
+          const subpasta = meta.tipo === 'prestacao' ? 'prestacoes' : 'documentos';
+          destDir = path.join(ROOT, 'docs', 'convenios', meta.convenio_slug, subpasta);
+        } else {
+          const tipoPasta = meta.tipo === 'prestacao' ? 'prestacoes' : meta.tipo;
+          destDir = path.join(ROOT, 'docs', tipoPasta, meta.unidade);
+        }
         // Nome padronizado
         let destName = fileName;
         if (meta.tipo === 'prestacao' && meta.mes && meta.ano) {
