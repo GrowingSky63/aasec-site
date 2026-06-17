@@ -233,9 +233,10 @@ const filtros = {tipo:'', unidade:'', ano:''};
 let _arquivo = null;
 
 // ── Init ──────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
   initNav('documentos');
   initModal('modalAdd');
+  await carregarExtras();
   renderStats();
   renderLista();
 });
@@ -249,9 +250,31 @@ function setF(campo, val, btn) {
   renderLista();
 }
 
-// ── Storage ───────────────────────────────────────────────
-function getExtras()   { return JSON.parse(localStorage.getItem('aasec_docs_extra')    || '[]'); }
-function saveExtras(d) { localStorage.setItem('aasec_docs_extra', JSON.stringify(d)); }
+// ── Storage (servidor) ────────────────────────────────────
+var _extrasCache = [];
+var _extrasPronto = false;
+
+async function carregarExtras() {
+  try {
+    var resp = await fetch('/api/extras');
+    _extrasCache = await resp.json();
+  } catch(e) {
+    _extrasCache = JSON.parse(localStorage.getItem('aasec_docs_extra') || '[]');
+  }
+  _extrasPronto = true;
+}
+
+function getExtras() { return _extrasCache; }
+
+async function saveExtras(d) {
+  _extrasCache = d;
+  try {
+    await fetch('/api/extras', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(d) });
+  } catch(e) {
+    localStorage.setItem('aasec_docs_extra', JSON.stringify(d));
+  }
+}
+
 function getApagados() { return JSON.parse(localStorage.getItem('aasec_docs_apagados') || '[]'); }
 
 function docChave(d) {

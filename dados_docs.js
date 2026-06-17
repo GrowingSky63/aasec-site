@@ -129,6 +129,21 @@ const AASEC_DOCS = [
   { nome: 'Prestação de Contas — Março 2026', tipo: 'prestacao', unidade: 'CEI Betel', ano: '2026', mes: '03', link: '/docs/prestacoes/CEI Betel/2026/032026.pdf' },
 ];
 
+var _docsExtras = [];
+var _docsExtrasCarregados = false;
+
+function carregarDocsExtras() {
+  if (_docsExtrasCarregados) return Promise.resolve();
+  return fetch('/api/extras')
+    .then(function (r) { return r.json(); })
+    .then(function (data) { _docsExtras = data; _docsExtrasCarregados = true; })
+    .catch(function () { _docsExtrasCarregados = true; });
+}
+
+function getTodosDocs() {
+  return AASEC_DOCS.concat(_docsExtras);
+}
+
 /**
  * Renderiza documentos (sem prestações) num elemento
  * @param {string} elementId — id do elemento alvo
@@ -139,10 +154,15 @@ function renderDocsPublico(elementId, filtros) {
   var el = document.getElementById(elementId);
   if (!el) return;
 
+  if (!_docsExtrasCarregados) {
+    carregarDocsExtras().then(function () { renderDocsPublico(elementId, filtros); });
+    return;
+  }
+
   var tipoIcone = { prestacao: '📊', institucional: '🏛️', contrato: '📝', relatorio: '📋' };
   var tipoLabel = { institucional: 'Institucional', contrato: 'Contrato/Convênio', relatorio: 'Relatório' };
 
-  var lista = AASEC_DOCS.filter(function (d) {
+  var lista = getTodosDocs().filter(function (d) {
     if (d.tipo === 'prestacao') return false;
     if (!d.link) return false;
     if (filtros.tipo && d.tipo !== filtros.tipo) return false;

@@ -53,6 +53,34 @@ const server = http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
 
+  // API extras — leitura e gravação de documentos adicionados via gestão
+  const EXTRAS_PATH = path.join(ROOT, 'docs_extras.json');
+
+  if (req.method === 'GET' && pathname === '/api/extras') {
+    let data = '[]';
+    try { data = fs.readFileSync(EXTRAS_PATH, 'utf8'); } catch (e) {}
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(data);
+    return;
+  }
+
+  if (req.method === 'POST' && pathname === '/api/extras') {
+    const chunks = [];
+    req.on('data', c => chunks.push(c));
+    req.on('end', () => {
+      try {
+        const body = Buffer.concat(chunks).toString();
+        JSON.parse(body);
+        fs.writeFileSync(EXTRAS_PATH, body, 'utf8');
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true }));
+      } catch (e) {
+        res.writeHead(400); res.end(JSON.stringify({ ok: false, erro: e.message }));
+      }
+    });
+    return;
+  }
+
   // Upload de arquivo — usando busboy
   if (req.method === 'POST' && pathname === '/upload') {
     console.log('UPLOAD recebido, content-type:', req.headers['content-type']);

@@ -462,7 +462,7 @@
     let filtros = { unidade: '', ano: '' };
 
     function getDocs() {
-      return (typeof AASEC_DOCS !== "undefined" ? AASEC_DOCS : []).filter(d => d.tipo === "prestacao");
+      return (typeof getTodosDocs === "function" ? getTodosDocs() : AASEC_DOCS || []).filter(d => d.tipo === "prestacao");
     }
 
     function setFiltro(tipo, val, btn) {
@@ -539,7 +539,8 @@
       }).join('');
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+      await carregarDocsExtras();
       renderStats();
       renderFiltrosAno();
       renderLista();
