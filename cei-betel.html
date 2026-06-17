@@ -1229,10 +1229,10 @@
       <p class="ssub" style="margin-bottom:24px">Documentos próprios da unidade — distintos da documentação
         institucional da AASEC.</p>
       <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-        <button class="doc-filtro" data-grupo="tipo-betel" onclick="filtrarDocsBetel(this,'')">Todos</button>
-        <button class="doc-filtro" data-grupo="tipo-betel" onclick="filtrarDocsBetel(this,'institucional')">Institucional</button>
-        <button class="doc-filtro" data-grupo="tipo-betel" onclick="filtrarDocsBetel(this,'contrato')">Contratos</button>
-        <button class="doc-filtro" data-grupo="tipo-betel" onclick="filtrarDocsBetel(this,'relatorio')">Relatórios</button>
+        <button class="doc-filtro" data-grupo="tipo-betel" title="Todos os documentos do CEI Betel" onclick="filtrarDocsBetel(this,'')">Todos</button>
+        <button class="doc-filtro" data-grupo="tipo-betel" title="Estatutos, regimentos, planos de trabalho e códigos de ética" onclick="filtrarDocsBetel(this,'institucional')">Institucional</button>
+        <button class="doc-filtro" data-grupo="tipo-betel" title="Termos de colaboração, convênios e aditivos" onclick="filtrarDocsBetel(this,'contrato')">Contratos</button>
+        <button class="doc-filtro" data-grupo="tipo-betel" title="Relatórios de atividades e prestação de serviços" onclick="filtrarDocsBetel(this,'relatorio')">Relatórios</button>
       </div>
       <div class="docs-grid" id="docsInstGrid"></div>
     </div>
@@ -1306,6 +1306,11 @@
   <script src="dados_docs.js"></script>
   <script>
     function filtrarDocsBetel(btn, tipo) {
+      if (btn.classList.contains('ativo')) {
+        btn.classList.remove('ativo');
+        document.getElementById('docsInstGrid').innerHTML = '';
+        return;
+      }
       document.querySelectorAll('.doc-filtro[data-grupo="tipo-betel"]').forEach(function (b) { b.classList.remove('ativo'); });
       btn.classList.add('ativo');
       var filtros = { unidade: 'CEI Betel' };

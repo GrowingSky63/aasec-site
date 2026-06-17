@@ -1242,15 +1242,15 @@
 
       <!-- Filtros por tipo -->
       <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
-        <button class="doc-filtro" data-grupo="tipo" onclick="filtrarDocs(this,'tipo','institucional')">Institucional</button>
-        <button class="doc-filtro" data-grupo="tipo" onclick="filtrarDocs(this,'tipo','contrato')">Contratos</button>
-        <button class="doc-filtro" data-grupo="tipo" onclick="filtrarDocs(this,'tipo','relatorio')">Relatórios</button>
+        <button class="doc-filtro" data-grupo="tipo" title="Estatutos, regimentos, planos de trabalho e códigos de ética" onclick="filtrarDocs(this,'tipo','institucional')">Institucional</button>
+        <button class="doc-filtro" data-grupo="tipo" title="Termos de colaboração, convênios e aditivos" onclick="filtrarDocs(this,'tipo','contrato')">Contratos</button>
+        <button class="doc-filtro" data-grupo="tipo" title="Relatórios de atividades e prestação de serviços" onclick="filtrarDocs(this,'tipo','relatorio')">Relatórios</button>
       </div>
       <!-- Filtros por unidade -->
       <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-        <button class="doc-filtro" data-grupo="unidade" onclick="filtrarDocs(this,'unidade','AASEC')">AASEC</button>
-        <button class="doc-filtro" data-grupo="unidade" onclick="filtrarDocs(this,'unidade','CEI Betel')">CEI Betel</button>
-        <button class="doc-filtro" data-grupo="unidade" onclick="filtrarDocs(this,'unidade','Esco-Lar')">Esco-Lar</button>
+        <button class="doc-filtro" data-grupo="unidade" title="Documentos da Associação (sede administrativa)" onclick="filtrarDocs(this,'unidade','AASEC')">AASEC</button>
+        <button class="doc-filtro" data-grupo="unidade" title="Centro de Educação Infantil Betel" onclick="filtrarDocs(this,'unidade','CEI Betel')">CEI Betel</button>
+        <button class="doc-filtro" data-grupo="unidade" title="Serviço de Convivência e Fortalecimento de Vínculos" onclick="filtrarDocs(this,'unidade','Esco-Lar')">Esco-Lar</button>
       </div>
       <div style="margin-bottom:16px">
         <a href="prestacoes.html" class="doc-card"
@@ -1438,10 +1438,20 @@
     var _filtroTipo = '';
     var _filtroUnidade = '';
     function filtrarDocs(btn, grupo, valor) {
-      if (grupo === 'tipo') _filtroTipo = valor;
-      if (grupo === 'unidade') _filtroUnidade = valor;
-      document.querySelectorAll('.doc-filtro[data-grupo="' + grupo + '"]').forEach(function (b) { b.classList.remove('ativo'); });
-      btn.classList.add('ativo');
+      if (btn.classList.contains('ativo')) {
+        btn.classList.remove('ativo');
+        if (grupo === 'tipo') _filtroTipo = '';
+        if (grupo === 'unidade') _filtroUnidade = '';
+      } else {
+        document.querySelectorAll('.doc-filtro[data-grupo="' + grupo + '"]').forEach(function (b) { b.classList.remove('ativo'); });
+        btn.classList.add('ativo');
+        if (grupo === 'tipo') _filtroTipo = valor;
+        if (grupo === 'unidade') _filtroUnidade = valor;
+      }
+      if (!_filtroTipo && !_filtroUnidade) {
+        document.getElementById('docsGrid').innerHTML = '';
+        return;
+      }
       var filtros = {};
       if (_filtroTipo) filtros.tipo = _filtroTipo;
       if (_filtroUnidade) filtros.unidade = _filtroUnidade;
