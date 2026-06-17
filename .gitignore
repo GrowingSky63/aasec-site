@@ -10,7 +10,6 @@ Thumbs.db
 docs/
 docs_backup/
 docs_extras.json
-dados_convenios.json
 
 *.md
 !README.md
