@@ -1245,23 +1245,13 @@
         <button class="doc-filtro" data-grupo="tipo" title="Estatutos, regimentos, planos de trabalho e códigos de ética" onclick="filtrarDocs(this,'tipo','institucional')">Institucional</button>
         <button class="doc-filtro" data-grupo="tipo" title="Termos de colaboração, convênios e aditivos" onclick="filtrarDocs(this,'tipo','contrato')">Contratos</button>
         <button class="doc-filtro" data-grupo="tipo" title="Relatórios de atividades e prestação de serviços" onclick="filtrarDocs(this,'tipo','relatorio')">Relatórios</button>
+        <a href="prestacoes.html" class="doc-filtro" title="Relatórios mensais de prestação de contas — CEI Betel e Esco-Lar" style="text-decoration:none">Prestações de Contas →</a>
       </div>
       <!-- Filtros por unidade -->
       <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
         <button class="doc-filtro" data-grupo="unidade" title="Documentos da Associação (sede administrativa)" onclick="filtrarDocs(this,'unidade','AASEC')">AASEC</button>
         <button class="doc-filtro" data-grupo="unidade" title="Centro de Educação Infantil Betel" onclick="filtrarDocs(this,'unidade','CEI Betel')">CEI Betel</button>
         <button class="doc-filtro" data-grupo="unidade" title="Serviço de Convivência e Fortalecimento de Vínculos" onclick="filtrarDocs(this,'unidade','Esco-Lar')">Esco-Lar</button>
-      </div>
-      <div style="margin-bottom:16px">
-        <a href="prestacoes.html" class="doc-card"
-          style="display:inline-flex;background:var(--azul);border-color:var(--azul);text-decoration:none;padding:14px 20px;border-radius:10px;gap:12px;align-items:center">
-          <div class="doc-icon" style="background:rgba(255,255,255,.15)">📊</div>
-          <div class="doc-info">
-            <strong style="color:#fff">Prestações de Contas</strong>
-            <span style="color:rgba(255,255,255,.7)">Ver todos os relatórios mensais — CEI Betel e Esco-Lar</span>
-          </div>
-          <span style="color:#93C5FD;font-size:18px;margin-left:auto">→</span>
-        </a>
       </div>
       <div class="docs-grid" id="docsGrid"></div>
       <div id="docsVazio" style="display:none;text-align:center;padding:32px;color:var(--cinza)">
