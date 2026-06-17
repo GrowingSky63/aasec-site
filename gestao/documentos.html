@@ -314,10 +314,12 @@ function docChave(d) {
 
 function getDocs() {
   var apagados = getApagados();
-  var base   = (typeof AASEC_DOCS !== 'undefined' ? AASEC_DOCS : [])
-                 .filter(function(d) { return apagados.indexOf(docChave(d)) === -1; });
   var extras = getExtras()
                  .filter(function(d) { return apagados.indexOf(docChave(d)) === -1; });
+  var extrasIds = extras.map(function(d) { return d.id; });
+  var base   = (typeof AASEC_DOCS !== 'undefined' ? AASEC_DOCS : [])
+                 .filter(function(d) { return apagados.indexOf(docChave(d)) === -1; })
+                 .filter(function(d) { return extrasIds.indexOf(docChave(d)) === -1; });
   return base.concat(extras);
 }
 
@@ -459,7 +461,7 @@ var _editandoId = null;
 
 function editarDoc(docJson) {
   var d = JSON.parse(decodeURIComponent(docJson));
-  _editandoId = d.id || null;
+  _editandoId = d.id || docChave(d);
   document.getElementById('modalAddTitulo').textContent = 'Editar Documento';
   document.getElementById('aNome').value    = d.nome || '';
   document.getElementById('aTipo').value    = d.tipo || '';
