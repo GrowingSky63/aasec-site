@@ -81,6 +81,34 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // API convênios — leitura e gravação de convênios cadastrados
+  const CONVENIOS_PATH = path.join(ROOT, 'dados_convenios.json');
+
+  if (req.method === 'GET' && pathname === '/api/convenios') {
+    let data = '[]';
+    try { data = fs.readFileSync(CONVENIOS_PATH, 'utf8'); } catch (e) {}
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(data);
+    return;
+  }
+
+  if (req.method === 'POST' && pathname === '/api/convenios') {
+    const chunks = [];
+    req.on('data', c => chunks.push(c));
+    req.on('end', () => {
+      try {
+        const body = Buffer.concat(chunks).toString();
+        JSON.parse(body);
+        fs.writeFileSync(CONVENIOS_PATH, body, 'utf8');
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true }));
+      } catch (e) {
+        res.writeHead(400); res.end(JSON.stringify({ ok: false, erro: e.message }));
+      }
+    });
+    return;
+  }
+
   // Upload de arquivo — usando busboy
   if (req.method === 'POST' && pathname === '/upload') {
     console.log('UPLOAD recebido, content-type:', req.headers['content-type']);

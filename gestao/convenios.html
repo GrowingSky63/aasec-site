@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Convênios — AASEC</title>
+<link rel="stylesheet" href="estilos.css">
+<style>
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.stat{background:#fff;border-radius:12px;padding:16px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid var(--azul)}
+.stat .sn{font-size:26px;font-weight:800;color:var(--azul)}
+.stat .sl{font-size:11px;color:var(--cinza);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.filtros-wrap{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.filtro-grupo label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cinza);display:block;margin-bottom:6px}
+.ftabs{display:flex;gap:6px;flex-wrap:wrap}
+.ftab{padding:6px 16px;border-radius:20px;border:1.5px solid var(--cinza-borda);background:#fff;font-size:12px;font-weight:600;cursor:pointer;color:var(--grafite);font-family:'Inter',sans-serif;transition:all .2s}
+.ftab:hover,.ftab.on{background:var(--azul);color:#fff;border-color:var(--azul)}
+.conv-list{display:flex;flex-direction:column;gap:10px}
+.conv-card{background:#fff;border-radius:12px;padding:18px 20px;box-shadow:0 2px 8px rgba(0,0,0,.05);border-left:4px solid var(--azul);transition:all .2s}
+.conv-card:hover{transform:translateX(3px)}
+.conv-card.finalizado{border-left-color:var(--cinza-borda);opacity:.7}
+.conv-card.interno{border-left-color:#f59e0b}
+.conv-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px}
+.conv-nome{font-size:14px;font-weight:700;color:var(--preto)}
+.conv-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;white-space:nowrap}
+.badge-exec{background:#d1fae5;color:#065f46}
+.badge-fin{background:#f1f5f9;color:#94a3b8}
+.badge-interno{background:#fef3c7;color:#92400e}
+.conv-meta{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--cinza)}
+.conv-meta span{display:flex;align-items:center;gap:4px}
+.conv-actions{display:flex;gap:6px;margin-top:10px}
+.conv-actions button{padding:4px 12px;border-radius:6px;border:none;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-editar{background:var(--azul-claro);color:var(--azul)}
+.btn-editar:hover{background:var(--azul);color:#fff}
+.btn-apagar{background:#fee2e2;color:#dc2626}
+.btn-apagar:hover{background:#fca5a5}
+.vazio{text-align:center;padding:48px;color:var(--cinza)}
+.vazio .vi{font-size:44px;margin-bottom:10px}
+@media(max-width:768px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<button class="mob-toggle" id="mobToggle">☰</button>
+<div class="sidebar">
+  <div class="sb-logo">
+    <a href="../index.html" style="display:contents">
+      <img src="../assets/logo_aasec.png" alt="AASEC" style="object-fit:contain">
+    </a>
+    <strong>Gestão</strong>
+    <span>CEI Betel · Esco-Lar</span>
+  </div>
+  <div class="sb-unidade"><span id="sb-unidade"></span></div>
+  <nav>
+    <div class="nav-label">Indicadores</div>
+    <a class="nav-item" href="indicadores.html" data-page="indicadores"><span class="nav-icon">📊</span> Painel Institucional</a>
+    <div class="nav-label">Registrar dados</div>
+    <a class="nav-item" href="lrco.html" data-page="lrco"><span class="nav-icon">📋</span> Dados Operacionais</a>
+    <a class="nav-item" href="reunioes.html" data-page="reunioes"><span class="nav-icon">👨‍👩‍👧</span> Reuniões de Família</a>
+    <div class="nav-label">Documentos</div>
+    <a class="nav-item" href="convenios.html" data-page="convenios"><span class="nav-icon">📑</span> Convênios</a>
+    <a class="nav-item" href="documentos.html" data-page="documentos"><span class="nav-icon">📁</span> Documentos & PCs</a>
+    <div class="nav-label">Configuração</div>
+    <a class="nav-item" href="cadastros.html" data-page="cadastros"><span class="nav-icon">⚙️</span> Cadastros</a>
+  </nav>
+  <div class="sb-bottom">
+    <a href="../index.html">← Voltar ao site</a>
+    <a href="login.html" style="margin-top:6px">⏻ Sair</a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-esq">
+      <h2>📑 Convênios & Parcerias</h2>
+      <p>Termos de colaboração, fomento, emendas e parcerias · AASEC</p>
+    </div>
+    <button class="btn btn-cor" onclick="abrirModal('modalAdd')">+ Novo Convênio</button>
+  </div>
+
+  <!-- MODAL ADICIONAR/EDITAR -->
+  <div class="modal-overlay" id="modalAdd">
+    <div class="modal">
+      <div class="modal-h">
+        <h3 id="modalTitulo">Novo Convênio</h3>
+        <button class="modal-close" onclick="fecharModal('modalAdd')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="fg"><label>Nome *</label><input id="cNome" type="text" placeholder="Ex: Termo de Colaboração nº 007/2024"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="fg"><label>Tipo *</label>
+            <select id="cTipo">
+              <option value="convenio">Convênio Prefeitura</option>
+              <option value="emenda">Emenda</option>
+              <option value="fomento">Termo de Fomento</option>
+              <option value="parceria">Parceria Privada</option>
+            </select>
+          </div>
+          <div class="fg"><label>Unidade *</label>
+            <select id="cUnidade">
+              <option value="CEI Betel">CEI Betel</option>
+              <option value="Esco-Lar">Esco-Lar</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg"><label>Concedente</label><input id="cConcedente" type="text" placeholder="Ex: PM Carambeí, SEDEF, Agrária..."></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="fg"><label>Nº SIT</label><input id="cSit" type="text" placeholder="Ex: 68901"></div>
+          <div class="fg"><label>Nº Processo</label><input id="cProcesso" type="text" placeholder="Ex: 007/2024"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="fg"><label>Início vigência</label><input id="cInicio" type="date"></div>
+          <div class="fg"><label>Fim vigência</label><input id="cFim" type="date"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="fg"><label>Valor (R$)</label><input id="cValor" type="number" step="0.01" placeholder="0.00"></div>
+          <div class="fg"><label>Situação</label>
+            <select id="cSituacao">
+              <option value="em_execucao">Em Execução</option>
+              <option value="finalizado">Finalizado</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg"><label>Visibilidade</label>
+          <select id="cVisibilidade">
+            <option value="publico">Público (aparece na transparência)</option>
+            <option value="interno">Interno (só na gestão)</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="fecharModal('modalAdd')">Cancelar</button>
+        <button class="btn btn-cor" onclick="salvarConvenio()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ESTATÍSTICAS -->
+  <div class="stats-row">
+    <div class="stat"><div class="sn" id="st-total">0</div><div class="sl">Total</div></div>
+    <div class="stat"><div class="sn" id="st-ativos">0</div><div class="sl">Em Execução</div></div>
+    <div class="stat"><div class="sn" id="st-betel">0</div><div class="sl">CEI Betel</div></div>
+    <div class="stat"><div class="sn" id="st-escolar">0</div><div class="sl">Esco-Lar</div></div>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="filtros-wrap">
+    <div class="filtro-grupo" id="ftUnidade">
+      <label>Unidade</label>
+      <div class="ftabs">
+        <button class="ftab on" onclick="setF('unidade','',this)">Todas</button>
+        <button class="ftab" onclick="setF('unidade','CEI Betel',this)">CEI Betel</button>
+        <button class="ftab" onclick="setF('unidade','Esco-Lar',this)">Esco-Lar</button>
+      </div>
+    </div>
+    <div class="filtro-grupo" id="ftSituacao">
+      <label>Situação</label>
+      <div class="ftabs">
+        <button class="ftab on" onclick="setF('situacao','',this)">Todas</button>
+        <button class="ftab" onclick="setF('situacao','em_execucao',this)">Em Execução</button>
+        <button class="ftab" onclick="setF('situacao','finalizado',this)">Finalizado</button>
+      </div>
+    </div>
+    <div class="filtro-grupo" id="ftVisibilidade">
+      <label>Visibilidade</label>
+      <div class="ftabs">
+        <button class="ftab on" onclick="setF('visibilidade','',this)">Todas</button>
+        <button class="ftab" onclick="setF('visibilidade','publico',this)">Público</button>
+        <button class="ftab" onclick="setF('visibilidade','interno',this)">Interno</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LISTA -->
+  <div class="conv-list" id="lista"></div>
+</div>
+
+<script src="_nav.js"></script>
+<script>
+var convenios = [];
+var filtros = { unidade: '', situacao: '', visibilidade: '' };
+var _editandoId = null;
+
+var tipoLabel = { convenio: 'Convênio Prefeitura', emenda: 'Emenda', fomento: 'Termo de Fomento', parceria: 'Parceria Privada' };
+
+document.addEventListener('DOMContentLoaded', async function() {
+  initNav('convenios');
+  initModal('modalAdd');
+  await carregarConvenios();
+  renderStats();
+  renderLista();
+});
+
+async function carregarConvenios() {
+  try {
+    var resp = await fetch('/api/convenios');
+    convenios = await resp.json();
+  } catch(e) {
+    convenios = [];
+  }
+}
+
+async function salvarNoServidor() {
+  try {
+    await fetch('/api/convenios', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(convenios) });
+  } catch(e) {
+    alert('Erro ao salvar: ' + e.message);
+  }
+}
+
+function gerarSlug(unidade, nome) {
+  var u = unidade.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  var n = nome.toLowerCase().replace(/[ºª°]/g, '').replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-');
+  return u + '_' + n;
+}
+
+function setF(campo, val, btn) {
+  filtros[campo] = val;
+  var grupo = campo.charAt(0).toUpperCase() + campo.slice(1);
+  document.querySelectorAll('#ft' + grupo + ' .ftab').forEach(function(b) { b.classList.remove('on'); });
+  btn.classList.add('on');
+  renderLista();
+}
+
+function renderStats() {
+  document.getElementById('st-total').textContent = convenios.length;
+  document.getElementById('st-ativos').textContent = convenios.filter(function(c) { return c.situacao === 'em_execucao'; }).length;
+  document.getElementById('st-betel').textContent = convenios.filter(function(c) { return c.unidade === 'CEI Betel'; }).length;
+  document.getElementById('st-escolar').textContent = convenios.filter(function(c) { return c.unidade === 'Esco-Lar'; }).length;
+}
+
+function formatarValor(v) {
+  if (!v) return '';
+  return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+}
+
+function formatarData(d) {
+  if (!d) return '';
+  var p = d.split('-');
+  return p[2] + '/' + p[1] + '/' + p[0];
+}
+
+function renderLista() {
+  var lista = convenios.filter(function(c) {
+    if (filtros.unidade && c.unidade !== filtros.unidade) return false;
+    if (filtros.situacao && c.situacao !== filtros.situacao) return false;
+    if (filtros.visibilidade && c.visibilidade !== filtros.visibilidade) return false;
+    return true;
+  });
+
+  var el = document.getElementById('lista');
+  if (!lista.length) {
+    el.innerHTML = '<div class="vazio"><div class="vi">📑</div><p>Nenhum convênio encontrado.</p></div>';
+    return;
+  }
+
+  el.innerHTML = lista.map(function(c) {
+    var classes = 'conv-card';
+    if (c.situacao === 'finalizado') classes += ' finalizado';
+    if (c.visibilidade === 'interno') classes += ' interno';
+
+    var badgeClass = c.situacao === 'em_execucao' ? 'badge-exec' : 'badge-fin';
+    var badgeText = c.situacao === 'em_execucao' ? 'Em Execução' : 'Finalizado';
+    if (c.visibilidade === 'interno') { badgeClass = 'badge-interno'; badgeText = 'Interno'; }
+
+    var json = encodeURIComponent(JSON.stringify(c));
+
+    return '<div class="' + classes + '">'
+      + '<div class="conv-header">'
+      + '<div class="conv-nome">' + c.nome + '</div>'
+      + '<span class="conv-badge ' + badgeClass + '">' + badgeText + '</span>'
+      + '</div>'
+      + '<div class="conv-meta">'
+      + '<span>' + (tipoLabel[c.tipo] || c.tipo) + '</span>'
+      + '<span>' + c.unidade + '</span>'
+      + (c.concedente ? '<span>' + c.concedente + '</span>' : '')
+      + (c.valor ? '<span>' + formatarValor(c.valor) + '</span>' : '')
+      + (c.vigencia_inicio ? '<span>' + formatarData(c.vigencia_inicio) + ' — ' + formatarData(c.vigencia_fim) + '</span>' : '')
+      + (c.sit ? '<span>SIT: ' + c.sit + '</span>' : '')
+      + '</div>'
+      + '<div class="conv-actions">'
+      + '<button class="btn-editar" onclick="editarConvenio(\'' + json + '\')">✏️ Editar</button>'
+      + '<button class="btn-apagar" onclick="apagarConvenio(\'' + c.id + '\')">🗑️</button>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function abrirNovoConvenio() {
+  _editandoId = null;
+  document.getElementById('modalTitulo').textContent = 'Novo Convênio';
+  document.getElementById('cNome').value = '';
+  document.getElementById('cTipo').value = 'convenio';
+  document.getElementById('cUnidade').value = 'CEI Betel';
+  document.getElementById('cConcedente').value = '';
+  document.getElementById('cSit').value = '';
+  document.getElementById('cProcesso').value = '';
+  document.getElementById('cInicio').value = '';
+  document.getElementById('cFim').value = '';
+  document.getElementById('cValor').value = '';
+  document.getElementById('cSituacao').value = 'em_execucao';
+  document.getElementById('cVisibilidade').value = 'publico';
+  abrirModal('modalAdd');
+}
+
+function editarConvenio(json) {
+  var c = JSON.parse(decodeURIComponent(json));
+  _editandoId = c.id;
+  document.getElementById('modalTitulo').textContent = 'Editar Convênio';
+  document.getElementById('cNome').value = c.nome || '';
+  document.getElementById('cTipo').value = c.tipo || 'convenio';
+  document.getElementById('cUnidade').value = c.unidade || 'CEI Betel';
+  document.getElementById('cConcedente').value = c.concedente || '';
+  document.getElementById('cSit').value = c.sit || '';
+  document.getElementById('cProcesso').value = c.processo || '';
+  document.getElementById('cInicio').value = c.vigencia_inicio || '';
+  document.getElementById('cFim').value = c.vigencia_fim || '';
+  document.getElementById('cValor').value = c.valor || '';
+  document.getElementById('cSituacao').value = c.situacao || 'em_execucao';
+  document.getElementById('cVisibilidade').value = c.visibilidade || 'publico';
+  abrirModal('modalAdd');
+}
+
+async function salvarConvenio() {
+  var nome = document.getElementById('cNome').value.trim();
+  var tipo = document.getElementById('cTipo').value;
+  var unidade = document.getElementById('cUnidade').value;
+  if (!nome || !tipo || !unidade) { alert('Preencha nome, tipo e unidade.'); return; }
+
+  var dados = {
+    nome: nome,
+    tipo: tipo,
+    unidade: unidade,
+    concedente: document.getElementById('cConcedente').value.trim(),
+    sit: document.getElementById('cSit').value.trim(),
+    processo: document.getElementById('cProcesso').value.trim(),
+    vigencia_inicio: document.getElementById('cInicio').value,
+    vigencia_fim: document.getElementById('cFim').value,
+    valor: parseFloat(document.getElementById('cValor').value) || null,
+    situacao: document.getElementById('cSituacao').value,
+    visibilidade: document.getElementById('cVisibilidade').value
+  };
+
+  if (_editandoId) {
+    var idx = convenios.findIndex(function(c) { return c.id === _editandoId; });
+    if (idx !== -1) {
+      dados.id = _editandoId;
+      dados.slug = convenios[idx].slug;
+      convenios[idx] = dados;
+    }
+  } else {
+    dados.id = tipo + '-' + (dados.processo || Date.now()).toString().replace(/[^a-z0-9]/gi, '-').toLowerCase();
+    dados.slug = gerarSlug(unidade, nome);
+    convenios.push(dados);
+  }
+
+  await salvarNoServidor();
+  fecharModal('modalAdd');
+  renderStats();
+  renderLista();
+}
+
+async function apagarConvenio(id) {
+  if (!confirm('Tem certeza que deseja remover este convênio?')) return;
+  convenios = convenios.filter(function(c) { return c.id !== id; });
+  await salvarNoServidor();
+  renderStats();
+  renderLista();
+}
+</script>
+</body>
+</html>
