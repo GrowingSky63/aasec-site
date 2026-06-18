@@ -6,10 +6,6 @@
 <title>Arquivos — AASEC</title>
 <link rel="stylesheet" href="estilos.css">
 <style>
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
-.stat{background:#fff;border-radius:12px;padding:16px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);border-top:3px solid var(--azul)}
-.stat .sn{font-size:26px;font-weight:800;color:var(--azul)}
-.stat .sl{font-size:11px;color:var(--cinza);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
 .filtros-wrap{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px}
 .filtro-grupo label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cinza);display:block;margin-bottom:6px}
 .ftabs{display:flex;gap:6px;flex-wrap:wrap}
@@ -25,7 +21,6 @@
 .dr-info strong{display:block;font-size:13px;font-weight:700;color:var(--preto);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dr-info span{font-size:11px;color:var(--cinza)}
 .dr-tipo{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0}
-.tp-prestacao{background:#e0f2fe;color:#0369a1}
 .tp-institucional,.tp-relatorio{background:#dbeafe;color:#1e40af}
 .tp-contrato{background:#fef9c3;color:#854d0e}
 .dr-status{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0}
@@ -55,7 +50,7 @@
   </nav>
   <div class="sb-bottom">
     <a href="../index.html">← Voltar ao site</a>
-    <a href="login.html" style="margin-top:6px">⏻ Sair</a>
+    <a href="#" onclick="sair()" style="margin-top:6px">⏻ Sair</a>
   </div>
 </div>
 
@@ -65,9 +60,10 @@
       <h2>📁 Arquivos</h2>
       <p>Documentos institucionais · AASEC</p>
     </div>
+    <button class="btn btn-cor" onclick="abrirAdicionar()">+ Adicionar documento</button>
   </div>
 
-  <!-- MODAL ADICIONAR -->
+  <!-- MODAL ADICIONAR/EDITAR -->
   <div class="modal-overlay" id="modalAdd">
     <div class="modal">
       <div class="modal-h">
@@ -77,20 +73,13 @@
       <div class="modal-body">
         <div class="fg">
           <label>Nome <span class="req">*</span></label>
-          <input type="text" id="aNome" placeholder="Ex: Prestação de Contas — Abril 2026">
+          <input type="text" id="aNome" placeholder="Ex: Regimento Interno CEI Betel">
         </div>
-        <div class="fg">
-          <label>Convênio</label>
-          <select id="aConvenio" onchange="aoSelecionarConvenio();calcularDestino()">
-            <option value="">— Sem convênio (documento institucional) —</option>
-          </select>
-        </div>
-        <div class="row2">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div class="fg">
             <label>Tipo <span class="req">*</span></label>
-            <select id="aTipo" onchange="calcularDestino()">
+            <select id="aTipo">
               <option value="">Selecione</option>
-              <option value="prestacao">Prestação de Contas</option>
               <option value="institucional">Institucional</option>
               <option value="contrato">Contrato/Convênio</option>
               <option value="relatorio">Relatório</option>
@@ -98,7 +87,7 @@
           </div>
           <div class="fg">
             <label>Unidade <span class="req">*</span></label>
-            <select id="aUnidade" onchange="calcularDestino()">
+            <select id="aUnidade">
               <option value="">Selecione</option>
               <option value="AASEC">AASEC</option>
               <option value="CEI Betel">CEI Betel</option>
@@ -106,34 +95,14 @@
             </select>
           </div>
         </div>
-        <div class="row2">
-          <div class="fg">
-            <label>Ano</label>
-            <select id="aAno" onchange="calcularDestino()">
-              <option value="">—</option>
-              <option value="2026">2026</option>
-              <option value="2025">2025</option>
-              <option value="2024">2024</option>
-              <option value="2023">2023</option>
-            </select>
-          </div>
-          <div class="fg">
-            <label>Mês</label>
-            <select id="aMes" onchange="calcularDestino()">
-              <option value="">—</option>
-              <option value="01">Janeiro</option><option value="02">Fevereiro</option>
-              <option value="03">Março</option><option value="04">Abril</option>
-              <option value="05">Maio</option><option value="06">Junho</option>
-              <option value="07">Julho</option><option value="08">Agosto</option>
-              <option value="09">Setembro</option><option value="10">Outubro</option>
-              <option value="11">Novembro</option><option value="12">Dezembro</option>
-            </select>
-          </div>
+        <div class="fg">
+          <label>Ano</label>
+          <input type="text" id="aAno" placeholder="Ex: 2026" maxlength="4">
         </div>
         <div id="avisoEdicao" style="display:none;margin-bottom:12px;padding:10px 14px;background:#fef9c3;border-radius:8px;border-left:3px solid #ca8a04;font-size:12px;color:#854d0e">
-          ⚠️ <strong>Edição de metadados apenas.</strong> Para trocar o arquivo, apague este registro e cadastre novamente.
+          Para trocar o arquivo, apague este registro e cadastre novamente.
         </div>
-        <div class="fg">
+        <div class="fg" id="fgArquivo">
           <label>Arquivo</label>
           <div id="dropZone"
             style="border:2px dashed var(--cinza-borda);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:#fafbfc"
@@ -141,51 +110,31 @@
             ondragover="event.preventDefault();this.style.borderColor='var(--azul)';this.style.background='#dbeafe'"
             ondragleave="this.style.borderColor='var(--cinza-borda)';this.style.background='#fafbfc'"
             ondrop="handleDrop(event)">
-            <div id="dropText" style="font-size:13px;color:var(--cinza)">📂 Clique para procurar ou arraste o arquivo aqui</div>
+            <div id="dropText" style="font-size:13px;color:var(--cinza)">Clique para procurar ou arraste o arquivo aqui</div>
           </div>
           <input type="file" id="fileInput" style="display:none" onchange="handleFile(this.files[0])">
-          <input type="text" id="aLink" placeholder="Ou cole o caminho/URL manualmente" style="margin-top:8px">
         </div>
         <div class="fg">
           <label>Observação</label>
           <input type="text" id="aObs" placeholder="Opcional">
         </div>
-        <div id="previewDestino" style="display:none;margin-top:8px;padding:10px 14px;background:#f0fdf4;border-radius:8px;border:1px solid #bbf7d0">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-            <div>
-              <div style="font-size:10px;font-weight:700;color:#15803d;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px">📄 Origem</div>
-              <div id="previewOrigem" style="font-size:12px;color:#166534;font-family:monospace;word-break:break-all">—</div>
-            </div>
-            <div>
-              <div style="font-size:10px;font-weight:700;color:#15803d;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px">📁 Destino</div>
-              <div id="previewPath" style="font-size:12px;color:#166534;font-family:monospace;word-break:break-all">—</div>
-            </div>
-          </div>
-        </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="fecharModal('modalAdd')">Cancelar</button>
-        <button class="btn btn-primary" onclick="salvarNovo()">Salvar</button>
+        <button class="btn" onclick="fecharModal('modalAdd')">Cancelar</button>
+        <button class="btn btn-cor" onclick="salvarDoc()">Salvar</button>
       </div>
     </div>
   </div>
 
   <div class="content">
-    <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
-      <button class="btn btn-primary" onclick="abrirAdicionar()">+ Adicionar documento</button>
-    </div>
-
-    <div class="stats-row" id="statsRow"></div>
-
     <div class="filtros-wrap">
       <div class="filtro-grupo">
         <label>Tipo</label>
         <div class="ftabs" id="ftTipo">
           <button class="ftab on" onclick="setF('tipo','',this)">Todos</button>
-          <button class="ftab" onclick="setF('tipo','prestacao',this)">📊 Prestações</button>
-          <button class="ftab" onclick="setF('tipo','institucional',this)">🏛️ Institucional</button>
-          <button class="ftab" onclick="setF('tipo','contrato',this)">📝 Contratos</button>
-          <button class="ftab" onclick="setF('tipo','relatorio',this)">📈 Relatórios</button>
+          <button class="ftab" onclick="setF('tipo','institucional',this)">Institucional</button>
+          <button class="ftab" onclick="setF('tipo','contrato',this)">Contratos</button>
+          <button class="ftab" onclick="setF('tipo','relatorio',this)">Relatórios</button>
         </div>
       </div>
       <div class="filtro-grupo">
@@ -197,21 +146,7 @@
           <button class="ftab" onclick="setF('unidade','Esco-Lar',this)">Esco-Lar</button>
         </div>
       </div>
-      <div class="filtro-grupo">
-        <label>Ano</label>
-        <div class="ftabs" id="ftAno">
-          <button class="ftab on" onclick="setF('ano','',this)">Todos</button>
-          <button class="ftab" onclick="setF('ano','2026',this)">2026</button>
-          <button class="ftab" onclick="setF('ano','2025',this)">2025</button>
-          <button class="ftab" onclick="setF('ano','2024',this)">2024</button>
-          <button class="ftab" onclick="setF('ano','2023',this)">2023</button>
-          <button class="ftab" onclick="setF('ano','2022',this)">2022</button>
-          <button class="ftab" onclick="setF('ano','2021',this)">2021</button>
-          <button class="ftab" onclick="setF('ano','2020',this)">2020</button>
-        </div>
-      </div>
     </div>
-
     <div id="lista"></div>
   </div>
 </div>
@@ -219,50 +154,56 @@
 <script src="../dados_docs.js"></script>
 <script src="_nav.js"></script>
 <script>
+var TIPO_LABEL = {institucional:'Institucional', contrato:'Contrato/Convênio', relatorio:'Relatório'};
+var TIPO_CLASS = {institucional:'tp-institucional', contrato:'tp-contrato', relatorio:'tp-relatorio'};
 
-// ── Constantes ────────────────────────────────────────────
-const MESES = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-const TIPO_LABEL = {prestacao:'Prestação de Contas', institucional:'Institucional', contrato:'Contrato/Convênio', relatorio:'Relatório'};
-const TIPO_CLASS = {prestacao:'tp-prestacao', institucional:'tp-institucional', contrato:'tp-contrato', relatorio:'tp-institucional'};
-
-// ── Estado ────────────────────────────────────────────────
-const filtros = {tipo:'', unidade:'', ano:''};
-let _arquivo = null;
-
-// ── Init ──────────────────────────────────────────────────
-var _convenios = [];
-
-async function carregarConvenios() {
-  try {
-    var resp = await fetch('/api/convenios');
-    _convenios = await resp.json();
-  } catch(e) { _convenios = []; }
-  var sel = document.getElementById('aConvenio');
-  sel.innerHTML = '<option value="">— Sem convênio (documento institucional) —</option>';
-  _convenios.forEach(function(c) {
-    var label = c.nome + ' — ' + c.unidade;
-    sel.innerHTML += '<option value="' + c.id + '" data-unidade="' + c.unidade + '" data-slug="' + c.slug + '">' + label + '</option>';
-  });
-}
-
-function aoSelecionarConvenio() {
-  var sel = document.getElementById('aConvenio');
-  var opt = sel.options[sel.selectedIndex];
-  if (opt && opt.dataset.unidade) {
-    document.getElementById('aUnidade').value = opt.dataset.unidade;
-  }
-}
+var filtros = {tipo:'', unidade:''};
+var _arquivo = null;
+var _editandoId = null;
+var _extras = [];
 
 document.addEventListener('DOMContentLoaded', async function() {
   initNav('documentos');
   initModal('modalAdd');
   await carregarExtras();
-  await carregarConvenios();
-  renderStats();
   renderLista();
 });
 
-// ── Filtros ───────────────────────────────────────────────
+async function carregarExtras() {
+  try {
+    var resp = await fetch('/api/extras');
+    _extras = await resp.json();
+  } catch(e) {
+    _extras = [];
+  }
+}
+
+async function salvarExtras() {
+  try {
+    await fetch('/api/extras', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(_extras) });
+  } catch(e) {
+    alert('Erro ao salvar: ' + e.message);
+  }
+}
+
+function getDocs() {
+  var base = (typeof AASEC_DOCS !== 'undefined' ? AASEC_DOCS : [])
+    .filter(function(d) { return d.tipo !== 'prestacao'; });
+  var extrasInst = _extras.filter(function(d) { return !d.convenio_id && d.tipo !== 'prestacao'; });
+  var baseIds = base.map(function(d) { return d.id || d.link; });
+  var novos = extrasInst.filter(function(d) { return baseIds.indexOf(d.id) === -1 && baseIds.indexOf(d.link) === -1; });
+  return base.concat(novos);
+}
+
+function resolverLink(link) {
+  if (!link) return null;
+  link = link.replace(/^['"]|['"]$/g, '').trim();
+  if (link.indexOf('://') !== -1) return link;
+  return window.location.origin + (link.charAt(0) === '/' ? link : '/' + link);
+}
+
+// ── Filtros ──────────────────────────────────────────────
+
 function setF(campo, val, btn) {
   filtros[campo] = val;
   document.querySelectorAll('#ft' + campo.charAt(0).toUpperCase() + campo.slice(1) + ' .ftab')
@@ -271,82 +212,15 @@ function setF(campo, val, btn) {
   renderLista();
 }
 
-// ── Storage (servidor) ────────────────────────────────────
-var _extrasCache = [];
-var _extrasPronto = false;
+// ── Render ───────────────────────────────────────────────
 
-async function carregarExtras() {
-  try {
-    var resp = await fetch('/api/extras');
-    _extrasCache = await resp.json();
-  } catch(e) {
-    _extrasCache = JSON.parse(localStorage.getItem('aasec_docs_extra') || '[]');
-  }
-  _extrasPronto = true;
-}
-
-function getExtras() { return _extrasCache; }
-
-async function saveExtras(d) {
-  _extrasCache = d;
-  try {
-    await fetch('/api/extras', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(d) });
-  } catch(e) {
-    localStorage.setItem('aasec_docs_extra', JSON.stringify(d));
-  }
-}
-
-function getApagados() { return JSON.parse(localStorage.getItem('aasec_docs_apagados') || '[]'); }
-
-function docChave(d) {
-  return d.id || d.link || (d.nome + (d.ano||'') + (d.mes||''));
-}
-
-function getDocs() {
-  var apagados = getApagados();
-  var extras = getExtras()
-                 .filter(function(d) { return apagados.indexOf(docChave(d)) === -1; });
-  var extrasIds = extras.map(function(d) { return d.id; });
-  var base   = (typeof AASEC_DOCS !== 'undefined' ? AASEC_DOCS : [])
-                 .filter(function(d) { return apagados.indexOf(docChave(d)) === -1; })
-                 .filter(function(d) { return extrasIds.indexOf(docChave(d)) === -1; });
-  return base.concat(extras);
-}
-
-// ── Link helpers ──────────────────────────────────────────
-// Converte link relativo (/docs/...) para URL absoluta do servidor
-function resolverLink(link) {
-  if (!link) return null;
-  // Remover aspas acidentais
-  link = link.replace(/^['"]|['"]$/g, '').trim();
-  if (link.indexOf('://') !== -1) return link; // já absoluto
-  var origin = window.location.protocol + '//' + window.location.host;
-  return origin + (link.charAt(0) === '/' ? link : '/' + link);
-}
-
-// ── Render stats ──────────────────────────────────────────
-function renderStats() {
-  var d = getDocs();
-  var disponíveis = d.filter(function(x) { return !!x.link; }).length;
-  var betel  = d.filter(function(x) { return x.unidade === 'CEI Betel'; }).length;
-  var escolar = d.filter(function(x) { return x.unidade === 'Esco-Lar'; }).length;
-  document.getElementById('statsRow').innerHTML =
-    '<div class="stat"><div class="sn">' + d.length + '</div><div class="sl">Total</div></div>' +
-    '<div class="stat"><div class="sn">' + disponíveis + '</div><div class="sl">Disponíveis</div></div>' +
-    '<div class="stat"><div class="sn">' + betel + '</div><div class="sl">CEI Betel</div></div>' +
-    '<div class="stat"><div class="sn">' + escolar + '</div><div class="sl">Esco-Lar</div></div>';
-}
-
-// ── Render lista ──────────────────────────────────────────
 function renderLista() {
   var lista = getDocs().filter(function(d) {
-    var okT = !filtros.tipo || d.tipo === filtros.tipo;
-    var okU = !filtros.unidade || d.unidade === filtros.unidade;
-    var okA = !filtros.ano || d.ano === filtros.ano;
-    return okT && okU && okA;
+    if (filtros.tipo && d.tipo !== filtros.tipo) return false;
+    if (filtros.unidade && d.unidade !== filtros.unidade) return false;
+    return true;
   }).sort(function(a, b) {
-    if (a.ano !== b.ano) return (b.ano||'').localeCompare(a.ano||'');
-    return (b.mes||'').localeCompare(a.mes||'');
+    return (b.ano||'').localeCompare(a.ano||'');
   });
 
   var el = document.getElementById('lista');
@@ -356,7 +230,6 @@ function renderLista() {
     return;
   }
 
-  // Agrupar por ano
   var porAno = {};
   lista.forEach(function(d) {
     var a = d.ano || '—';
@@ -370,32 +243,23 @@ function renderLista() {
     html += '<div class="ano-sep">' + ano + ' — ' + itens.length + ' documento(s)</div>';
     html += '<div class="doc-list">';
     itens.forEach(function(d) {
-      var tem  = !!d.link;
-      var url  = resolverLink(d.link);
-      var mes  = d.mes ? MESES[parseInt(d.mes, 10)] : '';
-      var periodo = mes ? mes + ' ' + d.ano : (d.ano || '');
+      var tem = !!d.link;
+      var url = resolverLink(d.link);
       var tipoC = TIPO_CLASS[d.tipo] || 'tp-institucional';
       var tipoL = TIPO_LABEL[d.tipo] || d.tipo;
-      var chave = docChave(d).replace(/'/g, "\\'");
-      var linkSafe = (d.link || '').replace(/'/g, "\\'");
 
       html += '<div class="doc-row' + (tem ? ' tem' : '') + '"'
-           + (tem ? ' onclick="abrirDoc(\'' + url.replace(/'/g,"\\'") + '\')"' : '') + '>';
+           + (tem ? ' onclick="window.open(\'' + url.replace(/'/g,"\\'") + '\',\'_blank\')"' : '') + '>';
       html += '<div class="dr-ico">' + (tem ? '✅' : '📋') + '</div>';
       html += '<div class="dr-info"><strong>' + d.nome + '</strong>'
-           + '<span>' + d.unidade + (periodo ? ' · ' + periodo : '') + '</span></div>';
+           + '<span>' + d.unidade + (d.ano ? ' · ' + d.ano : '') + '</span></div>';
       html += '<span class="dr-tipo ' + tipoC + '">' + tipoL + '</span>';
-      html += '<span class="dr-status ' + (tem ? 'st-ok' : 'st-nd') + '">'
-           + (tem ? '✓ Disponível' : 'Em breve') + '</span>';
       if (tem) {
-        html += '<a class="btn btn-primary btn-sm" href="' + url + '" target="_blank"'
-             + ' onclick="event.stopPropagation()">⬇️</a>';
+        html += '<a class="dr-status st-ok" href="' + url + '" target="_blank" onclick="event.stopPropagation()">Abrir</a>';
       }
-      // Serializar doc para edição
-      var docJson = encodeURIComponent(JSON.stringify({id:d.id||'',nome:d.nome,tipo:d.tipo,unidade:d.unidade,ano:d.ano||'',mes:d.mes||'',link:d.link||'',obs:d.obs||''}));
-      html += '<button class="btn-apagar" style="background:#dbeafe;color:#1e40af" onclick="event.stopPropagation();editarDoc(\'' + docJson + '\')" title="Editar">✏️</button>';
-      html += '<button class="btn-apagar" onclick="event.stopPropagation();apagarDoc(\''
-           + chave + '\',\'' + linkSafe + '\')" title="Apagar">🗑️</button>';
+      if (d.id) {
+        html += '<button class="btn-apagar" onclick="event.stopPropagation();apagarDoc(\'' + d.id + '\')" title="Apagar">🗑️</button>';
+      }
       html += '</div>';
     });
     html += '</div>';
@@ -404,93 +268,22 @@ function renderLista() {
   el.innerHTML = html;
 }
 
-// Abre doc em nova aba
-function abrirDoc(url) {
-  window.open(url, '_blank');
-}
+// ── Modal ────────────────────────────────────────────────
 
-// ── Apagar doc ────────────────────────────────────────────
-async function apagarDoc(chave, link) {
-  if (!confirm('Apagar este documento? Esta ação não pode ser desfeita.')) return;
-
-  // Limpar aspas acidentais do link
-  link = link.replace(/^['"`]|['"`]$/g, '').trim();
-
-  // Tentar apagar do servidor
-  if (link && window.location.protocol !== 'file:') {
-    try {
-      var r = await fetch('/apagar', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({link: link})
-      });
-      var j = await r.json();
-      if (!j.ok) toast('Arquivo no servidor não removido: ' + j.erro, 'aviso');
-    } catch(e) {
-      toast('Servidor indisponível — removido apenas da lista', 'aviso');
-    }
-  }
-
-  // Remover dos extras, ou marcar como apagado na base
-  var extras = getExtras();
-  var novosExtras = extras.filter(function(d) { return docChave(d) !== chave; });
-  if (novosExtras.length < extras.length) {
-    saveExtras(novosExtras);
-  } else {
-    var apagados = getApagados();
-    if (apagados.indexOf(chave) === -1) apagados.push(chave);
-    localStorage.setItem('aasec_docs_apagados', JSON.stringify(apagados));
-  }
-
-  renderStats();
-  renderLista();
-  toast('Documento removido.');
-}
-
-var _editandoId = null;
-
-function editarDoc(docJson) {
-  var d = JSON.parse(decodeURIComponent(docJson));
-  _editandoId = d.id || docChave(d);
-  document.getElementById('modalAddTitulo').textContent = 'Editar Documento';
-  document.getElementById('aNome').value    = d.nome || '';
-  document.getElementById('aTipo').value    = d.tipo || '';
-  document.getElementById('aUnidade').value = d.unidade || '';
-  document.getElementById('aAno').value     = d.ano || '';
-  document.getElementById('aMes').value     = d.mes || '';
-  document.getElementById('aLink').value    = d.link || '';
-  document.getElementById('aObs').value     = d.obs || '';
-  document.getElementById('aConvenio').value = d.convenio_id || '';
-  document.getElementById('dropZone').style.display = 'none';
-  document.getElementById('fileInput').style.display = 'none';
-  document.getElementById('aLink').style.display = 'none';
-  document.getElementById('previewDestino').style.display = 'none';
-  document.getElementById('avisoEdicao').style.display = 'block';
-  _arquivo = null;
-  abrirModal('modalAdd');
-}
-
-// ── Modal adicionar ───────────────────────────────────────
 function abrirAdicionar() {
-  document.getElementById('aNome').value  = '';
-  document.getElementById('aLink').value  = '';
-  document.getElementById('aObs').value   = '';
-  document.getElementById('aTipo').value  = '';
-  document.getElementById('aUnidade').value = '';
-  document.getElementById('aMes').value   = '';
-  document.getElementById('aAno').value   = new Date().getFullYear().toString();
-  document.getElementById('aConvenio').value = '';
-  document.getElementById('previewDestino').style.display = 'none';
-  document.getElementById('dropText').innerHTML = '📂 Clique para procurar ou arraste o arquivo aqui';
-  document.getElementById('dropZone').style.borderColor = 'var(--cinza-borda)';
-  document.getElementById('dropZone').style.background  = '#fafbfc';
-  document.getElementById('modalAddTitulo').textContent = 'Adicionar Documento';
-  document.getElementById('dropZone').style.display = '';
-  document.getElementById('fileInput').style.display = '';
-  document.getElementById('aLink').style.display = '';
-  document.getElementById('avisoEdicao').style.display = 'none';
-  _arquivo = null;
   _editandoId = null;
+  _arquivo = null;
+  document.getElementById('modalAddTitulo').textContent = 'Adicionar Documento';
+  document.getElementById('aNome').value = '';
+  document.getElementById('aTipo').value = '';
+  document.getElementById('aUnidade').value = '';
+  document.getElementById('aAno').value = '';
+  document.getElementById('aObs').value = '';
+  document.getElementById('dropText').textContent = 'Clique para procurar ou arraste o arquivo aqui';
+  document.getElementById('dropZone').style.borderColor = 'var(--cinza-borda)';
+  document.getElementById('dropZone').style.background = '#fafbfc';
+  document.getElementById('fgArquivo').style.display = '';
+  document.getElementById('avisoEdicao').style.display = 'none';
   abrirModal('modalAdd');
 }
 
@@ -500,125 +293,95 @@ function handleFile(file) {
   document.getElementById('dropText').innerHTML =
     '✅ <strong>' + file.name + '</strong> (' + (file.size/1024).toFixed(0) + ' KB)';
   document.getElementById('dropZone').style.borderColor = '#10b981';
-  document.getElementById('dropZone').style.background  = '#ecfdf5';
+  document.getElementById('dropZone').style.background = '#ecfdf5';
   if (!document.getElementById('aNome').value) {
     document.getElementById('aNome').value = file.name.replace(/\.[^.]+$/, '').replace(/_/g, ' ');
   }
-  calcularDestino();
 }
 
 function handleDrop(e) {
   e.preventDefault();
   document.getElementById('dropZone').style.borderColor = 'var(--cinza-borda)';
-  document.getElementById('dropZone').style.background  = '#fafbfc';
+  document.getElementById('dropZone').style.background = '#fafbfc';
   if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
 }
 
-function calcularDestino() {
-  var tipo    = document.getElementById('aTipo').value;
+async function salvarDoc() {
+  var nome = document.getElementById('aNome').value.trim();
+  var tipo = document.getElementById('aTipo').value;
   var unidade = document.getElementById('aUnidade').value;
-  var ano     = document.getElementById('aAno').value;
-  var mes     = document.getElementById('aMes').value;
-  var convSel = document.getElementById('aConvenio');
-  var convOpt = convSel.options[convSel.selectedIndex];
-  var slug    = convOpt && convOpt.dataset.slug ? convOpt.dataset.slug : '';
-  var prev    = document.getElementById('previewDestino');
+  if (!nome || !tipo || !unidade) { alert('Preencha nome, tipo e unidade.'); return; }
 
-  if (!tipo || !unidade) { prev.style.display = 'none'; return; }
+  var ano = document.getElementById('aAno').value.trim() || null;
+  var obs = document.getElementById('aObs').value.trim();
+  var link = null;
 
-  var destino;
-  if (slug) {
-    var subpasta = tipo === 'prestacao' ? 'prestacoes' : 'documentos';
-    if (tipo === 'prestacao' && mes && ano) {
-      destino = 'docs/convenios/' + slug + '/' + subpasta + '/' + mes + ano + '.pdf';
-    } else {
-      var nomeArq = _arquivo ? _arquivo.name : '(nome do arquivo)';
-      destino = 'docs/convenios/' + slug + '/' + subpasta + '/' + nomeArq;
-    }
-  } else {
-    var tipoPasta = tipo === 'prestacao' ? 'prestacoes' : tipo;
-    if (tipo === 'prestacao' && mes && ano) {
-      destino = 'docs/' + tipoPasta + '/' + unidade + '/' + mes + ano + '.pdf';
-    } else {
-      var nomeArq = _arquivo ? _arquivo.name : '(nome do arquivo)';
-      destino = 'docs/' + tipoPasta + '/' + unidade + '/' + nomeArq;
-    }
-  }
+  if (_arquivo) {
+    var fd = new FormData();
+    fd.append('file', _arquivo);
+    fd.append('tipo', tipo);
+    fd.append('unidade', unidade);
+    fd.append('ano', ano || '');
 
-  document.getElementById('previewPath').textContent   = destino;
-  document.getElementById('previewOrigem').textContent = _arquivo ? _arquivo.name : '(nenhum arquivo selecionado)';
-  prev.style.display = 'block';
-}
-
-async function salvarNovo() {
-  var nome    = document.getElementById('aNome').value.trim();
-  var tipo    = document.getElementById('aTipo').value;
-  var unidade = document.getElementById('aUnidade').value;
-  var ano     = document.getElementById('aAno').value || null;
-  var mes     = document.getElementById('aMes').value || null;
-  var obs     = document.getElementById('aObs').value.trim();
-  var linkManual = document.getElementById('aLink').value.trim();
-  var convSel = document.getElementById('aConvenio');
-  var convId  = convSel.value || null;
-  var convOpt = convSel.options[convSel.selectedIndex];
-  var convSlug = convOpt && convOpt.dataset.slug ? convOpt.dataset.slug : null;
-
-  if (!nome || !tipo || !unidade) {
-    toast('Preencha nome, tipo e unidade.', 'erro');
-    return;
-  }
-
-  var link = linkManual || null;
-
-  // Upload via servidor
-  console.log('protocolo:', window.location.protocol, 'arquivo:', _arquivo ? _arquivo.name : 'nenhum');
-  if (_arquivo && window.location.protocol !== 'file:') {
-    toast('Enviando arquivo...');
     try {
-      var fd = new FormData();
-      fd.append('file', _arquivo);
-      fd.append('tipo', tipo);
-      fd.append('unidade', unidade);
-      fd.append('ano', ano || '');
-      fd.append('mes', mes || '');
-      if (convSlug) fd.append('convenio_slug', convSlug);
-      var resp = await fetch('/upload', {method:'POST', body:fd});
+      var resp = await fetch('/upload', { method: 'POST', body: fd });
       var r = await resp.json();
-      if (r.ok) {
-        link = r.link;
-      } else {
-        toast('Erro no upload: ' + r.erro, 'erro');
-        return;
-      }
+      if (!r.ok) { alert('Erro no upload: ' + r.erro); return; }
+      link = r.link;
     } catch(e) {
-      toast('Erro: ' + e.message, 'erro');
-      console.error('Upload erro:', e);
+      alert('Erro: ' + e.message);
       return;
     }
   }
 
-  var extras = getExtras();
   if (_editandoId) {
-    var idx = extras.findIndex(function(d) { return d.id === _editandoId; });
+    var idx = _extras.findIndex(function(d) { return d.id === _editandoId; });
     if (idx !== -1) {
-      extras[idx] = Object.assign(extras[idx], {nome:nome, tipo:tipo, unidade:unidade, ano:ano, mes:mes, link:link, obs:obs, convenio_id:convId});
-    } else {
-      extras.push({id:_editandoId, nome:nome, tipo:tipo, unidade:unidade, ano:ano, mes:mes, link:link, obs:obs, convenio_id:convId, editado_em:new Date().toISOString()});
+      _extras[idx].nome = nome;
+      _extras[idx].tipo = tipo;
+      _extras[idx].unidade = unidade;
+      _extras[idx].ano = ano;
+      _extras[idx].obs = obs;
+      if (link) _extras[idx].link = link;
     }
-    toast('Documento atualizado!');
   } else {
-    extras.push({id:Date.now().toString(), nome:nome, tipo:tipo, unidade:unidade, ano:ano, mes:mes, link:link, obs:obs, convenio_id:convId, criado_em:new Date().toISOString()});
-    toast('Documento adicionado!');
+    _extras.push({
+      id: Date.now().toString(),
+      nome: nome,
+      tipo: tipo,
+      unidade: unidade,
+      ano: ano,
+      link: link,
+      obs: obs,
+      criado_em: new Date().toISOString()
+    });
   }
-  saveExtras(extras);
+
+  await salvarExtras();
   _arquivo = null;
   _editandoId = null;
-
   fecharModal('modalAdd');
-  renderStats();
   renderLista();
 }
 
+async function apagarDoc(id) {
+  if (!confirm('Apagar este documento?')) return;
+  var doc = _extras.find(function(d) { return d.id === id; });
+
+  if (doc && doc.link) {
+    try {
+      await fetch('/apagar', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({link: doc.link})
+      });
+    } catch(e) {}
+  }
+
+  _extras = _extras.filter(function(d) { return d.id !== id; });
+  await salvarExtras();
+  renderLista();
+}
 </script>
 </body>
 </html>
