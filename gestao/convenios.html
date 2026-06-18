@@ -45,18 +45,6 @@
 .det-campo .dl{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--cinza);margin-bottom:2px}
 .det-campo .dv{font-weight:600;color:var(--preto)}
 .det-secao{font-size:13px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--cinza);margin:24px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--cinza-borda)}
-.pc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
-.pc-cell{background:#fff;border-radius:10px;padding:12px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1.5px solid var(--cinza-borda);transition:all .2s;position:relative}
-.pc-cell.ok{border-color:#10b981;background:#f0fdf4}
-.pc-cell.ok:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(16,185,129,.2)}
-.pc-mes{font-size:12px;font-weight:700;color:var(--preto);margin-bottom:4px}
-.pc-status{font-size:18px;margin-bottom:4px}
-.pc-acao{font-size:10px;font-weight:600;margin-top:4px}
-.pc-acao a{color:var(--azul);text-decoration:none}
-.pc-acao a:hover{text-decoration:underline}
-.pc-cell label{display:block;cursor:pointer;font-size:10px;font-weight:600;color:var(--azul);margin-top:4px}
-.pc-cell label:hover{text-decoration:underline}
-.pc-cell input[type=file]{display:none}
 .det-docs{display:flex;flex-direction:column;gap:6px}
 .det-doc-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.05);font-size:13px}
 .det-doc-row a{color:var(--azul);font-weight:600;text-decoration:none}
@@ -156,7 +144,7 @@
   <div class="modal-overlay" id="modalDoc">
     <div class="modal">
       <div class="modal-h">
-        <h3>Adicionar Documento</h3>
+        <h3 id="modalDocTitulo">Adicionar Documento</h3>
         <button class="modal-close" onclick="fecharModal('modalDoc')">✕</button>
       </div>
       <div class="modal-body">
@@ -237,7 +225,6 @@ var filtros = { unidade: '', situacao: '', visibilidade: '', ano: '' };
 var _editandoId = null;
 
 var tipoLabel = { convenio: 'Convênio Prefeitura', emenda: 'Emenda', fomento: 'Termo de Fomento', parceria: 'Parceria Privada' };
-var MESES = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
 document.addEventListener('DOMContentLoaded', async function() {
   initNav('convenios');
@@ -338,22 +325,6 @@ function formatarData(d) {
   return p[2] + '/' + p[1] + '/' + p[0];
 }
 
-function gerarMeses(inicio, fim) {
-  if (!inicio || !fim) return [];
-  var meses = [];
-  var pi = inicio.split('-');
-  var pf = fim.split('-');
-  var anoI = parseInt(pi[0]), mesI = parseInt(pi[1]);
-  var anoF = parseInt(pf[0]), mesF = parseInt(pf[1]);
-  var a = anoI, m = mesI;
-  while (a < anoF || (a === anoF && m <= mesF)) {
-    meses.push({ ano: a.toString(), mes: m < 10 ? '0' + m : '' + m });
-    m++;
-    if (m > 12) { m = 1; a++; }
-  }
-  return meses;
-}
-
 // ── Lista de convênios ───────────────────────────────────
 
 function renderLista() {
@@ -380,9 +351,8 @@ function renderLista() {
     var badgeText = c.situacao === 'em_execucao' ? 'Em Execução' : 'Finalizado';
     if (c.visibilidade === 'interno') { badgeClass = 'badge-interno'; badgeText = 'Interno'; }
 
-    var pcCount = docsDoConvenio(c.id).filter(function(d) { return d.tipo === 'prestacao' && d.link; }).length;
-    var mesesTotal = gerarMeses(c.vigencia_inicio, c.vigencia_fim).length;
-    var pcLabel = mesesTotal ? pcCount + '/' + mesesTotal + ' PCs' : '';
+    var pcCount = docsDoConvenio(c.id).filter(function(d) { return d.tipo === 'prestacao'; }).length;
+    var docCount = docsDoConvenio(c.id).filter(function(d) { return d.tipo !== 'prestacao'; }).length;
 
     var json = encodeURIComponent(JSON.stringify(c));
 
@@ -398,7 +368,8 @@ function renderLista() {
       + (c.valor ? '<span>' + formatarValor(c.valor) + '</span>' : '')
       + (c.vigencia_inicio ? '<span>' + formatarData(c.vigencia_inicio) + ' — ' + formatarData(c.vigencia_fim) + '</span>' : '')
       + (c.sit ? '<span>SIT: ' + c.sit + '</span>' : '')
-      + (pcLabel ? '<span>📋 ' + pcLabel + '</span>' : '')
+      + (pcCount ? '<span>📋 ' + pcCount + ' PC(s)</span>' : '')
+      + (docCount ? '<span>📄 ' + docCount + ' doc(s)</span>' : '')
       + '</div>'
       + '<div class="conv-actions">'
       + '<button class="btn-editar" onclick="event.stopPropagation();editarConvenio(\'' + json + '\')">✏️ Editar</button>'
@@ -424,7 +395,8 @@ function verConvenio(id) {
   el.style.display = 'block';
 
   var docs = docsDoConvenio(c.id);
-  var meses = gerarMeses(c.vigencia_inicio, c.vigencia_fim);
+  var pcs = docs.filter(function(d) { return d.tipo === 'prestacao'; });
+  var outrosDocs = docs.filter(function(d) { return d.tipo !== 'prestacao'; });
 
   var html = '<button class="det-voltar" onclick="voltarLista()">← Voltar</button>';
   html += '<h3 style="margin:0 0 16px;font-size:18px">' + c.nome + '</h3>';
@@ -439,32 +411,29 @@ function verConvenio(id) {
   if (c.processo) html += '<div class="det-campo"><div class="dl">Processo</div><div class="dv">' + c.processo + '</div></div>';
   html += '</div>';
 
-  // Prestações de contas
-  if (meses.length) {
-    var enviadas = docs.filter(function(d) { return d.tipo === 'prestacao' && d.link; }).length;
-    html += '<div class="det-secao">Prestações de Contas — ' + enviadas + ' de ' + meses.length + '</div>';
-    html += '<div class="pc-grid">';
-    meses.forEach(function(m) {
-      var doc = docs.find(function(d) { return d.tipo === 'prestacao' && d.ano === m.ano && d.mes === m.mes; });
-      var tem = doc && doc.link;
-      var cellId = 'pc-' + m.ano + '-' + m.mes;
-      html += '<div class="pc-cell' + (tem ? ' ok' : '') + '" id="' + cellId + '">';
-      html += '<div class="pc-mes">' + MESES[parseInt(m.mes)] + '</div>';
-      html += '<div style="font-size:10px;color:var(--cinza)">' + m.ano + '</div>';
-      html += '<div class="pc-status">' + (tem ? '✅' : '⏳') + '</div>';
-      if (tem) {
-        html += '<div class="pc-acao"><a href="' + doc.link + '" target="_blank">Abrir PDF</a></div>';
+  // Prestações de contas — lista livre
+  html += '<div class="det-secao">Prestações de Contas (' + pcs.length + ')</div>';
+  if (pcs.length) {
+    html += '<div class="det-docs">';
+    pcs.forEach(function(d) {
+      html += '<div class="det-doc-row">';
+      html += '<span>📋</span>';
+      if (d.link) {
+        html += '<a href="' + d.link + '" target="_blank">' + d.nome + '</a>';
       } else {
-        html += '<label>Enviar PDF<input type="file" accept=".pdf" onchange="uploadPC(this,\'' + c.id + '\',\'' + c.slug + '\',\'' + m.ano + '\',\'' + m.mes + '\',\'' + (c.unidade || '') + '\')"></label>';
+        html += '<span>' + d.nome + '</span>';
       }
+      html += '<button class="btn-apagar" onclick="apagarDoc(\'' + d.id + '\',\'' + c.id + '\')" style="margin-left:auto">🗑️</button>';
       html += '</div>';
     });
     html += '</div>';
+  } else {
+    html += '<p style="font-size:13px;color:var(--cinza)">Nenhuma prestação cadastrada.</p>';
   }
+  html += '<button class="btn btn-cor" style="margin-top:12px" onclick="abrirUploadDoc(\'' + c.id + '\',\'' + c.slug + '\',\'' + (c.unidade || '') + '\',\'prestacao\')">+ Adicionar prestação de contas</button>';
 
-  // Outros documentos do convênio
-  var outrosDocs = docs.filter(function(d) { return d.tipo !== 'prestacao'; });
-  html += '<div class="det-secao">Documentos do Convênio</div>';
+  // Documentos do convênio
+  html += '<div class="det-secao">Documentos (' + outrosDocs.length + ')</div>';
   if (outrosDocs.length) {
     html += '<div class="det-docs">';
     outrosDocs.forEach(function(d) {
@@ -482,7 +451,7 @@ function verConvenio(id) {
   } else {
     html += '<p style="font-size:13px;color:var(--cinza)">Nenhum documento cadastrado.</p>';
   }
-  html += '<button class="btn btn-cor" style="margin-top:12px" onclick="abrirUploadDoc(\'' + c.id + '\',\'' + c.slug + '\',\'' + (c.unidade || '') + '\')">+ Adicionar documento</button>';
+  html += '<button class="btn btn-cor" style="margin-top:12px" onclick="abrirUploadDoc(\'' + c.id + '\',\'' + c.slug + '\',\'' + (c.unidade || '') + '\',\'contrato\')">+ Adicionar documento</button>';
 
   el.innerHTML = html;
 }
@@ -493,61 +462,23 @@ function voltarLista() {
   document.getElementById('btnNovo').style.display = '';
 }
 
-// ── Upload de prestação de contas ────────────────────────
-
-async function uploadPC(input, convenioId, slug, ano, mes, unidade) {
-  var file = input.files[0];
-  if (!file) return;
-
-  var fd = new FormData();
-  fd.append('file', file);
-  fd.append('tipo', 'prestacao');
-  fd.append('unidade', unidade);
-  fd.append('ano', ano);
-  fd.append('mes', mes);
-  fd.append('convenio_slug', slug);
-
-  var cell = document.getElementById('pc-' + ano + '-' + mes);
-  cell.querySelector('.pc-status').textContent = '⏳';
-  cell.querySelector('label').textContent = 'Enviando...';
-
-  try {
-    var resp = await fetch('/upload', { method: 'POST', body: fd });
-    var r = await resp.json();
-    if (!r.ok) { alert('Erro: ' + r.erro); verConvenio(convenioId); return; }
-
-    _extras.push({
-      id: Date.now().toString(),
-      nome: 'Prestação de Contas — ' + MESES[parseInt(mes)] + ' ' + ano,
-      tipo: 'prestacao',
-      unidade: unidade,
-      ano: ano,
-      mes: mes,
-      link: r.link,
-      convenio_id: convenioId,
-      criado_em: new Date().toISOString()
-    });
-    await salvarExtras();
-    verConvenio(convenioId);
-  } catch(e) {
-    alert('Erro no upload: ' + e.message);
-    verConvenio(convenioId);
-  }
-}
-
-// ── Upload de documento do convênio ──────────────────────
+// ── Upload de documento/PC do convênio ───────────────────
 
 var _docConvenioId = null;
 var _docConvenioSlug = null;
 var _docConvenioUnidade = null;
+var _docTipo = null;
 var _docArquivo = null;
 
-function abrirUploadDoc(convenioId, slug, unidade) {
+function abrirUploadDoc(convenioId, slug, unidade, tipo) {
   _docConvenioId = convenioId;
   _docConvenioSlug = slug;
   _docConvenioUnidade = unidade;
+  _docTipo = tipo;
   _docArquivo = null;
   document.getElementById('dNome').value = '';
+  document.getElementById('modalDocTitulo').textContent = tipo === 'prestacao' ? 'Adicionar Prestação de Contas' : 'Adicionar Documento';
+  document.getElementById('dNome').placeholder = tipo === 'prestacao' ? 'Ex: Janeiro 2025, Parcela 3, 1º Trimestre...' : 'Ex: Plano de Trabalho, Termo Aditivo...';
   document.getElementById('docDropText').textContent = 'Clique para procurar ou arraste o arquivo aqui';
   document.getElementById('docDropZone').style.borderColor = 'var(--cinza-borda)';
   document.getElementById('docDropZone').style.background = '#fafbfc';
@@ -576,12 +507,12 @@ function handleDocDrop(e) {
 
 async function salvarDocConvenio() {
   var nome = document.getElementById('dNome').value.trim();
-  if (!nome) { alert('Preencha o nome do documento.'); return; }
+  if (!nome) { alert('Preencha o nome.'); return; }
   if (!_docArquivo) { alert('Selecione um arquivo.'); return; }
 
   var fd = new FormData();
   fd.append('file', _docArquivo);
-  fd.append('tipo', 'contrato');
+  fd.append('tipo', _docTipo);
   fd.append('unidade', _docConvenioUnidade);
   fd.append('convenio_slug', _docConvenioSlug);
 
@@ -593,7 +524,7 @@ async function salvarDocConvenio() {
     _extras.push({
       id: Date.now().toString(),
       nome: nome,
-      tipo: 'contrato',
+      tipo: _docTipo,
       unidade: _docConvenioUnidade,
       link: r.link,
       convenio_id: _docConvenioId,
