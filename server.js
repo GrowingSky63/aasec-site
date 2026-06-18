@@ -156,7 +156,7 @@ const server = http.createServer(async (req, res) => {
         email: result.account.username,
       }, isHttps);
       console.log('AUTH login OK:', result.account.username);
-      res.writeHead(302, { Location: '/gestao/indicadores.html' });
+      res.writeHead(302, { Location: '/gestao/convenios.html' });
       res.end();
     } catch (e) {
       console.error('AUTH callback erro:', e.message);
@@ -353,9 +353,14 @@ const server = http.createServer(async (req, res) => {
   let filePath = path.join(ROOT, pathDecoded === '/' ? 'index.html' : pathDecoded);
   if (!filePath.startsWith(ROOT)) { res.writeHead(403); res.end('Acesso negado'); return; }
 
+  // Bloquear acesso a diretórios sensíveis
+  const BLOCKED = ['.git', '.env', 'node_modules', '_lixeira', 'docs_backup'];
+  const segments = pathDecoded.replace(/^\//, '').split('/');
+  if (segments.some(s => BLOCKED.includes(s))) { res.writeHead(404); res.end('Não encontrado'); return; }
+
   fs.readFile(filePath, (err, data) => {
     if (err) {
-      if (err.code === 'ENOENT') { res.writeHead(404); res.end('Não encontrado'); }
+      if (err.code === 'ENOENT' || err.code === 'EISDIR') { res.writeHead(404); res.end('Não encontrado'); }
       else { console.error('ERRO ao ler arquivo:', filePath, err.code, err.message); res.writeHead(500); res.end('Erro interno'); }
       return;
     }

@@ -57,7 +57,7 @@ if (new URLSearchParams(location.search).has('erro')) {
 }
 // Se já está logado, redirecionar
 fetch('/auth/me').then(r => r.json()).then(d => {
-  if (d.logado) window.location.href = 'indicadores.html';
+  if (d.logado) window.location.href = 'convenios.html';
 });
 </script>
 </body>

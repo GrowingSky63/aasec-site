@@ -51,16 +51,8 @@
   </div>
   <div class="sb-unidade"><span id="sb-unidade"></span></div>
   <nav>
-    <div class="nav-label">Indicadores</div>
-    <a class="nav-item" href="indicadores.html" data-page="indicadores"><span class="nav-icon">📊</span> Painel Institucional</a>
-    <div class="nav-label">Registrar dados</div>
-    <a class="nav-item" href="lrco.html" data-page="lrco"><span class="nav-icon">📋</span> Dados Operacionais</a>
-    <a class="nav-item" href="reunioes.html" data-page="reunioes"><span class="nav-icon">👨‍👩‍👧</span> Reuniões de Família</a>
-    <div class="nav-label">Documentos</div>
     <a class="nav-item" href="convenios.html" data-page="convenios"><span class="nav-icon">📑</span> Convênios</a>
-    <a class="nav-item" href="documentos.html" data-page="documentos"><span class="nav-icon">📁</span> Documentos & PCs</a>
-    <div class="nav-label">Configuração</div>
-    <a class="nav-item" href="cadastros.html" data-page="cadastros"><span class="nav-icon">⚙️</span> Cadastros</a>
+    <a class="nav-item" href="documentos.html" data-page="documentos"><span class="nav-icon">📁</span> Arquivos</a>
   </nav>
   <div class="sb-bottom">
     <a href="../index.html">← Voltar ao site</a>
@@ -168,6 +160,10 @@
         <button class="ftab" onclick="setF('visibilidade','interno',this)">Interno</button>
       </div>
     </div>
+    <div class="filtro-grupo" id="ftAno">
+      <label>Ano</label>
+      <div class="ftabs" id="ftAno-tabs"></div>
+    </div>
   </div>
 
   <!-- LISTA -->
@@ -177,7 +173,7 @@
 <script src="_nav.js"></script>
 <script>
 var convenios = [];
-var filtros = { unidade: '', situacao: '', visibilidade: '' };
+var filtros = { unidade: '', situacao: '', visibilidade: '', ano: '' };
 var _editandoId = null;
 
 var tipoLabel = { convenio: 'Convênio Prefeitura', emenda: 'Emenda', fomento: 'Termo de Fomento', parceria: 'Parceria Privada' };
@@ -186,6 +182,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   initNav('convenios');
   initModal('modalAdd');
   await carregarConvenios();
+  renderFiltroAno();
   renderStats();
   renderLista();
 });
@@ -211,6 +208,23 @@ function gerarSlug(unidade, nome) {
   var u = unidade.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
   var n = nome.toLowerCase().replace(/[ºª°]/g, '').replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-');
   return u + '_' + n;
+}
+
+function renderFiltroAno() {
+  var anos = [];
+  convenios.forEach(function(c) {
+    if (c.vigencia_inicio) {
+      var a = c.vigencia_inicio.substring(0, 4);
+      if (anos.indexOf(a) === -1) anos.push(a);
+    }
+  });
+  anos.sort().reverse();
+  var container = document.getElementById('ftAno-tabs');
+  var html = '<button class="ftab on" onclick="setF(\'ano\',\'\',this)">Todos</button>';
+  anos.forEach(function(a) {
+    html += '<button class="ftab" onclick="setF(\'ano\',\'' + a + '\',this)">' + a + '</button>';
+  });
+  container.innerHTML = html;
 }
 
 function setF(campo, val, btn) {
@@ -244,6 +258,7 @@ function renderLista() {
     if (filtros.unidade && c.unidade !== filtros.unidade) return false;
     if (filtros.situacao && c.situacao !== filtros.situacao) return false;
     if (filtros.visibilidade && c.visibilidade !== filtros.visibilidade) return false;
+    if (filtros.ano && (!c.vigencia_inicio || c.vigencia_inicio.substring(0, 4) !== filtros.ano)) return false;
     return true;
   });
 

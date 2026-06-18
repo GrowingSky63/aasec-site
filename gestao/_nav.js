@@ -67,14 +67,6 @@ function fmtData(iso) {
   return new Date(iso).toLocaleDateString('pt-BR');
 }
 
-// Cor por valor percentual
-function corPct(v) {
-  if (v == null) return 'var(--cinza)';
-  if (v >= 80) return 'var(--ok)';
-  if (v >= 60) return 'var(--atencao)';
-  return 'var(--alerta)';
-}
-
 // Sidebar HTML
 function renderSidebar() {
   return `
@@ -89,16 +81,8 @@ function renderSidebar() {
   </div>
   <div class="sb-unidade"><span id="sb-unidade"></span></div>
   <nav>
-    <div class="nav-label">Indicadores</div>
-    <a class="nav-item" href="indicadores.html" data-page="indicadores"><span class="nav-icon">📊</span> Painel Institucional</a>
-    <div class="nav-label">Registrar dados</div>
-    <a class="nav-item" href="lrco.html" data-page="lrco"><span class="nav-icon">📋</span> Dados Operacionais</a>
-    <a class="nav-item" href="reunioes.html" data-page="reunioes"><span class="nav-icon">👨‍👩‍👧</span> Reuniões de Família</a>
-    <div class="nav-label">Documentos</div>
     <a class="nav-item" href="convenios.html" data-page="convenios"><span class="nav-icon">📑</span> Convênios</a>
-    <a class="nav-item" href="documentos.html" data-page="documentos"><span class="nav-icon">📁</span> Documentos & PCs</a>
-    <div class="nav-label">Configuração</div>
-    <a class="nav-item" href="cadastros.html" data-page="cadastros"><span class="nav-icon">⚙️</span> Cadastros</a>
+    <a class="nav-item" href="documentos.html" data-page="documentos"><span class="nav-icon">📁</span> Arquivos</a>
   </nav>
   <div class="sb-bottom">
     <a href="../index.html">← Voltar ao site</a>
