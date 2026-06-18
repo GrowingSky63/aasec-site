@@ -50,6 +50,14 @@
 .det-doc-row a{color:var(--azul);font-weight:600;text-decoration:none}
 .det-doc-row a:hover{text-decoration:underline}
 
+.det-fotos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.det-foto-thumb{position:relative;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.det-foto-thumb img{width:100%;height:100px;object-fit:cover;display:block}
+.det-foto-thumb .ft-info{padding:6px 8px;background:#fff;font-size:11px}
+.det-foto-thumb .ft-info strong{display:block;font-size:11px;color:var(--preto);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.det-foto-thumb .ft-info .ft-desc{font-size:10px;color:var(--cinza);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.det-foto-thumb .ft-del{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:4px;padding:2px 6px;font-size:11px;cursor:pointer;opacity:0;transition:opacity .2s}
+.det-foto-thumb:hover .ft-del{opacity:1}
 @media(max-width:768px){.stats-row{grid-template-columns:repeat(2,1fr)}.pc-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}}
 </style>
 </head>
@@ -151,6 +159,10 @@
         <div class="fg">
           <label>Nome *</label>
           <input type="text" id="dNome" placeholder="Ex: Plano de Trabalho, Termo Aditivo...">
+        </div>
+        <div class="fg" id="fgDescricao" style="display:none">
+          <label>Descrição</label>
+          <input type="text" id="dDescricao" placeholder="Descrição da foto (opcional)">
         </div>
         <div class="fg">
           <label>Arquivo</label>
@@ -396,7 +408,8 @@ function verConvenio(id) {
 
   var docs = docsDoConvenio(c.id);
   var pcs = docs.filter(function(d) { return d.tipo === 'prestacao'; });
-  var outrosDocs = docs.filter(function(d) { return d.tipo !== 'prestacao'; });
+  var outrosDocs = docs.filter(function(d) { return d.tipo !== 'prestacao' && d.tipo !== 'foto'; });
+  var fotos = docs.filter(function(d) { return d.tipo === 'foto'; });
 
   var html = '<button class="det-voltar" onclick="voltarLista()">← Voltar</button>';
   html += '<h3 style="margin:0 0 16px;font-size:18px">' + c.nome + '</h3>';
@@ -453,6 +466,25 @@ function verConvenio(id) {
   }
   html += '<button class="btn btn-cor" style="margin-top:12px" onclick="abrirUploadDoc(\'' + c.id + '\',\'' + c.slug + '\',\'' + (c.unidade || '') + '\',\'contrato\')">+ Adicionar documento</button>';
 
+  // Fotos do convênio
+  html += '<div class="det-secao">Fotos (' + fotos.length + ')</div>';
+  if (fotos.length) {
+    html += '<div class="det-fotos-grid">';
+    fotos.forEach(function(d) {
+      html += '<div class="det-foto-thumb">';
+      html += '<img src="' + d.link + '" alt="' + (d.nome || '') + '" loading="lazy">';
+      html += '<div class="ft-info"><strong>' + d.nome + '</strong>';
+      if (d.descricao) html += '<span class="ft-desc">' + d.descricao + '</span>';
+      html += '</div>';
+      html += '<button class="ft-del" onclick="event.stopPropagation();apagarDoc(\'' + d.id + '\',\'' + c.id + '\')">&#10005;</button>';
+      html += '</div>';
+    });
+    html += '</div>';
+  } else {
+    html += '<p style="font-size:13px;color:var(--cinza)">Nenhuma foto cadastrada.</p>';
+  }
+  html += '<button class="btn btn-cor" style="margin-top:12px" onclick="abrirUploadDoc(\'' + c.id + '\',\'' + c.slug + '\',\'' + (c.unidade || '') + '\',\'foto\')">+ Adicionar foto</button>';
+
   el.innerHTML = html;
 }
 
@@ -477,8 +509,24 @@ function abrirUploadDoc(convenioId, slug, unidade, tipo) {
   _docTipo = tipo;
   _docArquivo = null;
   document.getElementById('dNome').value = '';
-  document.getElementById('modalDocTitulo').textContent = tipo === 'prestacao' ? 'Adicionar Prestação de Contas' : 'Adicionar Documento';
-  document.getElementById('dNome').placeholder = tipo === 'prestacao' ? 'Ex: Janeiro 2025, Parcela 3, 1º Trimestre...' : 'Ex: Plano de Trabalho, Termo Aditivo...';
+  document.getElementById('dDescricao').value = '';
+  document.getElementById('docFileInput').value = '';
+  if (tipo === 'foto') {
+    document.getElementById('modalDocTitulo').textContent = 'Adicionar Foto';
+    document.getElementById('dNome').placeholder = 'Título da foto';
+    document.getElementById('docFileInput').setAttribute('accept', 'image/*');
+    document.getElementById('fgDescricao').style.display = '';
+  } else if (tipo === 'prestacao') {
+    document.getElementById('modalDocTitulo').textContent = 'Adicionar Prestação de Contas';
+    document.getElementById('dNome').placeholder = 'Ex: Janeiro 2025, Parcela 3, 1º Trimestre...';
+    document.getElementById('docFileInput').removeAttribute('accept');
+    document.getElementById('fgDescricao').style.display = 'none';
+  } else {
+    document.getElementById('modalDocTitulo').textContent = 'Adicionar Documento';
+    document.getElementById('dNome').placeholder = 'Ex: Plano de Trabalho, Termo Aditivo...';
+    document.getElementById('docFileInput').removeAttribute('accept');
+    document.getElementById('fgDescricao').style.display = 'none';
+  }
   document.getElementById('docDropText').textContent = 'Clique para procurar ou arraste o arquivo aqui';
   document.getElementById('docDropZone').style.borderColor = 'var(--cinza-borda)';
   document.getElementById('docDropZone').style.background = '#fafbfc';
@@ -521,7 +569,7 @@ async function salvarDocConvenio() {
     var r = await resp.json();
     if (!r.ok) { alert('Erro: ' + r.erro); return; }
 
-    _extras.push({
+    var entry = {
       id: Date.now().toString(),
       nome: nome,
       tipo: _docTipo,
@@ -529,7 +577,12 @@ async function salvarDocConvenio() {
       link: r.link,
       convenio_id: _docConvenioId,
       criado_em: new Date().toISOString()
-    });
+    };
+    if (_docTipo === 'foto') {
+      var desc = document.getElementById('dDescricao').value.trim();
+      if (desc) entry.descricao = desc;
+    }
+    _extras.push(entry);
     await salvarExtras();
     fecharModal('modalDoc');
     verConvenio(_docConvenioId);

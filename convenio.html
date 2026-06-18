@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Convênio — AASEC</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    :root{--azul:#1A56A0;--azul-escuro:#0F3D7A;--azul-profundo:#092B5A;--azul-claro:#EBF2FB;--azul-medio:#C8DEFA;--branco:#FFFFFF;--fundo:#F7F9FC;--cinza-borda:#E2E8F0;--cinza-claro:#F1F5F9;--cinza:#64748B;--grafite:#334155;--preto:#0F172A;--ok:#059669;--ok-claro:#D1FAE5}
+    *{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',sans-serif;color:var(--grafite);background:var(--fundo);font-size:15px;line-height:1.6}
+
+    nav{position:fixed;top:0;left:0;right:0;background:var(--branco);border-bottom:3px solid var(--azul);z-index:100;padding:0 4%;display:flex;align-items:center;justify-content:space-between;height:64px;box-shadow:0 2px 16px rgba(0,0,0,.07)}
+    .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .nav-logo img{height:50px;width:auto;mix-blend-mode:multiply}
+    .nav-logo-txt strong{display:block;font-size:16px;font-weight:800;color:var(--preto)}
+    .nav-logo-txt span{font-size:10px;color:var(--cinza)}
+    .nav-back{text-decoration:none;background:var(--azul);color:#fff;font-size:13px;font-weight:600;padding:8px 16px;border-radius:8px;transition:all .2s}
+    .nav-back:hover{background:var(--azul-escuro)}
+
+    .hero{background:linear-gradient(150deg,var(--azul) 0%,var(--azul-escuro) 55%,var(--azul-profundo) 100%);padding:100px 4% 48px;text-align:center}
+    .hero .htag{display:inline-block;background:rgba(255,255,255,.12);color:rgba(255,255,255,.8);font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;border-radius:20px;margin-bottom:16px}
+    .hero h1{font-size:clamp(24px,3.5vw,38px);font-weight:800;color:#fff;margin-bottom:12px}
+    .hero p{font-size:15px;color:rgba(255,255,255,.7);max-width:560px;margin:0 auto}
+
+    .content{max-width:1100px;margin:0 auto;padding:40px 4% 60px}
+
+    .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:32px;background:var(--branco);border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+    .info-campo .il{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--cinza);margin-bottom:2px}
+    .info-campo .iv{font-size:14px;font-weight:600;color:var(--preto)}
+    .info-badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px}
+    .info-badge.em_execucao{background:#d1fae5;color:#065f46}
+    .info-badge.finalizado{background:#f1f5f9;color:#94a3b8}
+
+    .secao{margin-bottom:32px}
+    .secao-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;padding-bottom:10px;border-bottom:2px solid var(--cinza-borda)}
+    .secao-header h3{font-size:16px;font-weight:800;color:var(--preto)}
+    .secao-count{font-size:12px;color:var(--cinza);background:var(--cinza-claro);padding:3px 10px;border-radius:20px;font-weight:600}
+    .secao-vazio{font-size:13px;color:var(--cinza);padding:12px 0}
+
+    .doc-lista{display:flex;flex-direction:column;gap:8px}
+    .doc-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--branco);border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.05);text-decoration:none;color:var(--grafite);transition:all .2s;border-left:3px solid var(--azul-claro)}
+    .doc-row:hover{border-left-color:var(--azul);transform:translateX(3px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+    .doc-row strong{font-weight:600;font-size:13px;color:var(--preto)}
+
+    .fotos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+    .foto-card{background:var(--branco);border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:all .25s;cursor:pointer}
+    .foto-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,.12)}
+    .foto-card img{width:100%;height:180px;object-fit:cover;display:block}
+    .foto-card .fc-info{padding:12px 14px}
+    .foto-card .fc-info strong{display:block;font-size:13px;font-weight:600;color:var(--preto);margin-bottom:4px}
+    .foto-card .fc-info p{font-size:12px;color:var(--cinza);line-height:1.5}
+
+    .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;align-items:center;justify-content:center;padding:20px;cursor:pointer}
+    .lightbox.on{display:flex}
+    .lightbox img{max-width:90%;max-height:90vh;border-radius:8px;object-fit:contain}
+    .lightbox-close{position:absolute;top:20px;right:20px;color:#fff;font-size:28px;cursor:pointer;background:none;border:none}
+    .lightbox-desc{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:#fff;background:rgba(0,0,0,.6);padding:10px 20px;border-radius:8px;font-size:13px;max-width:80%;text-align:center}
+
+    .carregando{text-align:center;padding:60px;color:var(--cinza)}
+    .erro{text-align:center;padding:60px;color:var(--cinza)}
+    .erro .ei{font-size:48px;margin-bottom:12px}
+
+    footer{background:#0C1A2E;padding:28px 4% 20px;border-top:3px solid var(--azul);text-align:center}
+    .footer-bottom{color:rgba(255,255,255,.25);font-size:12px}
+    .footer-bottom a{color:rgba(255,255,255,.5);text-decoration:none;margin:0 10px}
+    .footer-bottom a:hover{color:#93C5FD}
+
+    @media(max-width:600px){
+      .info-grid{grid-template-columns:1fr 1fr}
+      .fotos-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <img src="assets/logo_aasec.png" alt="AASEC">
+      <div class="nav-logo-txt">
+        <strong>AASEC</strong>
+        <span>Transparência</span>
+      </div>
+    </a>
+    <a href="index.html#transparencia" class="nav-back">← Voltar</a>
+  </nav>
+
+  <div class="hero">
+    <div class="htag">Transparência Institucional</div>
+    <h1 id="heroTitulo">Carregando...</h1>
+    <p id="heroSub"></p>
+  </div>
+
+  <div class="content" id="conteudo">
+    <div class="carregando">Carregando dados do convênio...</div>
+  </div>
+
+  <div class="lightbox" id="lightbox" onclick="fecharLightbox()">
+    <button class="lightbox-close" onclick="fecharLightbox()">✕</button>
+    <img id="lbImg" src="" alt="">
+    <div class="lightbox-desc" id="lbDesc"></div>
+  </div>
+
+  <footer>
+    <div class="footer-bottom">
+      <a href="index.html">← Início</a>
+      <a href="index.html#transparencia">Transparência</a>
+      <a href="gestao/login.html">Área Restrita</a>
+      <br><br>
+      <span>© 2026 AASEC — Associação de Assistência Social Evangélica de Carambeí. Todos os direitos reservados.</span>
+    </div>
+  </footer>
+
+  <script>
+    var situacaoLabel = { em_execucao: 'Em execução', finalizado: 'Finalizado' };
+    var tipoLabel = { convenio: 'Convênio', emenda: 'Emenda', fomento: 'Termo de Fomento', parceria: 'Parceria' };
+
+    function fmtData(iso) {
+      if (!iso) return '—';
+      var p = iso.split('-');
+      return p[2] + '/' + p[1] + '/' + p[0];
+    }
+
+    function fmtValor(v) {
+      if (!v) return '—';
+      return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+    }
+
+    function abrirLightbox(src, desc) {
+      document.getElementById('lbImg').src = src;
+      document.getElementById('lbDesc').textContent = desc || '';
+      document.getElementById('lbDesc').style.display = desc ? '' : 'none';
+      document.getElementById('lightbox').classList.add('on');
+    }
+
+    function fecharLightbox() {
+      document.getElementById('lightbox').classList.remove('on');
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') fecharLightbox();
+    });
+
+    document.addEventListener('DOMContentLoaded', async function() {
+      var params = new URLSearchParams(window.location.search);
+      var id = params.get('id');
+      if (!id) { window.location.href = 'index.html#transparencia'; return; }
+
+      var convenios = [], extras = [];
+      try {
+        var resps = await Promise.all([fetch('/api/convenios'), fetch('/api/extras')]);
+        convenios = await resps[0].json();
+        extras = await resps[1].json();
+      } catch(e) {}
+
+      var c = convenios.find(function(x) { return x.id === id; });
+      if (!c || c.visibilidade === 'interno') {
+        document.getElementById('heroTitulo').textContent = 'Convênio não encontrado';
+        document.getElementById('heroSub').textContent = '';
+        document.getElementById('conteudo').innerHTML = '<div class="erro"><div class="ei">🔍</div><p>Este convênio não foi encontrado ou não está disponível publicamente.</p><br><a href="index.html#transparencia" style="color:var(--azul);font-weight:600">← Voltar para Transparência</a></div>';
+        return;
+      }
+
+      document.title = c.nome + ' — AASEC';
+      document.getElementById('heroTitulo').textContent = c.nome;
+      document.getElementById('heroSub').textContent = (c.unidade || 'AASEC') + ' · ' + (c.concedente || '');
+
+      var docs = extras.filter(function(d) { return d.convenio_id === c.id; });
+      var pcs = docs.filter(function(d) { return d.tipo === 'prestacao' && d.link; });
+      var outros = docs.filter(function(d) { return d.tipo !== 'prestacao' && d.tipo !== 'foto' && d.link; });
+      var fotos = docs.filter(function(d) { return d.tipo === 'foto' && d.link; });
+
+      var html = '';
+
+      // Info
+      html += '<div class="info-grid">';
+      html += '<div class="info-campo"><div class="il">Tipo</div><div class="iv">' + (tipoLabel[c.tipo] || c.tipo) + '</div></div>';
+      html += '<div class="info-campo"><div class="il">Unidade</div><div class="iv">' + (c.unidade || '—') + '</div></div>';
+      html += '<div class="info-campo"><div class="il">Concedente</div><div class="iv">' + (c.concedente || '—') + '</div></div>';
+      html += '<div class="info-campo"><div class="il">Valor</div><div class="iv">' + fmtValor(c.valor) + '</div></div>';
+      html += '<div class="info-campo"><div class="il">Vigência</div><div class="iv">' + fmtData(c.vigencia_inicio) + ' — ' + fmtData(c.vigencia_fim) + '</div></div>';
+      html += '<div class="info-campo"><div class="il">Situação</div><div class="iv"><span class="info-badge ' + (c.situacao || '') + '">' + (situacaoLabel[c.situacao] || c.situacao || '—') + '</span></div></div>';
+      if (c.sit) html += '<div class="info-campo"><div class="il">SIT</div><div class="iv">' + c.sit + '</div></div>';
+      html += '</div>';
+
+      // Prestações
+      html += '<div class="secao">';
+      html += '<div class="secao-header"><h3>Prestações de Contas</h3><span class="secao-count">' + pcs.length + '</span></div>';
+      if (pcs.length) {
+        html += '<div class="doc-lista">';
+        pcs.forEach(function(d) {
+          html += '<a class="doc-row" href="' + d.link + '" target="_blank"><strong>' + d.nome + '</strong></a>';
+        });
+        html += '</div>';
+      } else {
+        html += '<p class="secao-vazio">Nenhuma prestação de contas disponível.</p>';
+      }
+      html += '</div>';
+
+      // Documentos
+      html += '<div class="secao">';
+      html += '<div class="secao-header"><h3>Documentos</h3><span class="secao-count">' + outros.length + '</span></div>';
+      if (outros.length) {
+        html += '<div class="doc-lista">';
+        outros.forEach(function(d) {
+          html += '<a class="doc-row" href="' + d.link + '" target="_blank"><strong>' + d.nome + '</strong></a>';
+        });
+        html += '</div>';
+      } else {
+        html += '<p class="secao-vazio">Nenhum documento disponível.</p>';
+      }
+      html += '</div>';
+
+      // Fotos
+      if (fotos.length) {
+        html += '<div class="secao">';
+        html += '<div class="secao-header"><h3>Galeria de Fotos</h3><span class="secao-count">' + fotos.length + '</span></div>';
+        html += '<div class="fotos-grid">';
+        fotos.forEach(function(d) {
+          var desc = d.descricao || '';
+          html += '<div class="foto-card" onclick="abrirLightbox(\'' + d.link.replace(/'/g, "\\'") + '\',\'' + desc.replace(/'/g, "\\'") + '\')">';
+          html += '<img src="' + d.link + '" alt="' + (d.nome || '') + '" loading="lazy">';
+          html += '<div class="fc-info"><strong>' + d.nome + '</strong>';
+          if (desc) html += '<p>' + desc + '</p>';
+          html += '</div></div>';
+        });
+        html += '</div></div>';
+      }
+
+      document.getElementById('conteudo').innerHTML = html;
+    });
+  </script>
+</body>
+</html>

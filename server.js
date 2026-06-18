@@ -285,7 +285,7 @@ const server = http.createServer(async (req, res) => {
         }
         let destDir;
         if (meta.convenio_slug) {
-          const subpasta = meta.tipo === 'prestacao' ? 'prestacoes' : 'documentos';
+          const subpasta = meta.tipo === 'prestacao' ? 'prestacoes' : meta.tipo === 'foto' ? 'fotos' : 'documentos';
           destDir = path.join(ROOT, 'docs', 'convenios', meta.convenio_slug, subpasta);
         } else {
           const tipoPasta = meta.tipo === 'prestacao' ? 'prestacoes' : meta.tipo;
