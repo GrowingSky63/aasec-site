@@ -38,9 +38,9 @@ const DBc = {
     ['Berçário','Maternal I','Maternal II','Jardim I'].forEach(n => {
       this.addTurma({ nome:n, unidade_id:u1.id, unidade_nome:u1.nome, periodo:'manha', ativa:true });
     });
-    this.addUsuario({ nome:'Diretora AASEC', email:'diretora@aasec.org.br', senha:'aasec2026', tipo:'admin', ativo:true });
-    this.addUsuario({ nome:'Coordenação Betel', email:'coord@aasec.org.br', senha:'betel2026', tipo:'coord', ativo:true });
-    this.addUsuario({ nome:'Esco-Lar', email:'escolar@aasec.org.br', senha:'escolar2026', tipo:'coord', ativo:true });
+    this.addUsuario({ nome:'Diretora AASEC', email:'diretora@aasec.org.br', tipo:'admin', ativo:true });
+    this.addUsuario({ nome:'Coordenação Betel', email:'coord@aasec.org.br', tipo:'coord', ativo:true });
+    this.addUsuario({ nome:'Esco-Lar', email:'escolar@aasec.org.br', tipo:'coord', ativo:true });
   }
 };
 
@@ -83,13 +83,3 @@ function carregarSelectsTurma(selectId, unidadeNome) {
   });
 }
 
-/**
- * Login com usuários do cadastro
- */
-function autenticarUsuario(email, senha) {
-  return DBc.getUsuarios().find(u =>
-    u.email.toLowerCase() === email.toLowerCase() &&
-    u.senha === senha &&
-    u.ativo !== false
-  ) || null;
-}

@@ -1,35 +1,80 @@
+require('dotenv').config();
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
+const crypto = require('crypto');
 const Busboy = require('busboy');
+const msal = require('@azure/msal-node');
 
 const ROOT = __dirname;
 const PORT = 8080;
 
-// Parse multipart form-data simples
-function parseMultipart(body, boundary) {
-  const parts = [];
-  const sep = Buffer.from('--' + boundary);
-  let start = body.indexOf(sep) + sep.length + 2;
-  while (start < body.length) {
-    const end = body.indexOf(sep, start);
-    if (end === -1) break;
-    const part = body.slice(start, end - 2);
-    const headerEnd = part.indexOf('\r\n\r\n');
-    if (headerEnd === -1) { start = end + sep.length + 2; continue; }
-    const headers = part.slice(0, headerEnd).toString();
-    const data = part.slice(headerEnd + 4);
-    const nameMatch = headers.match(/name="([^"]+)"/);
-    const filenameMatch = headers.match(/filename="([^"]+)"/);
-    parts.push({
-      name: nameMatch ? nameMatch[1] : '',
-      filename: filenameMatch ? filenameMatch[1] : null,
-      data
-    });
-    start = end + sep.length + 2;
+// ── Microsoft Entra ID (MSAL) ───────────────────────────────────────────
+const msalClient = new msal.ConfidentialClientApplication({
+  auth: {
+    clientId: process.env.AZURE_CLIENT_ID,
+    authority: `https://login.microsoftonline.com/${process.env.AZURE_TENANT_ID}`,
+    clientSecret: process.env.AZURE_CLIENT_SECRET,
   }
-  return parts;
+});
+const AUTH_SCOPES = ['openid', 'profile', 'email', 'User.Read'];
+
+// ── Sessões (in-memory + cookie httpOnly) ───────────────────────────────
+const sessions = new Map();
+const SESSION_COOKIE = 'aasec_sid';
+const SESSION_MAX_AGE = 8 * 60 * 60 * 1000; // 8 horas
+
+function parseCookies(req) {
+  const header = req.headers.cookie || '';
+  const cookies = {};
+  header.split(';').forEach(c => {
+    const idx = c.indexOf('=');
+    if (idx > 0) {
+      cookies[c.substring(0, idx).trim()] = c.substring(idx + 1).trim();
+    }
+  });
+  return cookies;
+}
+
+function getSession(req) {
+  const sid = parseCookies(req)[SESSION_COOKIE];
+  if (!sid) return null;
+  const session = sessions.get(sid);
+  if (!session) return null;
+  if (Date.now() - session.criado > SESSION_MAX_AGE) {
+    sessions.delete(sid);
+    return null;
+  }
+  return session;
+}
+
+function createSession(res, userData, isHttps) {
+  const sid = crypto.randomUUID();
+  sessions.set(sid, { ...userData, criado: Date.now() });
+  const maxAge = SESSION_MAX_AGE / 1000;
+  const flags = `HttpOnly; SameSite=Lax; Path=/; Max-Age=${maxAge}${isHttps ? '; Secure' : ''}`;
+  res.setHeader('Set-Cookie', `${SESSION_COOKIE}=${sid}; ${flags}`);
+}
+
+function destroySession(req, res) {
+  const sid = parseCookies(req)[SESSION_COOKIE];
+  if (sid) sessions.delete(sid);
+  res.setHeader('Set-Cookie', `${SESSION_COOKIE}=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0`);
+}
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [sid, s] of sessions) {
+    if (now - s.criado > SESSION_MAX_AGE) sessions.delete(sid);
+  }
+}, 60 * 60 * 1000);
+
+// ── Helpers ─────────────────────────────────────────────────────────────
+function getBaseUrl(req) {
+  const host = req.headers.host;
+  const protocol = host.includes('localhost') || host.startsWith('127.') || host.startsWith('192.168') ? 'http' : 'https';
+  return `${protocol}://${host}`;
 }
 
 function getMime(ext) {
@@ -43,7 +88,23 @@ function getMime(ext) {
   return m[ext] || 'application/octet-stream';
 }
 
-const server = http.createServer((req, res) => {
+function requireAuth(req, res) {
+  const session = getSession(req);
+  if (!session) {
+    if (req.headers.accept && req.headers.accept.includes('application/json')) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: false, erro: 'Não autenticado' }));
+    } else {
+      res.writeHead(302, { Location: '/gestao/login.html' });
+      res.end();
+    }
+    return null;
+  }
+  return session;
+}
+
+// ── Servidor ────────────────────────────────────────────────────────────
+const server = http.createServer(async (req, res) => {
   const parsed = url.parse(req.url, true);
   const pathname = parsed.pathname;
 
@@ -53,7 +114,94 @@ const server = http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
 
-  // API extras — leitura e gravação de documentos adicionados via gestão
+  const baseUrl = getBaseUrl(req);
+  const isHttps = baseUrl.startsWith('https');
+  const redirectUri = `${baseUrl}/auth/callback`;
+
+  // ── Auth: login ─────────────────────────────────────────────────────
+  if (req.method === 'GET' && pathname === '/auth/login') {
+    try {
+      const authUrl = await msalClient.getAuthCodeUrl({
+        scopes: AUTH_SCOPES,
+        redirectUri,
+      });
+      res.writeHead(302, { Location: authUrl });
+      res.end();
+    } catch (e) {
+      console.error('AUTH login erro:', e.message);
+      res.writeHead(302, { Location: '/gestao/login.html?erro=auth' });
+      res.end();
+    }
+    return;
+  }
+
+  // ── Auth: callback da Microsoft ─────────────────────────────────────
+  if (req.method === 'GET' && pathname === '/auth/callback') {
+    const code = parsed.query.code;
+    const error = parsed.query.error;
+    if (error || !code) {
+      console.error('AUTH callback erro:', parsed.query.error_description || 'sem código');
+      res.writeHead(302, { Location: '/gestao/login.html?erro=auth' });
+      res.end();
+      return;
+    }
+    try {
+      const result = await msalClient.acquireTokenByCode({
+        code,
+        scopes: AUTH_SCOPES,
+        redirectUri,
+      });
+      createSession(res, {
+        nome: result.account.name,
+        email: result.account.username,
+      }, isHttps);
+      console.log('AUTH login OK:', result.account.username);
+      res.writeHead(302, { Location: '/gestao/indicadores.html' });
+      res.end();
+    } catch (e) {
+      console.error('AUTH callback erro:', e.message);
+      res.writeHead(302, { Location: '/gestao/login.html?erro=auth' });
+      res.end();
+    }
+    return;
+  }
+
+  // ── Auth: informações do usuário logado ─────────────────────────────
+  if (req.method === 'GET' && pathname === '/auth/me') {
+    const session = getSession(req);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    if (session) {
+      res.end(JSON.stringify({ logado: true, nome: session.nome, email: session.email }));
+    } else {
+      res.end(JSON.stringify({ logado: false }));
+    }
+    return;
+  }
+
+  // ── Auth: logout ────────────────────────────────────────────────────
+  if (req.method === 'GET' && pathname === '/auth/logout') {
+    destroySession(req, res);
+    const postLogout = encodeURIComponent(`${baseUrl}/gestao/login.html`);
+    const logoutUrl = `https://login.microsoftonline.com/${process.env.AZURE_TENANT_ID}/oauth2/v2.0/logout?post_logout_redirect_uri=${postLogout}`;
+    res.writeHead(302, { Location: logoutUrl });
+    res.end();
+    return;
+  }
+
+  // ── Proteger páginas da gestão (HTML) ───────────────────────────────
+  if (pathname.startsWith('/gestao/') && pathname.endsWith('.html') && pathname !== '/gestao/login.html') {
+    if (!requireAuth(req, res)) return;
+  }
+
+  // ── Proteger rotas de API / upload / apagar ─────────────────────────
+  if (pathname.startsWith('/api/') && req.method === 'POST') {
+    if (!requireAuth(req, res)) return;
+  }
+  if (req.method === 'POST' && (pathname === '/upload' || pathname === '/apagar')) {
+    if (!requireAuth(req, res)) return;
+  }
+
+  // ── API extras ──────────────────────────────────────────────────────
   const EXTRAS_PATH = path.join(ROOT, 'docs_extras.json');
 
   if (req.method === 'GET' && pathname === '/api/extras') {
@@ -81,7 +229,7 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // API convênios — leitura e gravação de convênios cadastrados
+  // ── API convênios ───────────────────────────────────────────────────
   const CONVENIOS_PATH = path.join(ROOT, 'dados_convenios.json');
 
   if (req.method === 'GET' && pathname === '/api/convenios') {
@@ -109,7 +257,7 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Upload de arquivo — usando busboy
+  // ── Upload de arquivo ───────────────────────────────────────────────
   if (req.method === 'POST' && pathname === '/upload') {
     console.log('UPLOAD recebido, content-type:', req.headers['content-type']);
     const meta = {};
@@ -135,7 +283,6 @@ const server = http.createServer((req, res) => {
         if (!fileBuffer || !fileName) {
           res.writeHead(400); res.end(JSON.stringify({ ok: false, erro: 'Arquivo não recebido' })); return;
         }
-        // Destino
         let destDir;
         if (meta.convenio_slug) {
           const subpasta = meta.tipo === 'prestacao' ? 'prestacoes' : 'documentos';
@@ -144,7 +291,6 @@ const server = http.createServer((req, res) => {
           const tipoPasta = meta.tipo === 'prestacao' ? 'prestacoes' : meta.tipo;
           destDir = path.join(ROOT, 'docs', tipoPasta, meta.unidade);
         }
-        // Nome padronizado
         let destName = fileName;
         if (meta.tipo === 'prestacao' && meta.mes && meta.ano) {
           destName = meta.mes + meta.ano + (path.extname(fileName) || '.pdf');
@@ -169,7 +315,7 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Apagar arquivo
+  // ── Apagar arquivo ──────────────────────────────────────────────────
   if (req.method === 'POST' && pathname === '/apagar') {
     const chunks = [];
     req.on('data', c => chunks.push(c));
@@ -178,15 +324,12 @@ const server = http.createServer((req, res) => {
         const body = JSON.parse(Buffer.concat(chunks).toString());
         const link = (body.link || '').replace(/^['"]|['"]$/g, '').trim();
         console.log('APAGAR link recebido:', link);
-        // link vem como /docs/prestacoes/CEI Betel/042026.pdf
         const rel = link.startsWith('/') ? link.slice(1) : link;
         const filePath = path.join(ROOT, rel);
-        // Segurança: só apagar dentro de /docs/
         if (!filePath.startsWith(path.join(ROOT, 'docs'))) {
           res.writeHead(403); res.end(JSON.stringify({ ok: false, erro: 'Acesso negado' })); return;
         }
         if (fs.existsSync(filePath)) {
-          // Mover para lixeira em vez de apagar
           const lixeira = path.join(ROOT, '_lixeira');
           fs.mkdirSync(lixeira, { recursive: true });
           const ts = new Date().toISOString().replace(/[:.]/g, '-');
@@ -205,10 +348,9 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Servir arquivos estáticos
+  // ── Servir arquivos estáticos ───────────────────────────────────────
   const pathDecoded = decodeURIComponent(pathname);
   let filePath = path.join(ROOT, pathDecoded === '/' ? 'index.html' : pathDecoded);
-  // Segurança: não sair da pasta raiz
   if (!filePath.startsWith(ROOT)) { res.writeHead(403); res.end('Acesso negado'); return; }
 
   fs.readFile(filePath, (err, data) => {
@@ -223,7 +365,7 @@ const server = http.createServer((req, res) => {
   });
 });
 
-// ── Backup automático ao iniciar ─────────────────────────────────────────
+// ── Backup automático ao iniciar ────────────────────────────────────────
 const BACKUP_RETENCAO_DIAS = 30;
 
 function fazerBackup() {
@@ -234,7 +376,6 @@ function fazerBackup() {
 
   if (!fs.existsSync(docsDir)) return;
 
-  // Criar backup de hoje se ainda não existir
   if (!fs.existsSync(backupDir)) {
     function copiarDir(src, dest) {
       fs.mkdirSync(dest, { recursive: true });
@@ -246,12 +387,11 @@ function fazerBackup() {
       });
     }
     copiarDir(docsDir, backupDir);
-    console.log('✅ Backup criado em:', backupDir);
+    console.log('Backup criado em:', backupDir);
   } else {
     console.log('Backup de hoje já existe:', backupDir);
   }
 
-  // Limpar backups mais antigos que BACKUP_RETENCAO_DIAS
   if (!fs.existsSync(backupRoot)) return;
   const limite = new Date();
   limite.setDate(limite.getDate() - BACKUP_RETENCAO_DIAS);
@@ -259,18 +399,18 @@ function fazerBackup() {
 
   let removidos = 0;
   fs.readdirSync(backupRoot).forEach(pasta => {
-    if (pasta < limiteStr) { // compara string YYYY-MM-DD — funciona cronologicamente
+    if (pasta < limiteStr) {
       const p = path.join(backupRoot, pasta);
       fs.rmSync(p, { recursive: true, force: true });
       removidos++;
     }
   });
-  if (removidos > 0) console.log('🗑️ Backups removidos (>' + BACKUP_RETENCAO_DIAS + ' dias):', removidos);
+  if (removidos > 0) console.log('Backups removidos (>' + BACKUP_RETENCAO_DIAS + ' dias):', removidos);
 }
 fazerBackup();
 
 server.listen(PORT, () => {
-  console.log(`\n✅ AASEC servidor rodando em http://192.168.1.70:${PORT}`);
-  console.log(`   Uploads aceitos em POST /upload`);
-  console.log(`   Ctrl+C para parar\n`);
+  console.log(`\nAASEC servidor rodando em http://localhost:${PORT}`);
+  console.log(`Auth Microsoft Entra ID ativo`);
+  console.log(`Ctrl+C para parar\n`);
 });

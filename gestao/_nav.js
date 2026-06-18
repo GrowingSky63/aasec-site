@@ -2,13 +2,21 @@
  * Navegação e autenticação compartilhada
  */
 
-function initNav(paginaAtiva) {
-  const sessao = JSON.parse(sessionStorage.getItem('aasec_sessao') || 'null');
-  if (!sessao) { window.location.href = 'login.html'; return; }
+let _sessaoCache = null;
 
-  // Preencher info da sessão
-  const el = document.getElementById('sb-unidade');
-  if (el) el.textContent = sessao.unidade || sessao.nome;
+async function initNav(paginaAtiva) {
+  try {
+    const resp = await fetch('/auth/me');
+    const sessao = await resp.json();
+    if (!sessao.logado) { window.location.href = 'login.html'; return; }
+    _sessaoCache = sessao;
+
+    const el = document.getElementById('sb-unidade');
+    if (el) el.textContent = sessao.nome;
+  } catch (e) {
+    window.location.href = 'login.html';
+    return;
+  }
 
   // Marcar item ativo
   document.querySelectorAll('.nav-item[data-page]').forEach(a => {
@@ -27,12 +35,11 @@ function initNav(paginaAtiva) {
 }
 
 function sair() {
-  sessionStorage.removeItem('aasec_sessao');
-  window.location.href = 'login.html';
+  window.location.href = '/auth/logout';
 }
 
 function getSessao() {
-  return JSON.parse(sessionStorage.getItem('aasec_sessao') || 'null');
+  return _sessaoCache;
 }
 
 // Fecha modal ao clicar fora
@@ -68,7 +75,7 @@ function corPct(v) {
   return 'var(--alerta)';
 }
 
-// Sidebar HTML — injetado em cada página
+// Sidebar HTML
 function renderSidebar() {
   return `
 <button class="mob-toggle" id="mobToggle">☰</button>

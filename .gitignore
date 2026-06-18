@@ -13,3 +13,4 @@ docs_extras.json
 
 *.md
 !README.md
+!PLAN.md
