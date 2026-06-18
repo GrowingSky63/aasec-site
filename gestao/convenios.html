@@ -99,7 +99,7 @@
         <button class="modal-close" onclick="fecharModal('modalAdd')">✕</button>
       </div>
       <div class="modal-body">
-        <div class="fg"><label>Nome *</label><input id="cNome" type="text" placeholder="Ex: Termo de Colaboração nº 007/2024"></div>
+        <div class="fg"><label>Nome *</label><input id="cNome" type="text" placeholder="Ex: Termo de Colaboração nº 007/2024" onfocus="var v=this;setTimeout(function(){v.setSelectionRange(v.value.length,v.value.length)},0)"></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div class="fg"><label>Tipo *</label>
             <select id="cTipo">
@@ -158,7 +158,7 @@
       <div class="modal-body">
         <div class="fg">
           <label>Nome *</label>
-          <input type="text" id="dNome" placeholder="Ex: Plano de Trabalho, Termo Aditivo...">
+          <input type="text" id="dNome" placeholder="Ex: Plano de Trabalho, Termo Aditivo..." onfocus="var v=this;setTimeout(function(){v.setSelectionRange(v.value.length,v.value.length)},0)">
         </div>
         <div class="fg" id="fgDescricao" style="display:none">
           <label>Descrição</label>
