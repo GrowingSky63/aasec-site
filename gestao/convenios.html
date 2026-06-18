@@ -16,8 +16,8 @@
 .ftab{padding:6px 16px;border-radius:20px;border:1.5px solid var(--cinza-borda);background:#fff;font-size:12px;font-weight:600;cursor:pointer;color:var(--grafite);font-family:'Inter',sans-serif;transition:all .2s}
 .ftab:hover,.ftab.on{background:var(--azul);color:#fff;border-color:var(--azul)}
 .conv-list{display:flex;flex-direction:column;gap:10px}
-.conv-card{background:#fff;border-radius:12px;padding:18px 20px;box-shadow:0 2px 8px rgba(0,0,0,.05);border-left:4px solid var(--azul);transition:all .2s}
-.conv-card:hover{transform:translateX(3px)}
+.conv-card{background:#fff;border-radius:12px;padding:18px 20px;box-shadow:0 2px 8px rgba(0,0,0,.05);border-left:4px solid var(--azul);transition:all .2s;cursor:pointer}
+.conv-card:hover{transform:translateX(3px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
 .conv-card.finalizado{border-left-color:var(--cinza-borda);opacity:.7}
 .conv-card.interno{border-left-color:#f59e0b}
 .conv-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px}
@@ -36,7 +36,33 @@
 .btn-apagar:hover{background:#fca5a5}
 .vazio{text-align:center;padding:48px;color:var(--cinza)}
 .vazio .vi{font-size:44px;margin-bottom:10px}
-@media(max-width:768px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+
+/* Detalhe do convênio */
+.det-voltar{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--azul);cursor:pointer;margin-bottom:16px;padding:6px 12px;border-radius:8px;border:none;background:var(--azul-claro);transition:all .2s}
+.det-voltar:hover{background:var(--azul);color:#fff}
+.det-info{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px;background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.det-campo{font-size:12px}
+.det-campo .dl{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--cinza);margin-bottom:2px}
+.det-campo .dv{font-weight:600;color:var(--preto)}
+.det-secao{font-size:13px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--cinza);margin:24px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--cinza-borda)}
+.pc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.pc-cell{background:#fff;border-radius:10px;padding:12px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1.5px solid var(--cinza-borda);transition:all .2s;position:relative}
+.pc-cell.ok{border-color:#10b981;background:#f0fdf4}
+.pc-cell.ok:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(16,185,129,.2)}
+.pc-mes{font-size:12px;font-weight:700;color:var(--preto);margin-bottom:4px}
+.pc-status{font-size:18px;margin-bottom:4px}
+.pc-acao{font-size:10px;font-weight:600;margin-top:4px}
+.pc-acao a{color:var(--azul);text-decoration:none}
+.pc-acao a:hover{text-decoration:underline}
+.pc-cell label{display:block;cursor:pointer;font-size:10px;font-weight:600;color:var(--azul);margin-top:4px}
+.pc-cell label:hover{text-decoration:underline}
+.pc-cell input[type=file]{display:none}
+.det-docs{display:flex;flex-direction:column;gap:6px}
+.det-doc-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.05);font-size:13px}
+.det-doc-row a{color:var(--azul);font-weight:600;text-decoration:none}
+.det-doc-row a:hover{text-decoration:underline}
+
+@media(max-width:768px){.stats-row{grid-template-columns:repeat(2,1fr)}.pc-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}}
 </style>
 </head>
 <body>
@@ -56,7 +82,7 @@
   </nav>
   <div class="sb-bottom">
     <a href="../index.html">← Voltar ao site</a>
-    <a href="login.html" style="margin-top:6px">⏻ Sair</a>
+    <a href="#" onclick="sair()" style="margin-top:6px">⏻ Sair</a>
   </div>
 </div>
 
@@ -66,7 +92,7 @@
       <h2>📑 Convênios & Parcerias</h2>
       <p>Termos de colaboração, fomento, emendas e parcerias · AASEC</p>
     </div>
-    <button class="btn btn-cor" onclick="abrirModal('modalAdd')">+ Novo Convênio</button>
+    <button class="btn btn-cor" id="btnNovo" onclick="abrirModal('modalAdd')">+ Novo Convênio</button>
   </div>
 
   <!-- MODAL ADICIONAR/EDITAR -->
@@ -126,62 +152,66 @@
     </div>
   </div>
 
-  <!-- ESTATÍSTICAS -->
-  <div class="stats-row">
-    <div class="stat"><div class="sn" id="st-total">0</div><div class="sl">Total</div></div>
-    <div class="stat"><div class="sn" id="st-ativos">0</div><div class="sl">Em Execução</div></div>
-    <div class="stat"><div class="sn" id="st-betel">0</div><div class="sl">CEI Betel</div></div>
-    <div class="stat"><div class="sn" id="st-escolar">0</div><div class="sl">Esco-Lar</div></div>
+  <!-- VISTA: LISTA -->
+  <div id="vistaLista">
+    <div class="stats-row">
+      <div class="stat"><div class="sn" id="st-total">0</div><div class="sl">Total</div></div>
+      <div class="stat"><div class="sn" id="st-ativos">0</div><div class="sl">Em Execução</div></div>
+      <div class="stat"><div class="sn" id="st-betel">0</div><div class="sl">CEI Betel</div></div>
+      <div class="stat"><div class="sn" id="st-escolar">0</div><div class="sl">Esco-Lar</div></div>
+    </div>
+    <div class="filtros-wrap">
+      <div class="filtro-grupo" id="ftUnidade">
+        <label>Unidade</label>
+        <div class="ftabs">
+          <button class="ftab on" onclick="setF('unidade','',this)">Todas</button>
+          <button class="ftab" onclick="setF('unidade','CEI Betel',this)">CEI Betel</button>
+          <button class="ftab" onclick="setF('unidade','Esco-Lar',this)">Esco-Lar</button>
+        </div>
+      </div>
+      <div class="filtro-grupo" id="ftSituacao">
+        <label>Situação</label>
+        <div class="ftabs">
+          <button class="ftab on" onclick="setF('situacao','',this)">Todas</button>
+          <button class="ftab" onclick="setF('situacao','em_execucao',this)">Em Execução</button>
+          <button class="ftab" onclick="setF('situacao','finalizado',this)">Finalizado</button>
+        </div>
+      </div>
+      <div class="filtro-grupo" id="ftVisibilidade">
+        <label>Visibilidade</label>
+        <div class="ftabs">
+          <button class="ftab on" onclick="setF('visibilidade','',this)">Todas</button>
+          <button class="ftab" onclick="setF('visibilidade','publico',this)">Público</button>
+          <button class="ftab" onclick="setF('visibilidade','interno',this)">Interno</button>
+        </div>
+      </div>
+      <div class="filtro-grupo" id="ftAno">
+        <label>Ano</label>
+        <div class="ftabs" id="ftAno-tabs"></div>
+      </div>
+    </div>
+    <div class="conv-list" id="lista"></div>
   </div>
 
-  <!-- FILTROS -->
-  <div class="filtros-wrap">
-    <div class="filtro-grupo" id="ftUnidade">
-      <label>Unidade</label>
-      <div class="ftabs">
-        <button class="ftab on" onclick="setF('unidade','',this)">Todas</button>
-        <button class="ftab" onclick="setF('unidade','CEI Betel',this)">CEI Betel</button>
-        <button class="ftab" onclick="setF('unidade','Esco-Lar',this)">Esco-Lar</button>
-      </div>
-    </div>
-    <div class="filtro-grupo" id="ftSituacao">
-      <label>Situação</label>
-      <div class="ftabs">
-        <button class="ftab on" onclick="setF('situacao','',this)">Todas</button>
-        <button class="ftab" onclick="setF('situacao','em_execucao',this)">Em Execução</button>
-        <button class="ftab" onclick="setF('situacao','finalizado',this)">Finalizado</button>
-      </div>
-    </div>
-    <div class="filtro-grupo" id="ftVisibilidade">
-      <label>Visibilidade</label>
-      <div class="ftabs">
-        <button class="ftab on" onclick="setF('visibilidade','',this)">Todas</button>
-        <button class="ftab" onclick="setF('visibilidade','publico',this)">Público</button>
-        <button class="ftab" onclick="setF('visibilidade','interno',this)">Interno</button>
-      </div>
-    </div>
-    <div class="filtro-grupo" id="ftAno">
-      <label>Ano</label>
-      <div class="ftabs" id="ftAno-tabs"></div>
-    </div>
-  </div>
-
-  <!-- LISTA -->
-  <div class="conv-list" id="lista"></div>
+  <!-- VISTA: DETALHE -->
+  <div id="vistaDetalhe" style="display:none"></div>
 </div>
 
 <script src="_nav.js"></script>
 <script>
 var convenios = [];
+var _extras = [];
 var filtros = { unidade: '', situacao: '', visibilidade: '', ano: '' };
 var _editandoId = null;
 
 var tipoLabel = { convenio: 'Convênio Prefeitura', emenda: 'Emenda', fomento: 'Termo de Fomento', parceria: 'Parceria Privada' };
+var MESES = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
 document.addEventListener('DOMContentLoaded', async function() {
   initNav('convenios');
   initModal('modalAdd');
   await carregarConvenios();
+  await carregarExtras();
   renderFiltroAno();
   renderStats();
   renderLista();
@@ -204,11 +234,30 @@ async function salvarNoServidor() {
   }
 }
 
+async function carregarExtras() {
+  try {
+    var resp = await fetch('/api/extras');
+    _extras = await resp.json();
+  } catch(e) {
+    _extras = [];
+  }
+}
+
+async function salvarExtras() {
+  try {
+    await fetch('/api/extras', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(_extras) });
+  } catch(e) {
+    alert('Erro ao salvar extras: ' + e.message);
+  }
+}
+
 function gerarSlug(unidade, nome) {
   var u = unidade.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
   var n = nome.toLowerCase().replace(/[ºª°]/g, '').replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-');
   return u + '_' + n;
 }
+
+// ── Filtros ──────────────────────────────────────────────
 
 function renderFiltroAno() {
   var anos = [];
@@ -235,12 +284,16 @@ function setF(campo, val, btn) {
   renderLista();
 }
 
+// ── Stats ────────────────────────────────────────────────
+
 function renderStats() {
   document.getElementById('st-total').textContent = convenios.length;
   document.getElementById('st-ativos').textContent = convenios.filter(function(c) { return c.situacao === 'em_execucao'; }).length;
   document.getElementById('st-betel').textContent = convenios.filter(function(c) { return c.unidade === 'CEI Betel'; }).length;
   document.getElementById('st-escolar').textContent = convenios.filter(function(c) { return c.unidade === 'Esco-Lar'; }).length;
 }
+
+// ── Helpers ──────────────────────────────────────────────
 
 function formatarValor(v) {
   if (!v) return '';
@@ -252,6 +305,24 @@ function formatarData(d) {
   var p = d.split('-');
   return p[2] + '/' + p[1] + '/' + p[0];
 }
+
+function gerarMeses(inicio, fim) {
+  if (!inicio || !fim) return [];
+  var meses = [];
+  var pi = inicio.split('-');
+  var pf = fim.split('-');
+  var anoI = parseInt(pi[0]), mesI = parseInt(pi[1]);
+  var anoF = parseInt(pf[0]), mesF = parseInt(pf[1]);
+  var a = anoI, m = mesI;
+  while (a < anoF || (a === anoF && m <= mesF)) {
+    meses.push({ ano: a.toString(), mes: m < 10 ? '0' + m : '' + m });
+    m++;
+    if (m > 12) { m = 1; a++; }
+  }
+  return meses;
+}
+
+// ── Lista de convênios ───────────────────────────────────
 
 function renderLista() {
   var lista = convenios.filter(function(c) {
@@ -277,9 +348,13 @@ function renderLista() {
     var badgeText = c.situacao === 'em_execucao' ? 'Em Execução' : 'Finalizado';
     if (c.visibilidade === 'interno') { badgeClass = 'badge-interno'; badgeText = 'Interno'; }
 
+    var pcCount = docsDoConvenio(c.id).filter(function(d) { return d.tipo === 'prestacao' && d.link; }).length;
+    var mesesTotal = gerarMeses(c.vigencia_inicio, c.vigencia_fim).length;
+    var pcLabel = mesesTotal ? pcCount + '/' + mesesTotal + ' PCs' : '';
+
     var json = encodeURIComponent(JSON.stringify(c));
 
-    return '<div class="' + classes + '">'
+    return '<div class="' + classes + '" onclick="verConvenio(\'' + c.id + '\')">'
       + '<div class="conv-header">'
       + '<div class="conv-nome">' + c.nome + '</div>'
       + '<span class="conv-badge ' + badgeClass + '">' + badgeText + '</span>'
@@ -291,14 +366,192 @@ function renderLista() {
       + (c.valor ? '<span>' + formatarValor(c.valor) + '</span>' : '')
       + (c.vigencia_inicio ? '<span>' + formatarData(c.vigencia_inicio) + ' — ' + formatarData(c.vigencia_fim) + '</span>' : '')
       + (c.sit ? '<span>SIT: ' + c.sit + '</span>' : '')
+      + (pcLabel ? '<span>📋 ' + pcLabel + '</span>' : '')
       + '</div>'
       + '<div class="conv-actions">'
-      + '<button class="btn-editar" onclick="editarConvenio(\'' + json + '\')">✏️ Editar</button>'
-      + '<button class="btn-apagar" onclick="apagarConvenio(\'' + c.id + '\')">🗑️</button>'
+      + '<button class="btn-editar" onclick="event.stopPropagation();editarConvenio(\'' + json + '\')">✏️ Editar</button>'
+      + '<button class="btn-apagar" onclick="event.stopPropagation();apagarConvenio(\'' + c.id + '\')">🗑️</button>'
       + '</div>'
       + '</div>';
   }).join('');
 }
+
+// ── Detalhe do convênio ──────────────────────────────────
+
+function docsDoConvenio(convenioId) {
+  return _extras.filter(function(d) { return d.convenio_id === convenioId; });
+}
+
+function verConvenio(id) {
+  var c = convenios.find(function(x) { return x.id === id; });
+  if (!c) return;
+
+  document.getElementById('vistaLista').style.display = 'none';
+  document.getElementById('btnNovo').style.display = 'none';
+  var el = document.getElementById('vistaDetalhe');
+  el.style.display = 'block';
+
+  var docs = docsDoConvenio(c.id);
+  var meses = gerarMeses(c.vigencia_inicio, c.vigencia_fim);
+
+  var html = '<button class="det-voltar" onclick="voltarLista()">← Voltar</button>';
+  html += '<h3 style="margin:0 0 16px;font-size:18px">' + c.nome + '</h3>';
+
+  html += '<div class="det-info">';
+  html += '<div class="det-campo"><div class="dl">Tipo</div><div class="dv">' + (tipoLabel[c.tipo] || c.tipo) + '</div></div>';
+  html += '<div class="det-campo"><div class="dl">Unidade</div><div class="dv">' + (c.unidade || '—') + '</div></div>';
+  html += '<div class="det-campo"><div class="dl">Concedente</div><div class="dv">' + (c.concedente || '—') + '</div></div>';
+  html += '<div class="det-campo"><div class="dl">Valor</div><div class="dv">' + (c.valor ? formatarValor(c.valor) : '—') + '</div></div>';
+  html += '<div class="det-campo"><div class="dl">Vigência</div><div class="dv">' + (c.vigencia_inicio ? formatarData(c.vigencia_inicio) + ' — ' + formatarData(c.vigencia_fim) : '—') + '</div></div>';
+  if (c.sit) html += '<div class="det-campo"><div class="dl">SIT</div><div class="dv">' + c.sit + '</div></div>';
+  if (c.processo) html += '<div class="det-campo"><div class="dl">Processo</div><div class="dv">' + c.processo + '</div></div>';
+  html += '</div>';
+
+  // Prestações de contas
+  if (meses.length) {
+    var enviadas = docs.filter(function(d) { return d.tipo === 'prestacao' && d.link; }).length;
+    html += '<div class="det-secao">Prestações de Contas — ' + enviadas + ' de ' + meses.length + '</div>';
+    html += '<div class="pc-grid">';
+    meses.forEach(function(m) {
+      var doc = docs.find(function(d) { return d.tipo === 'prestacao' && d.ano === m.ano && d.mes === m.mes; });
+      var tem = doc && doc.link;
+      var cellId = 'pc-' + m.ano + '-' + m.mes;
+      html += '<div class="pc-cell' + (tem ? ' ok' : '') + '" id="' + cellId + '">';
+      html += '<div class="pc-mes">' + MESES[parseInt(m.mes)] + '</div>';
+      html += '<div style="font-size:10px;color:var(--cinza)">' + m.ano + '</div>';
+      html += '<div class="pc-status">' + (tem ? '✅' : '⏳') + '</div>';
+      if (tem) {
+        html += '<div class="pc-acao"><a href="' + doc.link + '" target="_blank">Abrir PDF</a></div>';
+      } else {
+        html += '<label>Enviar PDF<input type="file" accept=".pdf" onchange="uploadPC(this,\'' + c.id + '\',\'' + c.slug + '\',\'' + m.ano + '\',\'' + m.mes + '\',\'' + (c.unidade || '') + '\')"></label>';
+      }
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  // Outros documentos do convênio
+  var outrosDocs = docs.filter(function(d) { return d.tipo !== 'prestacao'; });
+  html += '<div class="det-secao">Documentos do Convênio</div>';
+  if (outrosDocs.length) {
+    html += '<div class="det-docs">';
+    outrosDocs.forEach(function(d) {
+      html += '<div class="det-doc-row">';
+      html += '<span>📄</span>';
+      if (d.link) {
+        html += '<a href="' + d.link + '" target="_blank">' + d.nome + '</a>';
+      } else {
+        html += '<span>' + d.nome + '</span>';
+      }
+      html += '<button class="btn-apagar" onclick="apagarDoc(\'' + d.id + '\',\'' + c.id + '\')" style="margin-left:auto">🗑️</button>';
+      html += '</div>';
+    });
+    html += '</div>';
+  } else {
+    html += '<p style="font-size:13px;color:var(--cinza)">Nenhum documento cadastrado.</p>';
+  }
+  html += '<button class="btn btn-cor" style="margin-top:12px" onclick="abrirUploadDoc(\'' + c.id + '\',\'' + c.slug + '\',\'' + (c.unidade || '') + '\')">+ Adicionar documento</button>';
+
+  el.innerHTML = html;
+}
+
+function voltarLista() {
+  document.getElementById('vistaDetalhe').style.display = 'none';
+  document.getElementById('vistaLista').style.display = '';
+  document.getElementById('btnNovo').style.display = '';
+}
+
+// ── Upload de prestação de contas ────────────────────────
+
+async function uploadPC(input, convenioId, slug, ano, mes, unidade) {
+  var file = input.files[0];
+  if (!file) return;
+
+  var fd = new FormData();
+  fd.append('file', file);
+  fd.append('tipo', 'prestacao');
+  fd.append('unidade', unidade);
+  fd.append('ano', ano);
+  fd.append('mes', mes);
+  fd.append('convenio_slug', slug);
+
+  var cell = document.getElementById('pc-' + ano + '-' + mes);
+  cell.querySelector('.pc-status').textContent = '⏳';
+  cell.querySelector('label').textContent = 'Enviando...';
+
+  try {
+    var resp = await fetch('/upload', { method: 'POST', body: fd });
+    var r = await resp.json();
+    if (!r.ok) { alert('Erro: ' + r.erro); verConvenio(convenioId); return; }
+
+    _extras.push({
+      id: Date.now().toString(),
+      nome: 'Prestação de Contas — ' + MESES[parseInt(mes)] + ' ' + ano,
+      tipo: 'prestacao',
+      unidade: unidade,
+      ano: ano,
+      mes: mes,
+      link: r.link,
+      convenio_id: convenioId,
+      criado_em: new Date().toISOString()
+    });
+    await salvarExtras();
+    verConvenio(convenioId);
+  } catch(e) {
+    alert('Erro no upload: ' + e.message);
+    verConvenio(convenioId);
+  }
+}
+
+// ── Upload de documento do convênio ──────────────────────
+
+function abrirUploadDoc(convenioId, slug, unidade) {
+  var nome = prompt('Nome do documento:');
+  if (!nome) return;
+
+  var input = document.createElement('input');
+  input.type = 'file';
+  input.onchange = async function() {
+    var file = input.files[0];
+    if (!file) return;
+
+    var fd = new FormData();
+    fd.append('file', file);
+    fd.append('tipo', 'contrato');
+    fd.append('unidade', unidade);
+    fd.append('convenio_slug', slug);
+
+    try {
+      var resp = await fetch('/upload', { method: 'POST', body: fd });
+      var r = await resp.json();
+      if (!r.ok) { alert('Erro: ' + r.erro); return; }
+
+      _extras.push({
+        id: Date.now().toString(),
+        nome: nome,
+        tipo: 'contrato',
+        unidade: unidade,
+        link: r.link,
+        convenio_id: convenioId,
+        criado_em: new Date().toISOString()
+      });
+      await salvarExtras();
+      verConvenio(convenioId);
+    } catch(e) {
+      alert('Erro: ' + e.message);
+    }
+  };
+  input.click();
+}
+
+async function apagarDoc(docId, convenioId) {
+  if (!confirm('Remover este documento?')) return;
+  _extras = _extras.filter(function(d) { return d.id !== docId; });
+  await salvarExtras();
+  verConvenio(convenioId);
+}
+
+// ── CRUD convênio ────────────────────────────────────────
 
 function abrirNovoConvenio() {
   _editandoId = null;
