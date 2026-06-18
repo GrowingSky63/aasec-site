@@ -712,6 +712,11 @@ async function salvarConvenio() {
 
   await salvarNoServidor();
   fecharModal('modalAdd');
+  filtros = { unidade: '', situacao: '', visibilidade: '', ano: '' };
+  document.querySelectorAll('.filtros-wrap .ftab').forEach(function(b) { b.classList.remove('on'); });
+  document.querySelectorAll('.filtros-wrap .ftab:first-child').forEach(function(b) { b.classList.add('on'); });
+  if (document.getElementById('buscaConv')) document.getElementById('buscaConv').value = '';
+  renderFiltroAno();
   renderStats();
   renderLista();
 }
