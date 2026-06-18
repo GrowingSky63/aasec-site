@@ -1395,21 +1395,15 @@
   </footer>
 
   <script>
-    // Transparência — carrega documentos do sistema
-    const mesesNome = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-    const tipoIcone = { prestacao: '📊', institucional: '🏛️', contrato: '📝', relatorio: '📋', outro: '📄' };
-    const tipoLabel = { prestacao: 'Prestação de Contas', institucional: 'Institucional', contrato: 'Contrato/Convênio', relatorio: 'Relatório', outro: 'Outro' };
-
-    let filtroAtualDocs = '';
-
-
-
-    const toggle = document.getElementById('navToggle');
-    const links = document.getElementById('navLinks');
-    toggle.addEventListener('click', () => links.classList.toggle('open'));
-    links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
-    window.addEventListener('scroll', () => {
-      document.getElementById('navbar').style.boxShadow = window.scrollY > 10 ? '0 4px 20px rgba(0,0,0,.12)' : '';
+    var toggle = document.getElementById('navToggle');
+    var links = document.getElementById('navLinks');
+    if (toggle && links) {
+      toggle.addEventListener('click', function() { links.classList.toggle('open'); });
+      links.querySelectorAll('a').forEach(function(a) { a.addEventListener('click', function() { links.classList.remove('open'); }); });
+    }
+    window.addEventListener('scroll', function() {
+      var nav = document.getElementById('navbar');
+      if (nav) nav.style.boxShadow = window.scrollY > 10 ? '0 4px 20px rgba(0,0,0,.12)' : '';
     });
   </script>
   <script src="dados_docs.js"></script>
