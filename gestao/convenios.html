@@ -540,6 +540,16 @@ async function salvarDocConvenio() {
 
 async function apagarDoc(docId, convenioId) {
   if (!confirm('Remover este documento?')) return;
+  var doc = _extras.find(function(d) { return d.id === docId; });
+  if (doc && doc.link) {
+    try {
+      await fetch('/apagar', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({link: doc.link})
+      });
+    } catch(e) {}
+  }
   _extras = _extras.filter(function(d) { return d.id !== docId; });
   await salvarExtras();
   verConvenio(convenioId);
