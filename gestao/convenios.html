@@ -152,6 +152,38 @@
     </div>
   </div>
 
+  <!-- MODAL DOCUMENTO DO CONVÊNIO -->
+  <div class="modal-overlay" id="modalDoc">
+    <div class="modal">
+      <div class="modal-h">
+        <h3>Adicionar Documento</h3>
+        <button class="modal-close" onclick="fecharModal('modalDoc')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="fg">
+          <label>Nome *</label>
+          <input type="text" id="dNome" placeholder="Ex: Plano de Trabalho, Termo Aditivo...">
+        </div>
+        <div class="fg">
+          <label>Arquivo</label>
+          <div id="docDropZone"
+            style="border:2px dashed var(--cinza-borda);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:#fafbfc"
+            onclick="document.getElementById('docFileInput').click()"
+            ondragover="event.preventDefault();this.style.borderColor='var(--azul)';this.style.background='#dbeafe'"
+            ondragleave="this.style.borderColor='var(--cinza-borda)';this.style.background='#fafbfc'"
+            ondrop="handleDocDrop(event)">
+            <div id="docDropText" style="font-size:13px;color:var(--cinza)">Clique para procurar ou arraste o arquivo aqui</div>
+          </div>
+          <input type="file" id="docFileInput" style="display:none" onchange="handleDocFile(this.files[0])">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="fecharModal('modalDoc')">Cancelar</button>
+        <button class="btn btn-cor" onclick="salvarDocConvenio()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- VISTA: LISTA -->
   <div id="vistaLista">
     <div class="stats-row">
@@ -505,43 +537,74 @@ async function uploadPC(input, convenioId, slug, ano, mes, unidade) {
 
 // ── Upload de documento do convênio ──────────────────────
 
+var _docConvenioId = null;
+var _docConvenioSlug = null;
+var _docConvenioUnidade = null;
+var _docArquivo = null;
+
 function abrirUploadDoc(convenioId, slug, unidade) {
-  var nome = prompt('Nome do documento:');
-  if (!nome) return;
+  _docConvenioId = convenioId;
+  _docConvenioSlug = slug;
+  _docConvenioUnidade = unidade;
+  _docArquivo = null;
+  document.getElementById('dNome').value = '';
+  document.getElementById('docDropText').textContent = 'Clique para procurar ou arraste o arquivo aqui';
+  document.getElementById('docDropZone').style.borderColor = 'var(--cinza-borda)';
+  document.getElementById('docDropZone').style.background = '#fafbfc';
+  initModal('modalDoc');
+  abrirModal('modalDoc');
+}
 
-  var input = document.createElement('input');
-  input.type = 'file';
-  input.onchange = async function() {
-    var file = input.files[0];
-    if (!file) return;
+function handleDocFile(file) {
+  if (!file) return;
+  _docArquivo = file;
+  document.getElementById('docDropText').innerHTML =
+    '✅ <strong>' + file.name + '</strong> (' + (file.size/1024).toFixed(0) + ' KB)';
+  document.getElementById('docDropZone').style.borderColor = '#10b981';
+  document.getElementById('docDropZone').style.background = '#ecfdf5';
+  if (!document.getElementById('dNome').value) {
+    document.getElementById('dNome').value = file.name.replace(/\.[^.]+$/, '').replace(/_/g, ' ');
+  }
+}
 
-    var fd = new FormData();
-    fd.append('file', file);
-    fd.append('tipo', 'contrato');
-    fd.append('unidade', unidade);
-    fd.append('convenio_slug', slug);
+function handleDocDrop(e) {
+  e.preventDefault();
+  document.getElementById('docDropZone').style.borderColor = 'var(--cinza-borda)';
+  document.getElementById('docDropZone').style.background = '#fafbfc';
+  if (e.dataTransfer.files[0]) handleDocFile(e.dataTransfer.files[0]);
+}
 
-    try {
-      var resp = await fetch('/upload', { method: 'POST', body: fd });
-      var r = await resp.json();
-      if (!r.ok) { alert('Erro: ' + r.erro); return; }
+async function salvarDocConvenio() {
+  var nome = document.getElementById('dNome').value.trim();
+  if (!nome) { alert('Preencha o nome do documento.'); return; }
+  if (!_docArquivo) { alert('Selecione um arquivo.'); return; }
 
-      _extras.push({
-        id: Date.now().toString(),
-        nome: nome,
-        tipo: 'contrato',
-        unidade: unidade,
-        link: r.link,
-        convenio_id: convenioId,
-        criado_em: new Date().toISOString()
-      });
-      await salvarExtras();
-      verConvenio(convenioId);
-    } catch(e) {
-      alert('Erro: ' + e.message);
-    }
-  };
-  input.click();
+  var fd = new FormData();
+  fd.append('file', _docArquivo);
+  fd.append('tipo', 'contrato');
+  fd.append('unidade', _docConvenioUnidade);
+  fd.append('convenio_slug', _docConvenioSlug);
+
+  try {
+    var resp = await fetch('/upload', { method: 'POST', body: fd });
+    var r = await resp.json();
+    if (!r.ok) { alert('Erro: ' + r.erro); return; }
+
+    _extras.push({
+      id: Date.now().toString(),
+      nome: nome,
+      tipo: 'contrato',
+      unidade: _docConvenioUnidade,
+      link: r.link,
+      convenio_id: _docConvenioId,
+      criado_em: new Date().toISOString()
+    });
+    await salvarExtras();
+    fecharModal('modalDoc');
+    verConvenio(_docConvenioId);
+  } catch(e) {
+    alert('Erro: ' + e.message);
+  }
 }
 
 async function apagarDoc(docId, convenioId) {
