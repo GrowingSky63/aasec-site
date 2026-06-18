@@ -502,6 +502,20 @@ var _docConvenioUnidade = null;
 var _docTipo = null;
 var _docArquivo = null;
 
+var _meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+function sugerirNomePrestacao(convenioId) {
+  var existentes = _extras.filter(function(d) { return d.convenio_id === convenioId && d.tipo === 'prestacao'; })
+    .map(function(d) { return d.nome.toLowerCase(); });
+  var agora = new Date();
+  for (var i = 0; i < 24; i++) {
+    var d = new Date(agora.getFullYear(), agora.getMonth() - i, 1);
+    var nome = _meses[d.getMonth()] + ' ' + d.getFullYear();
+    if (existentes.indexOf(nome.toLowerCase()) === -1) return nome;
+  }
+  return _meses[agora.getMonth()] + ' ' + agora.getFullYear();
+}
+
 function abrirUploadDoc(convenioId, slug, unidade, tipo) {
   _docConvenioId = convenioId;
   _docConvenioSlug = slug;
@@ -518,7 +532,8 @@ function abrirUploadDoc(convenioId, slug, unidade, tipo) {
     document.getElementById('fgDescricao').style.display = '';
   } else if (tipo === 'prestacao') {
     document.getElementById('modalDocTitulo').textContent = 'Adicionar Prestação de Contas';
-    document.getElementById('dNome').placeholder = 'Ex: Janeiro 2025, Parcela 3, 1º Trimestre...';
+    document.getElementById('dNome').value = sugerirNomePrestacao(convenioId);
+    document.getElementById('dNome').placeholder = 'Ex: Janeiro 2025';
     document.getElementById('docFileInput').removeAttribute('accept');
     document.getElementById('fgDescricao').style.display = 'none';
   } else {
@@ -610,13 +625,23 @@ async function apagarDoc(docId, convenioId) {
 
 // ── CRUD convênio ────────────────────────────────────────
 
+function sugerirNomeConvenio() {
+  var ano = new Date().getFullYear();
+  var nums = convenios.map(function(c) {
+    var m = c.nome.match(/nº?\s*0*(\d+)\s*\/\s*(\d{4})/i);
+    return (m && parseInt(m[2]) === ano) ? parseInt(m[1]) : 0;
+  });
+  var prox = Math.max.apply(null, nums.concat([0])) + 1;
+  return 'Termo de Colaboração nº ' + String(prox).padStart(3, '0') + '/' + ano;
+}
+
 function abrirNovoConvenio() {
   _editandoId = null;
   document.getElementById('modalTitulo').textContent = 'Novo Convênio';
-  document.getElementById('cNome').value = '';
+  document.getElementById('cNome').value = sugerirNomeConvenio();
   document.getElementById('cTipo').value = 'convenio';
   document.getElementById('cUnidade').value = 'CEI Betel';
-  document.getElementById('cConcedente').value = '';
+  document.getElementById('cConcedente').value = 'PM Carambeí';
   document.getElementById('cSit').value = '';
   document.getElementById('cProcesso').value = '';
   document.getElementById('cInicio').value = '';
