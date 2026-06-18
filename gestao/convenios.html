@@ -260,7 +260,11 @@ async function carregarConvenios() {
 
 async function salvarNoServidor() {
   try {
-    await fetch('/api/convenios', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(convenios) });
+    var resp = await fetch('/api/convenios', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(convenios) });
+    if (!resp.ok) {
+      if (resp.status === 401) { alert('Sessão expirada. Faça login novamente.'); window.location.href = 'login.html'; return; }
+      alert('Erro ao salvar convênios (status ' + resp.status + ')');
+    }
   } catch(e) {
     alert('Erro ao salvar: ' + e.message);
   }
@@ -277,7 +281,11 @@ async function carregarExtras() {
 
 async function salvarExtras() {
   try {
-    await fetch('/api/extras', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(_extras) });
+    var resp = await fetch('/api/extras', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(_extras) });
+    if (!resp.ok) {
+      if (resp.status === 401) { alert('Sessão expirada. Faça login novamente.'); window.location.href = 'login.html'; return; }
+      alert('Erro ao salvar documentos (status ' + resp.status + ')');
+    }
   } catch(e) {
     alert('Erro ao salvar extras: ' + e.message);
   }
