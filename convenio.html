@@ -39,6 +39,11 @@
     .secao-count{font-size:12px;color:var(--cinza);background:var(--cinza-claro);padding:3px 10px;border-radius:20px;font-weight:600}
     .secao-vazio{font-size:13px;color:var(--cinza);padding:12px 0}
 
+    .busca-wrap{margin-bottom:24px}
+    .busca-input{width:100%;padding:10px 16px 10px 38px;border:1.5px solid var(--cinza-borda);border-radius:10px;font-size:13px;font-family:'Inter',sans-serif;color:var(--grafite);background:var(--branco) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2364748B' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E") no-repeat 12px center;transition:border-color .2s;outline:none}
+    .busca-input:focus{border-color:var(--azul)}
+    .busca-input::placeholder{color:var(--cinza)}
+
     .doc-lista{display:flex;flex-direction:column;gap:8px}
     .doc-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--branco);border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.05);text-decoration:none;color:var(--grafite);transition:all .2s;border-left:3px solid var(--azul-claro)}
     .doc-row:hover{border-left-color:var(--azul);transform:translateX(3px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
@@ -145,75 +150,85 @@
       document.getElementById('heroTitulo').textContent = c.nome;
       document.getElementById('heroSub').textContent = (c.unidade || 'AASEC') + ' · ' + (c.concedente || '');
 
-      var docs = extras.filter(function(d) { return d.convenio_id === c.id; });
-      var pcs = docs.filter(function(d) { return d.tipo === 'prestacao' && d.link; });
-      var outros = docs.filter(function(d) { return d.tipo !== 'prestacao' && d.tipo !== 'foto' && d.link; });
-      var fotos = docs.filter(function(d) { return d.tipo === 'foto' && d.link; });
+      var _allDocs = extras.filter(function(d) { return d.convenio_id === c.id; });
+      var _glightbox = null;
 
-      var html = '';
+      function renderSecoes(busca) {
+        busca = (busca || '').toLowerCase().trim();
+        var pcs = _allDocs.filter(function(d) { return d.tipo === 'prestacao' && d.link && (!busca || d.nome.toLowerCase().indexOf(busca) !== -1); });
+        var outros = _allDocs.filter(function(d) { return d.tipo !== 'prestacao' && d.tipo !== 'foto' && d.link && (!busca || d.nome.toLowerCase().indexOf(busca) !== -1); });
+        var fotos = _allDocs.filter(function(d) { return d.tipo === 'foto' && d.link && (!busca || (d.nome || '').toLowerCase().indexOf(busca) !== -1 || (d.descricao || '').toLowerCase().indexOf(busca) !== -1); });
 
-      // Info
-      html += '<div class="info-grid">';
-      html += '<div class="info-campo"><div class="il">Tipo</div><div class="iv">' + (tipoLabel[c.tipo] || c.tipo) + '</div></div>';
-      html += '<div class="info-campo"><div class="il">Unidade</div><div class="iv">' + (c.unidade || '—') + '</div></div>';
-      html += '<div class="info-campo"><div class="il">Concedente</div><div class="iv">' + (c.concedente || '—') + '</div></div>';
-      html += '<div class="info-campo"><div class="il">Valor</div><div class="iv">' + fmtValor(c.valor) + '</div></div>';
-      html += '<div class="info-campo"><div class="il">Vigência</div><div class="iv">' + fmtData(c.vigencia_inicio) + ' — ' + fmtData(c.vigencia_fim) + '</div></div>';
-      html += '<div class="info-campo"><div class="il">Situação</div><div class="iv"><span class="info-badge ' + (c.situacao || '') + '">' + (situacaoLabel[c.situacao] || c.situacao || '—') + '</span></div></div>';
-      if (c.sit) html += '<div class="info-campo"><div class="il">SIT</div><div class="iv">' + c.sit + '</div></div>';
-      html += '</div>';
+        var html = '';
 
-      // Prestações
-      html += '<div class="secao">';
-      html += '<div class="secao-header"><h3>Prestações de Contas</h3><span class="secao-count">' + pcs.length + '</span></div>';
-      if (pcs.length) {
-        html += '<div class="doc-lista">';
-        pcs.forEach(function(d) {
-          html += '<a class="doc-row" href="' + d.link + '" target="_blank"><strong>' + d.nome + '</strong></a>';
-        });
+        html += '<div class="info-grid">';
+        html += '<div class="info-campo"><div class="il">Tipo</div><div class="iv">' + (tipoLabel[c.tipo] || c.tipo) + '</div></div>';
+        html += '<div class="info-campo"><div class="il">Unidade</div><div class="iv">' + (c.unidade || '—') + '</div></div>';
+        html += '<div class="info-campo"><div class="il">Concedente</div><div class="iv">' + (c.concedente || '—') + '</div></div>';
+        html += '<div class="info-campo"><div class="il">Valor</div><div class="iv">' + fmtValor(c.valor) + '</div></div>';
+        html += '<div class="info-campo"><div class="il">Vigência</div><div class="iv">' + fmtData(c.vigencia_inicio) + ' — ' + fmtData(c.vigencia_fim) + '</div></div>';
+        html += '<div class="info-campo"><div class="il">Situação</div><div class="iv"><span class="info-badge ' + (c.situacao || '') + '">' + (situacaoLabel[c.situacao] || c.situacao || '—') + '</span></div></div>';
+        if (c.sit) html += '<div class="info-campo"><div class="il">SIT</div><div class="iv">' + c.sit + '</div></div>';
         html += '</div>';
-      } else {
-        html += '<p class="secao-vazio">Nenhuma prestação de contas disponível.</p>';
-      }
-      html += '</div>';
 
-      // Documentos
-      html += '<div class="secao">';
-      html += '<div class="secao-header"><h3>Documentos</h3><span class="secao-count">' + outros.length + '</span></div>';
-      if (outros.length) {
-        html += '<div class="doc-lista">';
-        outros.forEach(function(d) {
-          html += '<a class="doc-row" href="' + d.link + '" target="_blank"><strong>' + d.nome + '</strong></a>';
-        });
-        html += '</div>';
-      } else {
-        html += '<p class="secao-vazio">Nenhum documento disponível.</p>';
-      }
-      html += '</div>';
+        html += '<div class="busca-wrap"><input type="text" class="busca-input" id="buscaConv" placeholder="Buscar prestações, documentos ou fotos..." oninput="renderSecoes(this.value)" value="' + (busca || '').replace(/"/g,'&quot;') + '"></div>';
 
-      // Fotos
-      if (fotos.length) {
         html += '<div class="secao">';
-        html += '<div class="secao-header"><h3>Galeria de Fotos</h3><span class="secao-count">' + fotos.length + '</span></div>';
-        html += '<div class="fotos-grid">';
-        fotos.forEach(function(d) {
-          var desc = d.descricao || '';
-          var titulo = d.nome || '';
-          var glDesc = titulo + (desc ? ' — ' + desc : '');
-          html += '<a class="foto-card glightbox" href="' + d.link + '" data-gallery="galeria" data-description="' + glDesc.replace(/"/g, '&quot;') + '">';
-          html += '<img src="' + d.link + '" alt="' + titulo.replace(/"/g, '&quot;') + '" loading="lazy">';
-          html += '<div class="fc-overlay"><strong>' + titulo + '</strong>';
-          if (desc) html += '<p>' + desc + '</p>';
-          html += '</div></a>';
-        });
-        html += '</div></div>';
+        html += '<div class="secao-header"><h3>Prestações de Contas</h3><span class="secao-count">' + pcs.length + '</span></div>';
+        if (pcs.length) {
+          html += '<div class="doc-lista">';
+          pcs.forEach(function(d) {
+            html += '<a class="doc-row" href="' + d.link + '" target="_blank"><strong>' + d.nome + '</strong></a>';
+          });
+          html += '</div>';
+        } else {
+          html += '<p class="secao-vazio">' + (busca ? 'Nenhum resultado.' : 'Nenhuma prestação de contas disponível.') + '</p>';
+        }
+        html += '</div>';
+
+        html += '<div class="secao">';
+        html += '<div class="secao-header"><h3>Documentos</h3><span class="secao-count">' + outros.length + '</span></div>';
+        if (outros.length) {
+          html += '<div class="doc-lista">';
+          outros.forEach(function(d) {
+            html += '<a class="doc-row" href="' + d.link + '" target="_blank"><strong>' + d.nome + '</strong></a>';
+          });
+          html += '</div>';
+        } else {
+          html += '<p class="secao-vazio">' + (busca ? 'Nenhum resultado.' : 'Nenhum documento disponível.') + '</p>';
+        }
+        html += '</div>';
+
+        if (fotos.length) {
+          html += '<div class="secao">';
+          html += '<div class="secao-header"><h3>Galeria de Fotos</h3><span class="secao-count">' + fotos.length + '</span></div>';
+          html += '<div class="fotos-grid">';
+          fotos.forEach(function(d) {
+            var desc = d.descricao || '';
+            var titulo = d.nome || '';
+            var glDesc = titulo + (desc ? ' — ' + desc : '');
+            html += '<a class="foto-card glightbox" href="' + d.link + '" data-gallery="galeria" data-description="' + glDesc.replace(/"/g, '&quot;') + '">';
+            html += '<img src="' + d.link + '" alt="' + titulo.replace(/"/g, '&quot;') + '" loading="lazy">';
+            html += '<div class="fc-overlay"><strong>' + titulo + '</strong>';
+            if (desc) html += '<p>' + desc + '</p>';
+            html += '</div></a>';
+          });
+          html += '</div></div>';
+        }
+
+        document.getElementById('conteudo').innerHTML = html;
+
+        var input = document.getElementById('buscaConv');
+        if (input && busca) { input.focus(); input.setSelectionRange(busca.length, busca.length); }
+
+        if (_glightbox) _glightbox.destroy();
+        if (fotos.length) {
+          _glightbox = GLightbox({ selector: '.glightbox', touchNavigation: true, loop: true });
+        }
       }
 
-      document.getElementById('conteudo').innerHTML = html;
-
-      if (fotos.length) {
-        GLightbox({ selector: '.glightbox', touchNavigation: true, loop: true });
-      }
+      window.renderSecoes = renderSecoes;
+      renderSecoes('');
     });
   </script>
   <script src="https://cdn.jsdelivr.net/npm/glightbox@3.3.0/dist/js/glightbox.min.js"></script>
