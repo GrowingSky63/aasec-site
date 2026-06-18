@@ -1244,6 +1244,13 @@
             <label>Ano</label>
             <div class="filtro-pills" id="filtrosConvAno"></div>
           </div>
+          <div class="filtro-grupo">
+            <label>Situação</label>
+            <div class="filtro-pills">
+              <button class="pill ativo" onclick="filtrarConv('situacao','ativos',this)">Em execução</button>
+              <button class="pill" onclick="filtrarConv('situacao','todos',this)">Incluir finalizados</button>
+            </div>
+          </div>
         </div>
         <div id="conveniosGrid"></div>
       </div>
@@ -1413,6 +1420,7 @@
     var _filtroInstUnidade = '';
     var _filtroConvUnidade = '';
     var _filtroConvAno = '';
+    var _filtroConvSituacao = 'ativos';
 
     var situacaoLabel = { em_execucao: 'Em execução', encerrado: 'Encerrado' };
     var svgDoc = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v1.5H8V13zm0 3h8v1.5H8V16zm0-6h3v1.5H8V10z"/></svg>';
@@ -1451,9 +1459,10 @@
     function filtrarConv(grupo, valor, btn) {
       if (grupo === 'unidade') _filtroConvUnidade = valor;
       if (grupo === 'ano') _filtroConvAno = valor;
-      var container = grupo === 'unidade' ? 'filtrosConvUnidade' : 'filtrosConvAno';
-      document.querySelectorAll('#' + container + ' .pill').forEach(function(b) { b.classList.remove('ativo'); });
+      if (grupo === 'situacao') _filtroConvSituacao = valor;
+      btn.closest('.filtro-pills').querySelectorAll('.pill').forEach(function(b) { b.classList.remove('ativo'); });
       btn.classList.add('ativo');
+      if (grupo === 'situacao') renderFiltrosConvAno();
       renderConvenios();
     }
 
@@ -1471,6 +1480,7 @@
       var anos = [];
       _convenios.forEach(function(c) {
         if (c.visibilidade === 'interno') return;
+        if (_filtroConvSituacao === 'ativos' && c.situacao !== 'em_execucao') return;
         if (c.vigencia_inicio) {
           var a = c.vigencia_inicio.substring(0, 4);
           if (anos.indexOf(a) === -1) anos.push(a);
@@ -1489,6 +1499,7 @@
       var grid = document.getElementById('conveniosGrid');
       var publicos = _convenios.filter(function(c) {
         if (c.visibilidade === 'interno') return false;
+        if (_filtroConvSituacao === 'ativos' && c.situacao !== 'em_execucao') return false;
         if (_filtroConvUnidade && c.unidade !== _filtroConvUnidade) return false;
         if (_filtroConvAno) {
           var anoInicio = c.vigencia_inicio ? c.vigencia_inicio.substring(0, 4) : '';
