@@ -222,6 +222,7 @@
         <div class="ftabs" id="ftAno-tabs"></div>
       </div>
     </div>
+    <input type="text" id="buscaConv" placeholder="Buscar convênio..." oninput="renderLista()" style="width:100%;padding:10px 16px 10px 38px;border:1.5px solid var(--cinza-borda);border-radius:10px;font-size:13px;font-family:'Inter',sans-serif;color:var(--grafite);background:#fff url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2364748B' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E&quot;) no-repeat 12px center;outline:none;margin-bottom:12px">
     <div class="conv-list" id="lista"></div>
   </div>
 
@@ -340,11 +341,13 @@ function formatarData(d) {
 // ── Lista de convênios ───────────────────────────────────
 
 function renderLista() {
+  var busca = (document.getElementById('buscaConv') ? document.getElementById('buscaConv').value : '').toLowerCase().trim();
   var lista = convenios.filter(function(c) {
     if (filtros.unidade && c.unidade !== filtros.unidade) return false;
     if (filtros.situacao && c.situacao !== filtros.situacao) return false;
     if (filtros.visibilidade && c.visibilidade !== filtros.visibilidade) return false;
     if (filtros.ano && (!c.vigencia_inicio || c.vigencia_inicio.substring(0, 4) !== filtros.ano)) return false;
+    if (busca && c.nome.toLowerCase().indexOf(busca) === -1) return false;
     return true;
   });
 
