@@ -42,10 +42,8 @@ function getSessao() {
   return _sessaoCache;
 }
 
-// Fecha modal ao clicar fora
+// Inicializa modal (não fecha ao clicar fora para não perder dados)
 function initModal(id) {
-  const el = document.getElementById(id);
-  if (el) el.addEventListener('click', e => { if (e.target === el) fecharModal(id); });
 }
 
 function abrirModal(id) {
