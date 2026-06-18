@@ -99,7 +99,7 @@
         <button class="modal-close" onclick="fecharModal('modalAdd')">✕</button>
       </div>
       <div class="modal-body">
-        <div class="fg"><label>Nome *</label><input id="cNome" type="text" placeholder="Ex: Termo de Colaboração nº 007/2024" onfocus="var v=this;setTimeout(function(){v.setSelectionRange(v.value.length,v.value.length)},0)"></div>
+        <div class="fg"><label>Nome *</label><input id="cNome" type="text" placeholder="Ex: Termo de Colaboração nº 007/2024" onclick="var v=this;setTimeout(function(){v.setSelectionRange(v.value.length,v.value.length)},0)" onfocus="var v=this;setTimeout(function(){v.setSelectionRange(v.value.length,v.value.length)},0)"></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div class="fg"><label>Tipo *</label>
             <select id="cTipo">
@@ -650,6 +650,11 @@ function abrirNovoConvenio() {
   document.getElementById('cSituacao').value = 'em_execucao';
   document.getElementById('cVisibilidade').value = 'publico';
   abrirModal('modalAdd');
+  setTimeout(function() {
+    var el = document.getElementById('cNome');
+    el.focus();
+    el.setSelectionRange(el.value.length, el.value.length);
+  }, 100);
 }
 
 function editarConvenio(json) {
