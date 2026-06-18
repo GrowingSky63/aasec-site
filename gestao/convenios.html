@@ -714,8 +714,27 @@ async function salvarConvenio() {
 }
 
 async function apagarConvenio(id) {
-  if (!confirm('Tem certeza que deseja remover este convênio?')) return;
-  convenios = convenios.filter(function(c) { return c.id !== id; });
+  var c = convenios.find(function(x) { return x.id === id; });
+  var docs = _extras.filter(function(d) { return d.convenio_id === id; });
+  var msg = 'Tem certeza que deseja remover este convênio?';
+  if (docs.length) msg += '\n\n' + docs.length + ' documento(s) associado(s) também serão removidos.';
+  if (!confirm(msg)) return;
+
+  for (var i = 0; i < docs.length; i++) {
+    if (docs[i].link) {
+      try {
+        await fetch('/apagar', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({link: docs[i].link})
+        });
+      } catch(e) {}
+    }
+  }
+  _extras = _extras.filter(function(d) { return d.convenio_id !== id; });
+  await salvarExtras();
+
+  convenios = convenios.filter(function(x) { return x.id !== id; });
   await salvarNoServidor();
   renderStats();
   renderLista();
