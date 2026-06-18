@@ -246,11 +246,14 @@ const server = http.createServer(async (req, res) => {
     req.on('end', () => {
       try {
         const body = Buffer.concat(chunks).toString();
+        console.log('CONVENIOS POST tamanho:', body.length);
         JSON.parse(body);
         fs.writeFileSync(CONVENIOS_PATH, body, 'utf8');
+        console.log('CONVENIOS salvo OK');
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: true }));
       } catch (e) {
+        console.error('CONVENIOS ERRO:', e.message);
         res.writeHead(400); res.end(JSON.stringify({ ok: false, erro: e.message }));
       }
     });
