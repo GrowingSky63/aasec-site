@@ -44,19 +44,14 @@
     .doc-row:hover{border-left-color:var(--azul);transform:translateX(3px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
     .doc-row strong{font-weight:600;font-size:13px;color:var(--preto)}
 
-    .fotos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
-    .foto-card{background:var(--branco);border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:all .25s;cursor:pointer}
+    .fotos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+    .foto-card{position:relative;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:all .25s;cursor:pointer;display:block}
     .foto-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,.12)}
-    .foto-card img{width:100%;height:180px;object-fit:cover;display:block}
-    .foto-card .fc-info{padding:12px 14px}
-    .foto-card .fc-info strong{display:block;font-size:13px;font-weight:600;color:var(--preto);margin-bottom:4px}
-    .foto-card .fc-info p{font-size:12px;color:var(--cinza);line-height:1.5}
-
-    .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;align-items:center;justify-content:center;padding:20px;cursor:pointer}
-    .lightbox.on{display:flex}
-    .lightbox img{max-width:90%;max-height:90vh;border-radius:8px;object-fit:contain}
-    .lightbox-close{position:absolute;top:20px;right:20px;color:#fff;font-size:28px;cursor:pointer;background:none;border:none}
-    .lightbox-desc{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:#fff;background:rgba(0,0,0,.6);padding:10px 20px;border-radius:8px;font-size:13px;max-width:80%;text-align:center}
+    .foto-card img{width:100%;height:200px;object-fit:cover;display:block;transition:transform .3s}
+    .foto-card:hover img{transform:scale(1.03)}
+    .foto-card .fc-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.7));padding:14px;color:#fff;pointer-events:none}
+    .foto-card .fc-overlay strong{display:block;font-size:13px;font-weight:600;margin-bottom:2px}
+    .foto-card .fc-overlay p{font-size:11px;opacity:.85;line-height:1.4}
 
     .carregando{text-align:center;padding:60px;color:var(--cinza)}
     .erro{text-align:center;padding:60px;color:var(--cinza)}
@@ -69,9 +64,14 @@
 
     @media(max-width:600px){
       .info-grid{grid-template-columns:1fr 1fr}
+      .fotos-grid{grid-template-columns:1fr 1fr}
+      .foto-card img{height:140px}
+    }
+    @media(max-width:380px){
       .fotos-grid{grid-template-columns:1fr}
     }
   </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.3.0/dist/css/glightbox.min.css">
 </head>
 <body>
 
@@ -94,12 +94,6 @@
 
   <div class="content" id="conteudo">
     <div class="carregando">Carregando dados do convênio...</div>
-  </div>
-
-  <div class="lightbox" id="lightbox" onclick="fecharLightbox()">
-    <button class="lightbox-close" onclick="fecharLightbox()">✕</button>
-    <img id="lbImg" src="" alt="">
-    <div class="lightbox-desc" id="lbDesc"></div>
   </div>
 
   <footer>
@@ -126,21 +120,6 @@
       if (!v) return '—';
       return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
     }
-
-    function abrirLightbox(src, desc) {
-      document.getElementById('lbImg').src = src;
-      document.getElementById('lbDesc').textContent = desc || '';
-      document.getElementById('lbDesc').style.display = desc ? '' : 'none';
-      document.getElementById('lightbox').classList.add('on');
-    }
-
-    function fecharLightbox() {
-      document.getElementById('lightbox').classList.remove('on');
-    }
-
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') fecharLightbox();
-    });
 
     document.addEventListener('DOMContentLoaded', async function() {
       var params = new URLSearchParams(window.location.search);
@@ -219,17 +198,24 @@
         html += '<div class="fotos-grid">';
         fotos.forEach(function(d) {
           var desc = d.descricao || '';
-          html += '<div class="foto-card" onclick="abrirLightbox(\'' + d.link.replace(/'/g, "\\'") + '\',\'' + desc.replace(/'/g, "\\'") + '\')">';
-          html += '<img src="' + d.link + '" alt="' + (d.nome || '') + '" loading="lazy">';
-          html += '<div class="fc-info"><strong>' + d.nome + '</strong>';
+          var titulo = d.nome || '';
+          var glDesc = titulo + (desc ? ' — ' + desc : '');
+          html += '<a class="foto-card glightbox" href="' + d.link + '" data-gallery="galeria" data-description="' + glDesc.replace(/"/g, '&quot;') + '">';
+          html += '<img src="' + d.link + '" alt="' + titulo.replace(/"/g, '&quot;') + '" loading="lazy">';
+          html += '<div class="fc-overlay"><strong>' + titulo + '</strong>';
           if (desc) html += '<p>' + desc + '</p>';
-          html += '</div></div>';
+          html += '</div></a>';
         });
         html += '</div></div>';
       }
 
       document.getElementById('conteudo').innerHTML = html;
+
+      if (fotos.length) {
+        GLightbox({ selector: '.glightbox', touchNavigation: true, loop: true });
+      }
     });
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/glightbox@3.3.0/dist/js/glightbox.min.js"></script>
 </body>
 </html>
