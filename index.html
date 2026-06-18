@@ -648,89 +648,55 @@
     }
 
     /* TRANSPARÊNCIA */
-    #transparencia {
-      background: var(--branco)
-    }
+    #transparencia{background:var(--branco)}
 
-    .docs-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-top: 28px
-    }
+    .transp-bloco{margin-top:40px;padding-top:32px}
+    .transp-bloco+.transp-bloco{border-top:1.5px solid var(--cinza-borda)}
+    .transp-bloco-titulo{font-size:18px;font-weight:800;color:var(--preto);margin-bottom:4px}
+    .transp-bloco-desc{font-size:13px;color:var(--cinza);margin-bottom:16px;line-height:1.6}
 
-    .doc-card {
-      background: var(--azul-claro);
-      border-radius: 10px;
-      padding: 18px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      transition: all .2s;
-      border: 1px solid var(--azul-medio)
-    }
+    .transp-filtros{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;margin-bottom:20px}
+    .filtro-grupo{display:flex;flex-direction:column;gap:6px}
+    .filtro-grupo label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cinza)}
+    .filtro-pills{display:flex;gap:6px;flex-wrap:wrap}
 
-    .doc-card:hover {
-      background: var(--azul-medio);
-      transform: translateX(3px)
-    }
+    .pill{padding:6px 16px;border-radius:20px;border:1.5px solid var(--cinza-borda);background:var(--branco);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;color:var(--grafite);font-family:'Inter',sans-serif}
+    .pill:hover,.pill.ativo{background:var(--azul);color:#fff;border-color:var(--azul)}
 
-    .doc-icon {
-      width: 36px;
-      height: 36px;
-      background: var(--azul);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      flex-shrink: 0;
-      color: #fff
-    }
+    .docs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+    .doc-card{background:var(--azul-claro);border-radius:10px;padding:16px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;border:1px solid var(--azul-medio);text-decoration:none}
+    .doc-card:hover{background:var(--azul-medio);transform:translateX(3px)}
+    .doc-card .dc-ico{width:34px;height:34px;background:var(--azul);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .doc-card .dc-ico svg{width:16px;height:16px;fill:#fff}
+    .doc-card .dc-info{min-width:0}
+    .doc-card .dc-info strong{display:block;font-size:13px;font-weight:600;color:var(--preto);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .doc-card .dc-info span{font-size:11px;color:var(--cinza)}
 
-    .doc-info strong {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--preto)
-    }
-
-    .doc-info span {
-      font-size: 11px;
-      color: var(--cinza)
-    }
-
-    .doc-status {
-      font-size: 10px;
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 8px;
-      margin-left: auto;
-      white-space: nowrap;
-      background: #fff3cd;
-      color: #856404
-    }
-
-    .doc-filtro {
-      padding: 6px 16px;
-      border-radius: 20px;
-      border: 1.5px solid var(--cinza-borda);
-      background: var(--branco);
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all .2s;
-      color: var(--grafite);
-      font-family: 'Inter', sans-serif
-    }
-
-    .doc-filtro:hover,
-    .doc-filtro.ativo {
-      background: var(--azul);
-      color: #fff;
-      border-color: var(--azul)
-    }
+    .conv-card{background:var(--fundo);border-radius:12px;border:1.5px solid var(--cinza-borda);overflow:hidden;transition:all .2s;margin-bottom:10px}
+    .conv-card:hover{border-color:var(--azul)}
+    .conv-header{display:flex;align-items:center;gap:12px;padding:16px 20px;cursor:pointer}
+    .conv-header .ch-ico{width:38px;height:38px;border-radius:9px;background:var(--azul-claro);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .conv-header .ch-ico svg{width:18px;height:18px;fill:var(--azul)}
+    .conv-header .ch-info{flex:1;min-width:0}
+    .conv-header .ch-info strong{display:block;font-size:14px;font-weight:700;color:var(--preto)}
+    .conv-header .ch-info span{font-size:11px;color:var(--cinza)}
+    .ch-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;white-space:nowrap;flex-shrink:0}
+    .ch-badge.em_execucao{background:#d1fae5;color:#065f46}
+    .ch-badge.encerrado{background:#f1f5f9;color:#94a3b8}
+    .conv-header .ch-count{font-size:11px;color:var(--cinza);white-space:nowrap;flex-shrink:0}
+    .conv-header .ch-seta{font-size:10px;color:var(--cinza);transition:transform .25s;flex-shrink:0}
+    .conv-card.aberto .ch-seta{transform:rotate(180deg)}
+    .conv-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .25s ease;overflow:hidden}
+    .conv-card.aberto .conv-body{grid-template-rows:1fr}
+    .conv-body-inner{overflow:hidden}
+    .conv-card.aberto .conv-body-inner{padding:0 20px 16px;border-top:1px solid var(--cinza-borda)}
+    .conv-sub{font-size:11px;font-weight:700;color:var(--cinza);text-transform:uppercase;letter-spacing:.5px;margin-top:14px;margin-bottom:6px}
+    .conv-docs-lista{display:flex;flex-direction:column;gap:6px}
+    .conv-doc-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--branco);border-radius:8px;font-size:13px;text-decoration:none;color:var(--grafite);transition:all .15s}
+    .conv-doc-item:hover{background:var(--azul-claro);transform:translateX(2px)}
+    .conv-doc-item strong{font-weight:600;color:var(--preto)}
+    .conv-doc-tipo{font-size:10px;margin-left:auto;color:var(--cinza);white-space:nowrap}
+    .conv-vazio{font-size:12px;color:var(--cinza);padding:12px 0}
 
     /* COMO AJUDAR */
     #como-ajudar {
@@ -1056,6 +1022,7 @@
       .docs-grid {
         grid-template-columns: 1fr 1fr
       }
+      .transp-filtros{gap:12px}
     }
 
     @media(max-width:600px) {
@@ -1067,6 +1034,8 @@
         grid-template-columns: 1fr;
         gap: 12px
       }
+      .transp-filtros{flex-direction:column;gap:10px}
+      .filtro-grupo{width:100%}
 
       section {
         padding: 44px 4%
@@ -1237,26 +1206,46 @@
       <div class="stag">Gestão responsável</div>
       <h2 class="stitu">Transparência</h2>
       <div class="div"></div>
-      <p class="ssub" style="margin-bottom:28px">A AASEC acredita que a confiança se constrói com abertura. Aqui você
-        encontra nossos documentos institucionais.</p>
+      <p class="ssub" style="margin-bottom:8px">A AASEC acredita que a confiança se constrói com abertura. Aqui você
+        encontra nossos documentos institucionais e prestações de contas.</p>
 
-      <!-- Filtros por tipo -->
-      <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
-        <button class="doc-filtro" data-grupo="tipo" title="Estatutos, regimentos, planos de trabalho e códigos de ética" onclick="filtrarDocs(this,'tipo','institucional')">Institucional</button>
-        <button class="doc-filtro" data-grupo="tipo" title="Termos de colaboração, convênios e aditivos" onclick="filtrarDocs(this,'tipo','contrato')">Contratos</button>
-        <button class="doc-filtro" data-grupo="tipo" title="Relatórios de atividades e prestação de serviços" onclick="filtrarDocs(this,'tipo','relatorio')">Relatórios</button>
-        <a href="prestacoes.html" class="doc-filtro" title="Relatórios mensais de prestação de contas — CEI Betel e Esco-Lar" style="text-decoration:none">Prestações de Contas →</a>
+      <!-- DOCUMENTOS INSTITUCIONAIS -->
+      <div class="transp-bloco">
+        <h3 class="transp-bloco-titulo">Documentos Institucionais</h3>
+        <p class="transp-bloco-desc">Estatutos, regimentos, planos de trabalho e termos de referência.</p>
+        <div class="transp-filtros">
+          <div class="filtro-grupo">
+            <label>Unidade</label>
+            <div class="filtro-pills" id="filtrosInstUnidade">
+              <button class="pill ativo" onclick="filtrarInst(this,'')">Todas</button>
+              <button class="pill" onclick="filtrarInst(this,'AASEC')">AASEC</button>
+              <button class="pill" onclick="filtrarInst(this,'CEI Betel')">CEI Betel</button>
+              <button class="pill" onclick="filtrarInst(this,'Esco-Lar')">Esco-Lar</button>
+            </div>
+          </div>
+        </div>
+        <div class="docs-grid" id="docsInstGrid"></div>
       </div>
-      <!-- Filtros por unidade -->
-      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-        <button class="doc-filtro" data-grupo="unidade" title="Documentos da Associação (sede administrativa)" onclick="filtrarDocs(this,'unidade','AASEC')">AASEC</button>
-        <button class="doc-filtro" data-grupo="unidade" title="Centro de Educação Infantil Betel" onclick="filtrarDocs(this,'unidade','CEI Betel')">CEI Betel</button>
-        <button class="doc-filtro" data-grupo="unidade" title="Serviço de Convivência e Fortalecimento de Vínculos" onclick="filtrarDocs(this,'unidade','Esco-Lar')">Esco-Lar</button>
-      </div>
-      <div class="docs-grid" id="docsGrid"></div>
-      <div id="docsVazio" style="display:none;text-align:center;padding:32px;color:var(--cinza)">
-        <div style="font-size:36px;margin-bottom:8px">📁</div>
-        <p>Nenhum documento encontrado para este filtro.</p>
+
+      <!-- CONVÊNIOS E PRESTAÇÕES -->
+      <div class="transp-bloco">
+        <h3 class="transp-bloco-titulo">Convênios e Prestações de Contas</h3>
+        <p class="transp-bloco-desc">Termos de colaboração com a Prefeitura de Carambeí e seus respectivos documentos.</p>
+        <div class="transp-filtros">
+          <div class="filtro-grupo">
+            <label>Unidade</label>
+            <div class="filtro-pills" id="filtrosConvUnidade">
+              <button class="pill ativo" onclick="filtrarConv('unidade','',this)">Todas</button>
+              <button class="pill" onclick="filtrarConv('unidade','CEI Betel',this)">CEI Betel</button>
+              <button class="pill" onclick="filtrarConv('unidade','Esco-Lar',this)">Esco-Lar</button>
+            </div>
+          </div>
+          <div class="filtro-grupo">
+            <label>Ano</label>
+            <div class="filtro-pills" id="filtrosConvAno"></div>
+          </div>
+        </div>
+        <div id="conveniosGrid"></div>
       </div>
     </div>
   </section>
@@ -1425,29 +1414,178 @@
   </script>
   <script src="dados_docs.js"></script>
   <script>
-    var _filtroTipo = '';
-    var _filtroUnidade = '';
-    function filtrarDocs(btn, grupo, valor) {
-      if (btn.classList.contains('ativo')) {
-        btn.classList.remove('ativo');
-        if (grupo === 'tipo') _filtroTipo = '';
-        if (grupo === 'unidade') _filtroUnidade = '';
-      } else {
-        document.querySelectorAll('.doc-filtro[data-grupo="' + grupo + '"]').forEach(function (b) { b.classList.remove('ativo'); });
-        btn.classList.add('ativo');
-        if (grupo === 'tipo') _filtroTipo = valor;
-        if (grupo === 'unidade') _filtroUnidade = valor;
-      }
-      if (!_filtroTipo && !_filtroUnidade) {
-        document.getElementById('docsGrid').innerHTML = '';
+    var _convenios = [];
+    var _extras = [];
+    var _filtroInstUnidade = '';
+    var _filtroConvUnidade = '';
+    var _filtroConvAno = '';
+
+    var situacaoLabel = { em_execucao: 'Em execução', encerrado: 'Encerrado' };
+    var svgDoc = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v1.5H8V13zm0 3h8v1.5H8V16zm0-6h3v1.5H8V10z"/></svg>';
+    var svgConv = '<svg viewBox="0 0 24 24"><path d="M16 2H4a2 2 0 00-2 2v16l6-3 6 3V4a2 2 0 00-2-2zm0 15l-4-2-4 2V4h8v13z"/></svg>';
+
+    // ── Documentos Institucionais ──────────────────────────
+    function filtrarInst(btn, unidade) {
+      _filtroInstUnidade = unidade;
+      document.querySelectorAll('#filtrosInstUnidade .pill').forEach(function(b) { b.classList.remove('ativo'); });
+      btn.classList.add('ativo');
+      renderDocsInst();
+    }
+
+    function renderDocsInst() {
+      var lista = (typeof getTodosDocs === 'function' ? getTodosDocs() : AASEC_DOCS || []).filter(function(d) {
+        if (d.tipo === 'prestacao') return false;
+        if (!d.link) return false;
+        if (_filtroInstUnidade && d.unidade !== _filtroInstUnidade) return false;
+        return true;
+      });
+      var el = document.getElementById('docsInstGrid');
+      if (!lista.length) {
+        el.innerHTML = '<p style="color:var(--cinza);font-size:13px;padding:16px 0">Nenhum documento encontrado.</p>';
         return;
       }
-      var filtros = {};
-      if (_filtroTipo) filtros.tipo = _filtroTipo;
-      if (_filtroUnidade) filtros.unidade = _filtroUnidade;
-      renderDocsPublico('docsGrid', filtros);
+      el.innerHTML = lista.map(function(d) {
+        var sub = d.unidade + (d.ano ? ' · ' + d.ano : '');
+        return '<a class="doc-card" href="' + d.link + '" target="_blank">'
+          + '<div class="dc-ico">' + svgDoc + '</div>'
+          + '<div class="dc-info"><strong>' + d.nome + '</strong><span>' + sub + '</span></div>'
+          + '</a>';
+      }).join('');
     }
-    document.addEventListener('DOMContentLoaded', function () {});
+
+    // ── Convênios ──────────────────────────────────────────
+    function filtrarConv(grupo, valor, btn) {
+      if (grupo === 'unidade') _filtroConvUnidade = valor;
+      if (grupo === 'ano') _filtroConvAno = valor;
+      var container = grupo === 'unidade' ? 'filtrosConvUnidade' : 'filtrosConvAno';
+      document.querySelectorAll('#' + container + ' .pill').forEach(function(b) { b.classList.remove('ativo'); });
+      btn.classList.add('ativo');
+      renderConvenios();
+    }
+
+    function toggleConvenio(el) {
+      el.closest('.conv-card').classList.toggle('aberto');
+    }
+
+    function fmtDataCurta(iso) {
+      if (!iso) return '';
+      var p = iso.split('-');
+      return p[2] + '/' + p[1] + '/' + p[0];
+    }
+
+    function renderFiltrosConvAno() {
+      var anos = [];
+      _convenios.forEach(function(c) {
+        if (c.visibilidade === 'interno') return;
+        if (c.vigencia_inicio) {
+          var a = c.vigencia_inicio.substring(0, 4);
+          if (anos.indexOf(a) === -1) anos.push(a);
+        }
+      });
+      anos.sort().reverse();
+      var wrap = document.getElementById('filtrosConvAno');
+      var html = '<button class="pill ativo" onclick="filtrarConv(\'ano\',\'\',this)">Todos</button>';
+      anos.forEach(function(a) {
+        html += '<button class="pill" onclick="filtrarConv(\'ano\',\'' + a + '\',this)">' + a + '</button>';
+      });
+      wrap.innerHTML = html;
+    }
+
+    function renderConvenios() {
+      var grid = document.getElementById('conveniosGrid');
+      var publicos = _convenios.filter(function(c) {
+        if (c.visibilidade === 'interno') return false;
+        if (_filtroConvUnidade && c.unidade !== _filtroConvUnidade) return false;
+        if (_filtroConvAno) {
+          var anoInicio = c.vigencia_inicio ? c.vigencia_inicio.substring(0, 4) : '';
+          var anoFim = c.vigencia_fim ? c.vigencia_fim.substring(0, 4) : anoInicio;
+          if (_filtroConvAno < anoInicio || _filtroConvAno > anoFim) return false;
+        }
+        return true;
+      });
+
+      publicos.sort(function(a, b) {
+        var sa = a.situacao === 'em_execucao' ? 0 : 1;
+        var sb = b.situacao === 'em_execucao' ? 0 : 1;
+        if (sa !== sb) return sa - sb;
+        return (b.vigencia_inicio || '').localeCompare(a.vigencia_inicio || '');
+      });
+
+      if (!publicos.length) {
+        grid.innerHTML = '<p class="conv-vazio">Nenhum convênio encontrado para este filtro.</p>';
+        return;
+      }
+
+      grid.innerHTML = publicos.map(function(c) {
+        var docs = _extras.filter(function(d) { return d.convenio_id === c.id; });
+        var pcs = docs.filter(function(d) { return d.tipo === 'prestacao'; });
+        var outros = docs.filter(function(d) { return d.tipo !== 'prestacao'; });
+        var sit = c.situacao || 'em_execucao';
+        var aberto = sit === 'em_execucao' ? ' aberto' : '';
+        var vigencia = '';
+        if (c.vigencia_inicio) {
+          vigencia = fmtDataCurta(c.vigencia_inicio);
+          if (c.vigencia_fim) vigencia += ' — ' + fmtDataCurta(c.vigencia_fim);
+        }
+        var sub = (c.unidade || '') + (vigencia ? ' · ' + vigencia : '');
+        var totalDocs = docs.filter(function(d) { return !!d.link; }).length;
+
+        var html = '<div class="conv-card' + aberto + '">';
+        html += '<div class="conv-header" onclick="toggleConvenio(this)">';
+        html += '<div class="ch-ico">' + svgConv + '</div>';
+        html += '<div class="ch-info"><strong>' + c.nome + '</strong><span>' + sub + '</span></div>';
+        if (totalDocs) html += '<span class="ch-count">' + totalDocs + ' doc' + (totalDocs !== 1 ? 's' : '') + '</span>';
+        html += '<span class="ch-badge ' + sit + '">' + (situacaoLabel[sit] || sit) + '</span>';
+        html += '<span class="ch-seta">▼</span>';
+        html += '</div>';
+
+        html += '<div class="conv-body"><div class="conv-body-inner">';
+
+        if (pcs.length) {
+          var pcsComLink = pcs.filter(function(d) { return !!d.link; });
+          if (pcsComLink.length) {
+            html += '<div class="conv-sub">Prestações de Contas (' + pcsComLink.length + ')</div>';
+            html += '<div class="conv-docs-lista">';
+            pcsComLink.forEach(function(d) {
+              html += '<a class="conv-doc-item" href="' + d.link + '" target="_blank"><strong>' + d.nome + '</strong></a>';
+            });
+            html += '</div>';
+          }
+        }
+
+        var outrosComLink = outros.filter(function(d) { return !!d.link; });
+        if (outrosComLink.length) {
+          html += '<div class="conv-sub">Documentos (' + outrosComLink.length + ')</div>';
+          html += '<div class="conv-docs-lista">';
+          outrosComLink.forEach(function(d) {
+            html += '<a class="conv-doc-item" href="' + d.link + '" target="_blank"><strong>' + d.nome + '</strong></a>';
+          });
+          html += '</div>';
+        }
+
+        if (!totalDocs) {
+          html += '<p class="conv-vazio">Nenhum documento disponível ainda.</p>';
+        }
+
+        html += '</div></div></div>';
+        return html;
+      }).join('');
+    }
+
+    document.addEventListener('DOMContentLoaded', async function() {
+      await carregarDocsExtras();
+      renderDocsInst();
+      try {
+        var resp = await fetch('/api/convenios');
+        _convenios = await resp.json();
+      } catch(e) { _convenios = []; }
+      try {
+        var resp2 = await fetch('/api/extras');
+        _extras = await resp2.json();
+      } catch(e) { _extras = []; }
+      renderFiltrosConvAno();
+      renderConvenios();
+    });
   </script>
 </body>
 
