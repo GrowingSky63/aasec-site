@@ -99,7 +99,7 @@
         <button class="modal-close" onclick="fecharModal('modalAdd')">✕</button>
       </div>
       <div class="modal-body">
-        <div class="fg"><label>Nome *</label><div id="cNomeSugestao" style="display:none;margin-bottom:6px"><button type="button" style="font-size:11px;padding:4px 12px;border-radius:6px;border:1px dashed var(--azul);background:var(--azul-claro);color:var(--azul);cursor:pointer;font-family:'Inter',sans-serif" onclick="document.getElementById('cNome').value=this.textContent;this.parentElement.style.display='none'"></button></div><input id="cNome" type="text" placeholder="Ex: Termo de Colaboração nº 007/2024"></div>
+        <div class="fg"><label>Nome *</label><input id="cNome" type="text" placeholder="Ex: Termo de Colaboração nº 007/2024"><div id="cNomeSugestao" style="display:none;margin-top:4px;font-size:11px;color:var(--cinza)">Sugestão: <a href="#" style="color:var(--azul);font-weight:600;text-decoration:none" onclick="event.preventDefault();document.getElementById('cNome').value=this.textContent;document.getElementById('cNomeSugestao').style.display='none'" id="cNomeSugestaoLink"></a></div></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div class="fg"><label>Tipo *</label>
             <select id="cTipo">
@@ -640,9 +640,8 @@ function abrirNovoConvenio() {
   document.getElementById('modalTitulo').textContent = 'Novo Convênio';
   document.getElementById('cNome').value = '';
   var sugestao = sugerirNomeConvenio();
-  var sEl = document.getElementById('cNomeSugestao');
-  sEl.style.display = '';
-  sEl.querySelector('button').textContent = sugestao;
+  document.getElementById('cNomeSugestaoLink').textContent = sugestao;
+  document.getElementById('cNomeSugestao').style.display = '';
   document.getElementById('cTipo').value = 'convenio';
   document.getElementById('cUnidade').value = 'CEI Betel';
   document.getElementById('cConcedente').value = 'PM Carambeí';
