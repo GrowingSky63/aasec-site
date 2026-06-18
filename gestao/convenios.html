@@ -99,7 +99,7 @@
         <button class="modal-close" onclick="fecharModal('modalAdd')">✕</button>
       </div>
       <div class="modal-body">
-        <div class="fg"><label>Nome *</label><input id="cNome" type="text" placeholder="Ex: Termo de Colaboração nº 007/2024" onclick="var v=this;setTimeout(function(){v.setSelectionRange(v.value.length,v.value.length)},0)" onfocus="var v=this;setTimeout(function(){v.setSelectionRange(v.value.length,v.value.length)},0)"></div>
+        <div class="fg"><label>Nome *</label><div id="cNomeSugestao" style="display:none;margin-bottom:6px"><button type="button" style="font-size:11px;padding:4px 12px;border-radius:6px;border:1px dashed var(--azul);background:var(--azul-claro);color:var(--azul);cursor:pointer;font-family:'Inter',sans-serif" onclick="document.getElementById('cNome').value=this.textContent;this.parentElement.style.display='none'"></button></div><input id="cNome" type="text" placeholder="Ex: Termo de Colaboração nº 007/2024"></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div class="fg"><label>Tipo *</label>
             <select id="cTipo">
@@ -638,7 +638,11 @@ function sugerirNomeConvenio() {
 function abrirNovoConvenio() {
   _editandoId = null;
   document.getElementById('modalTitulo').textContent = 'Novo Convênio';
-  document.getElementById('cNome').value = sugerirNomeConvenio();
+  document.getElementById('cNome').value = '';
+  var sugestao = sugerirNomeConvenio();
+  var sEl = document.getElementById('cNomeSugestao');
+  sEl.style.display = '';
+  sEl.querySelector('button').textContent = sugestao;
   document.getElementById('cTipo').value = 'convenio';
   document.getElementById('cUnidade').value = 'CEI Betel';
   document.getElementById('cConcedente').value = 'PM Carambeí';
@@ -650,17 +654,13 @@ function abrirNovoConvenio() {
   document.getElementById('cSituacao').value = 'em_execucao';
   document.getElementById('cVisibilidade').value = 'publico';
   abrirModal('modalAdd');
-  setTimeout(function() {
-    var el = document.getElementById('cNome');
-    el.focus();
-    el.setSelectionRange(el.value.length, el.value.length);
-  }, 100);
 }
 
 function editarConvenio(json) {
   var c = JSON.parse(decodeURIComponent(json));
   _editandoId = c.id;
   document.getElementById('modalTitulo').textContent = 'Editar Convênio';
+  document.getElementById('cNomeSugestao').style.display = 'none';
   document.getElementById('cNome').value = c.nome || '';
   document.getElementById('cTipo').value = c.tipo || 'convenio';
   document.getElementById('cUnidade').value = c.unidade || 'CEI Betel';
