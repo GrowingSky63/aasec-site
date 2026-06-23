@@ -374,7 +374,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 // ── Backup automático ao iniciar ────────────────────────────────────────
-const BACKUP_RETENCAO_DIAS = 30;
+const BACKUP_RETENCAO_DIAS = 7;
 
 function fazerBackup() {
   const docsDir = path.join(ROOT, 'docs');
