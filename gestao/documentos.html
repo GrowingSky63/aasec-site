@@ -29,8 +29,11 @@
 .ano-sep{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cinza);padding:10px 0 4px;border-bottom:1px solid var(--cinza-borda);margin-bottom:6px;margin-top:18px}
 .vazio{text-align:center;padding:48px;color:var(--cinza)}
 .vazio .vi{font-size:44px;margin-bottom:10px}
+.btn-editar{background:#dbeafe;color:#1e40af;border:none;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:13px;flex-shrink:0}
+.btn-editar:hover{background:#bfdbfe}
 .btn-apagar{background:#fee2e2;color:#dc2626;border:none;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:13px;flex-shrink:0}
 .btn-apagar:hover{background:#fca5a5}
+.dr-acoes{display:flex;gap:6px;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -259,7 +262,10 @@ function renderLista() {
         html += '<a class="dr-status st-ok" href="' + url + '" target="_blank" onclick="event.stopPropagation()">Abrir</a>';
       }
       if (d.id) {
+        html += '<div class="dr-acoes">';
+        html += '<button class="btn-editar" onclick="event.stopPropagation();editarDoc(\'' + d.id + '\')" title="Editar">✏️</button>';
         html += '<button class="btn-apagar" onclick="event.stopPropagation();apagarDoc(\'' + d.id + '\')" title="Apagar">🗑️</button>';
+        html += '</div>';
       }
       html += '</div>';
     });
@@ -364,6 +370,32 @@ async function salvarDoc() {
   _editandoId = null;
   fecharModal('modalAdd');
   renderLista();
+}
+
+function editarDoc(id) {
+  var doc = _extras.find(function(d) { return d.id === id; });
+  if (!doc) return;
+  _editandoId = id;
+  _arquivo = null;
+  document.getElementById('modalAddTitulo').textContent = 'Editar Documento';
+  document.getElementById('aNome').value = doc.nome || '';
+  document.getElementById('aTipo').value = doc.tipo || '';
+  document.getElementById('aUnidade').value = doc.unidade || '';
+  document.getElementById('aAno').value = doc.ano || '';
+  document.getElementById('aObs').value = doc.obs || '';
+  document.getElementById('fileInput').value = '';
+  document.getElementById('fgArquivo').style.display = '';
+  document.getElementById('avisoEdicao').style.display = doc.link ? '' : 'none';
+  if (doc.link) {
+    document.getElementById('dropText').innerHTML = '📎 Arquivo atual: <strong>' + doc.link.split('/').pop() + '</strong><br><span style="font-size:11px;color:var(--cinza)">Selecione um novo arquivo para substituir</span>';
+    document.getElementById('dropZone').style.borderColor = '#10b981';
+    document.getElementById('dropZone').style.background = '#ecfdf5';
+  } else {
+    document.getElementById('dropText').textContent = 'Clique para procurar ou arraste o arquivo aqui';
+    document.getElementById('dropZone').style.borderColor = 'var(--cinza-borda)';
+    document.getElementById('dropZone').style.background = '#fafbfc';
+  }
+  abrirModal('modalAdd');
 }
 
 async function apagarDoc(id) {

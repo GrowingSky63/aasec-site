@@ -4,44 +4,6 @@
  */
 
 const AASEC_DOCS = [
-  // ── INSTITUCIONAL ──────────────────────────────────────────────────────
-  {
-    nome: 'Estatuto AASEC', tipo: 'institucional', unidade: 'AASEC',
-    link: '/docs/institucional/AASEC/AASEC ESTATUTO.docx'
-  },
-  {
-    nome: 'Estrutura Organizacional AASEC', tipo: 'institucional', unidade: 'AASEC',
-    link: '/docs/institucional/AASEC/AASEC_Estrutura_Organizacional.pdf'
-  },
-  {
-    nome: '1º Aditivo — Termo de Colaboração CEI Betel', tipo: 'contrato', unidade: 'CEI Betel', ano: '2025',
-    link: '/docs/institucional/CEI Betel/CEI A 2025-12-03 print Primeiro_Aditivo_Termo_de_Colaboracao_Creche_Betel.pdf'
-  },
-  {
-    nome: 'Plano de Trabalho CEI Betel 2026', tipo: 'institucional', unidade: 'CEI Betel', ano: '2026',
-    link: '/docs/institucional/CEI Betel/CEI B 2026 Plano de trabalho - CEI Betel.pdf'
-  },
-  {
-    nome: 'Regimento Interno CEI Betel', tipo: 'institucional', unidade: 'CEI Betel', ano: '2022',
-    link: '/docs/institucional/CEI Betel/CEI C 2022-06-21 Regimento interno legalizado.pdf'
-  },
-  {
-    nome: 'Código de Ética CEI Betel', tipo: 'institucional', unidade: 'CEI Betel', ano: '2026',
-    link: '/docs/institucional/CEI Betel/CEI D 2026 Codigo_de_Etica_CEI_Betel_Padronizado.pdf'
-  },
-  {
-    nome: 'Termo de Referência Esco-Lar 2025-2026', tipo: 'contrato', unidade: 'Esco-Lar', ano: '2026',
-    link: '/docs/institucional/Esco-Lar/ESCO-LAR A 2026 Termo de Referência serviço de Convivência 2025-2026.pdf'
-  },
-  {
-    nome: 'Plano de Trabalho Esco-Lar 2026', tipo: 'institucional', unidade: 'Esco-Lar', ano: '2026',
-    link: '/docs/institucional/Esco-Lar/ESCO-LAR B 2026 Plano de Trabalho.pdf.pdf'
-  },
-  {
-    nome: 'Regimento Interno Esco-Lar', tipo: 'institucional', unidade: 'Esco-Lar', ano: '2025',
-    link: '/docs/institucional/Esco-Lar/ESCO-LAR D 2025 Regimento Interno.pdf'
-  },
-
   // ── PRESTAÇÕES CEI BETEL — 2020 ────────────────────────────────────────
   { nome: 'Prestação de Contas — Fevereiro 2020', tipo: 'prestacao', unidade: 'CEI Betel', ano: '2020', mes: '02', link: '/docs/prestacoes/CEI Betel/2020/022020.pdf' },
   { nome: 'Prestação de Contas — Março 2020', tipo: 'prestacao', unidade: 'CEI Betel', ano: '2020', mes: '03', link: '/docs/prestacoes/CEI Betel/2020/032020.pdf' },
